@@ -24,17 +24,17 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('HomeShare'),
+        title: const Text('HomeShare'),
         actions: [
           IconButton(
-            icon: Icon(Icons.settings),
+            icon: const Icon(Icons.settings),
             onPressed: () {
               // TODO: Implement settings functionality
             },
           ),
         ],
       ),
-      body: Center(
+      body: const Center(
         child: Text('Welcome to HomeShare!'),
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -46,11 +46,11 @@ class _HomePageState extends State<HomePage> {
         },
         selectedItemColor: Colors.black,
         unselectedItemColor: Colors.grey,
-        selectedLabelStyle: TextStyle(
+        selectedLabelStyle: const TextStyle(
             color: Colors.grey), // set the label color for selected item
-        unselectedLabelStyle: TextStyle(
+        unselectedLabelStyle: const TextStyle(
             color: Colors.grey), // set the label color for unselected items
-        items: [
+        items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Home',
