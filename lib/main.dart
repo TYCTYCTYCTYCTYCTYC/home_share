@@ -30,21 +30,6 @@ class _HomePageState extends State<HomePage> {
             icon: const Icon(Icons.settings),
             onPressed: () {
               // TODO: Implement settings functionality
-<<<<<<< HEAD
-=======
-              //tyc test
-              //oi;otiolu
-              //nyc test
-              //tyc test 2
-              //tym test test 10009999999999
-              //ttttttttttt
-              //changef
-              //DDDQJBDSASKBDKJABJKDSA
-              //wowowoowowow
-              //tes test etststststst
-              //tyc test 3
-              ///stststststst
->>>>>>> d5acd17dba27931a1a7683116da820d03cafdd73
             },
           ),
         ],
