@@ -2,18 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'package:home_share/main.dart';
 
-class Schedule extends StatefulWidget {
-  const Schedule({super.key});
-
-  @override
-  _ScheduleState createState() => _ScheduleState();
-}
-
-class _ScheduleState extends State<Schedule> {
-  @override
-  void initState() {
-    super.initState();
-  }
+class Schedule extends StatelessWidget {
+  const Schedule({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

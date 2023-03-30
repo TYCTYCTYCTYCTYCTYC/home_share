@@ -2,18 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'package:home_share/main.dart';
 
-class Chores extends StatefulWidget {
-  const Chores({super.key});
-
-  @override
-  _ChoresState createState() => _ChoresState();
-}
-
-class _ChoresState extends State<Chores> {
-  @override
-  void initState() {
-    super.initState();
-  }
+class Chores extends StatelessWidget {
+  const Chores({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

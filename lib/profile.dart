@@ -2,18 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'package:home_share/main.dart';
 
-class Profile extends StatefulWidget {
-  const Profile({super.key});
-
-  @override
-  _ProfileState createState() => _ProfileState();
-}
-
-class _ProfileState extends State<Profile> {
-  @override
-  void initState() {
-    super.initState();
-  }
+class Profile extends StatelessWidget {
+  const Profile({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

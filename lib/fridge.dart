@@ -2,18 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'package:home_share/main.dart';
 
-class Fridge extends StatefulWidget {
-  const Fridge({super.key});
-
-  @override
-  _FridgeState createState() => _FridgeState();
-}
-
-class _FridgeState extends State<Fridge> {
-  @override
-  void initState() {
-    super.initState();
-  }
+class Fridge extends StatelessWidget {
+  const Fridge({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
