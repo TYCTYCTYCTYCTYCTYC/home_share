@@ -45,6 +45,7 @@ class _HomeState extends State<Home> {
       body: screen[_selectedIndex],
       backgroundColor: Color(0xFF103465),
       bottomNavigationBar: GNav(
+
           backgroundColor: Color(0xFF103465),
           color: Colors.white,
           activeColor: Colors.black,
