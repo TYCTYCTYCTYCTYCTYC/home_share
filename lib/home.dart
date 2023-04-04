@@ -35,43 +35,55 @@ class _HomeState extends State<Home> {
       body: screen[_selectedIndex],
       backgroundColor: Color(0xFF103465),
       bottomNavigationBar: GNav(
-          backgroundColor: Color(0xFF103465),
-          color: Colors.white,
-          activeColor: Colors.black,
-          tabBackgroundColor: Colors.amber,
-          iconSize: 24,
-          tabMargin: EdgeInsets.symmetric(vertical: 8),
-          gap: 8,
-          mainAxisAlignment: MainAxisAlignment.center,
-          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-          tabs: [
-            GButton(
-              icon: Icons.home_outlined,
-              text: 'Home',
-            ),
-            GButton(
-              icon: Icons.kitchen_outlined,
-              text: 'Fridge',
-            ),
-            GButton(
-              icon: Icons.cleaning_services_outlined,
-              text: 'chores',
-            ),
-            GButton(
-              icon: Icons.date_range,
-              text: 'Schedule',
-            ),
-            GButton(
-              icon: Icons.account_circle_outlined,
-              text: 'Profile',
-            ),
-          ],
-          selectedIndex: _selectedIndex,
-          onTabChange: (index) {
-            setState(() {
-              _selectedIndex = index;
-            });
-          }),
+        backgroundColor: Color(0xFF103465),
+        color: Colors.white,
+        activeColor: Colors.black,
+        tabBackgroundColor: Colors.amber,
+        iconSize: 24,
+        tabMargin: const EdgeInsets.symmetric(vertical: 8),
+        gap: 8,
+        mainAxisAlignment: MainAxisAlignment.center,
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        tabs: const [
+          GButton(
+            icon: Icons.home_outlined,
+            text: 'Home',
+          ),
+          GButton(
+            icon: Icons.kitchen_outlined,
+            text: 'Fridge',
+          ),
+          GButton(
+            icon: Icons.cleaning_services_outlined,
+            text: 'chores',
+          ),
+          GButton(
+            icon: Icons.date_range,
+            text: 'Schedule',
+          ),
+          GButton(
+            icon: Icons.account_circle_outlined,
+            text: 'Profile',
+          ),
+        ],
+        selectedIndex: _selectedIndex,
+        onTabChange: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
+      ),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () {
+      //     Navigator.push(
+      //       context,
+      //       MaterialPageRoute(
+      //         builder: (context) => screen[_selectedIndex],
+      //       ),
+      //     );
+      //   },
+      //   child: Icon(Icons.add),
+      // ),
     );
   }
 }
