@@ -3,11 +3,21 @@ import 'package:home_share/fridge.dart';
 import 'package:home_share/chores.dart';
 import 'package:home_share/schedule.dart';
 import 'package:home_share/profile.dart';
+import 'package:home_share/fridge.dart';
 import 'package:home_share/main.dart';
+import 'package:home_share/pages/create_or_join.dart';
+import 'package:home_share/create_new_home.dart';
+import 'package:home_share/join_existing_home.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
+
+
 
 class Home extends StatefulWidget {
   const Home({super.key});
+
+  static Route<void> route() {
+    return MaterialPageRoute(builder: (context) => const Home());
+  }
 
   @override
   _HomeState createState() => _HomeState();
@@ -16,11 +26,11 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   int _selectedIndex = 0;
   final screen = [
-    HomePage(),
-    Fridge(),
-    Chores(),
-    Schedule(),
-    Profile(),
+    const HomePage(),
+    const Fridge(),
+    const Chores(),
+    const Schedule(),
+    const Profile(),
   ];
 
   @override
@@ -44,7 +54,7 @@ class _HomeState extends State<Home> {
           gap: 8,
           mainAxisAlignment: MainAxisAlignment.center,
           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-          tabs: [
+          tabs: const [
             GButton(
               icon: Icons.home_outlined,
               text: 'Home',
@@ -81,11 +91,19 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
+    return const Scaffold(
       body: Center(
-        child: Text("Welcome to Home"),
+        child: Text(
+          'Welcome to Home page',
+          style: TextStyle(
+            fontSize: 20,
+          ),
+        ),
       ),
     );
   }
 }
+
+
+
+
