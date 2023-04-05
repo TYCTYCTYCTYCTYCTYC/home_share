@@ -42,6 +42,7 @@ dependencies:
   supabase_flutter: ^1.6.2
   provider: ^6.0.0
 
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

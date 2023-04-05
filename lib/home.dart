@@ -4,13 +4,13 @@ import 'package:home_share/chores.dart';
 import 'package:home_share/schedule.dart';
 import 'package:home_share/profile.dart';
 import 'package:home_share/fridge.dart';
+import 'package:home_share/dashboard.dart';
 import 'package:home_share/main.dart';
 import 'package:home_share/pages/create_or_join.dart';
 import 'package:home_share/create_new_home.dart';
 import 'package:home_share/join_existing_home.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
-
-
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -26,7 +26,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   int _selectedIndex = 0;
   final screen = [
-    const HomePage(),
+    const DashBoard(),
     const Fridge(),
     const Chores(),
     const Schedule(),
@@ -45,7 +45,6 @@ class _HomeState extends State<Home> {
       body: screen[_selectedIndex],
       backgroundColor: Color(0xFF103465),
       bottomNavigationBar: GNav(
-
           backgroundColor: Color(0xFF103465),
           color: Colors.white,
           activeColor: Colors.black,
@@ -86,25 +85,3 @@ class _HomeState extends State<Home> {
     );
   }
 }
-
-class HomePage extends StatelessWidget {
-  const HomePage({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Text(
-          'Welcome to Home page',
-          style: TextStyle(
-            fontSize: 20,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-
-
-
