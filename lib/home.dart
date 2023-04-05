@@ -12,6 +12,8 @@ import 'package:home_share/join_existing_home.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+
+
 class Home extends StatefulWidget {
   const Home({super.key});
 
@@ -45,6 +47,7 @@ class _HomeState extends State<Home> {
       body: screen[_selectedIndex],
       backgroundColor: Color(0xFF103465),
       bottomNavigationBar: GNav(
+
           backgroundColor: Color(0xFF103465),
           color: Colors.white,
           activeColor: Colors.black,
@@ -85,3 +88,36 @@ class _HomeState extends State<Home> {
     );
   }
 }
+
+class HomePage extends StatelessWidget {
+  const HomePage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+
+    // final currentUser = Supabase.instance.client.auth.currentUser;
+    // final userId = currentUser?.id;
+
+    // final homeName = ()async{await Supabase.instance.client
+    //                            .from('home')
+    // .select('name', )
+    // .eq('user_home:user_id', userId)
+    // .innerJoin('user_home', 'home.id', 'user_home.home_id');};
+
+
+    return const Scaffold(
+      body: Center(
+        child: Text(
+          'Welcome to Home page',
+          style: TextStyle(
+            fontSize: 20,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
+
+

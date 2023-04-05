@@ -69,6 +69,14 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   @override
+void dispose() {
+  _emailController.dispose();
+  _passwordController.dispose();
+  _usernameController.dispose();
+  super.dispose();
+}
+ 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
@@ -170,13 +178,7 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  @override
-void dispose() {
-  _emailController.dispose();
-  _passwordController.dispose();
-  _usernameController.dispose();
-  super.dispose();
-}
+
 }
 
 
