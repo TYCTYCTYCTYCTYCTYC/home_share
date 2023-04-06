@@ -77,14 +77,15 @@ class NewHomeScreen extends StatelessWidget {
                       final userId = currentUser?.id;
 
                       await Supabase.instance.client
-                          .rpc('create_home_with_user_id', params:{
+                          .rpc('create_home_with_user_id', params: {
                         'home_name': homeName,
                         'home_address': address,
                         'user_id': userId,
                       });
 
                       Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(builder: (context) => Home()),
+                        MaterialPageRoute(
+                            builder: (context) => Home(initialIndex: 0)),
                         (route) => false,
                       );
                     },

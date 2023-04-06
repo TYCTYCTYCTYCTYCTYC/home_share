@@ -14,10 +14,13 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class Home extends StatefulWidget {
-  const Home({super.key});
+  final int initialIndex;
 
-  static Route<void> route() {
-    return MaterialPageRoute(builder: (context) => const Home());
+  const Home({Key? key, this.initialIndex = 0}) : super(key: key);
+
+  static Route<void> route({int initialIndex = 0}) {
+    return MaterialPageRoute(
+        builder: (context) => Home(initialIndex: initialIndex));
   }
 
   @override
@@ -33,6 +36,12 @@ class _HomeState extends State<Home> {
     const Schedule(),
     const Profile(),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedIndex = widget.initialIndex;
+  }
 
   @override
   Widget build(BuildContext context) {

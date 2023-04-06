@@ -3,12 +3,13 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:home_share/home.dart';
 
 class JoinHomeScreen extends StatelessWidget {
-   JoinHomeScreen({Key? key}) : super(key: key);
+  JoinHomeScreen({Key? key}) : super(key: key);
 
   static Route<void> route() {
-    return MaterialPageRoute(builder: (context) =>  JoinHomeScreen());
+    return MaterialPageRoute(builder: (context) => JoinHomeScreen());
   }
-final _codeController = TextEditingController();
+
+  final _codeController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,13 +41,11 @@ final _codeController = TextEditingController();
                         decoration: InputDecoration(
                           labelText: 'Home Code',
                           labelStyle: TextStyle(color: Colors.amber),
-                        
                           enabledBorder: OutlineInputBorder(
                             borderSide: BorderSide(
                               color: Color(0xFF103465),
                             ),
                           ),
-
                           focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(
                               color: Colors.amber,
@@ -59,9 +58,7 @@ final _codeController = TextEditingController();
                 ),
               ],
             ),
-            
             const SizedBox(height: 20),
-
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -76,30 +73,32 @@ final _codeController = TextEditingController();
                       final userId = currentUser?.id;
 
                       await Supabase.instance.client
-                          .rpc('join_home_with_user_id', params:{
+                          .rpc('join_home_with_user_id', params: {
                         'home_code': homeCode,
                         'user_id': userId,
                       });
 
                       Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(builder: (context) => Home()),
+                        MaterialPageRoute(
+                            builder: (context) => Home(initialIndex: 0)),
                         (route) => false,
                       );
                     },
                     style: ButtonStyle(
-                      minimumSize: MaterialStateProperty.all(Size(0,40)),
-                      backgroundColor: MaterialStateProperty.all<Color>(Color(0xFF103465)),
-                      foregroundColor: MaterialStateProperty.all<Color>(Colors.amber),
+                      minimumSize: MaterialStateProperty.all(Size(0, 40)),
+                      backgroundColor:
+                          MaterialStateProperty.all<Color>(Color(0xFF103465)),
+                      foregroundColor:
+                          MaterialStateProperty.all<Color>(Colors.amber),
                     ),
                     child: Text('Join Home'),
                   ),
                 ),
               ],
             ),
-          ],          
+          ],
         ),
       ),
     );
   }
 }
-

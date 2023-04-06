@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:home_share/main.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:supabase/supabase.dart';
 
 class DashBoard extends StatefulWidget {
   const DashBoard({Key? key}) : super(key: key);

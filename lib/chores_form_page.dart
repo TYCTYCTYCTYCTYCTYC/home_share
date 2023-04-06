@@ -1,0 +1,237 @@
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:date_time_picker/date_time_picker.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+
+import 'package:home_share/main.dart';
+import 'package:home_share/home.dart';
+
+class ChoreFormPage extends StatefulWidget {
+  const ChoreFormPage({Key? key}) : super(key: key);
+
+  static Route<void> route() {
+    return MaterialPageRoute(builder: (context) => ChoreFormPage());
+  }
+
+  @override
+  _ChoreFormPageState createState() => _ChoreFormPageState();
+}
+
+class _ChoreFormPageState extends State<ChoreFormPage> {
+  String? _category;
+  String? _assignedUser;
+  String? _description;
+  DateTime? _startDate;
+  int? _effortPoints;
+
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  Widget _buildCategoryField() {
+    return DropdownButtonFormField<String>(
+      decoration: InputDecoration(labelText: 'Category'),
+      value: _category,
+      onChanged: (newValue) => setState(() => _category = newValue),
+      items: <String>[
+        'Cleaning',
+        'Cooking',
+        'Errands',
+        'Gardening',
+        'Other',
+      ].map<DropdownMenuItem<String>>((String value) {
+        return DropdownMenuItem<String>(
+          value: value,
+          child: Text(value),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildAssignedUserField() {
+    return DropdownButtonFormField<String>(
+      decoration: InputDecoration(labelText: 'Assigned user'),
+      value: _assignedUser,
+      onChanged: (newValue) => setState(() => _assignedUser = newValue),
+      items: <String>[
+        'user1',
+        'user2',
+        'user3',
+        'user4',
+      ].map<DropdownMenuItem<String>>((String value) {
+        return DropdownMenuItem<String>(
+          value: value,
+          child: Text(value),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildDescriptionField() {
+    return TextFormField(
+      decoration: InputDecoration(labelText: 'Description'),
+      keyboardType: TextInputType.multiline,
+      maxLines: null,
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please enter a description';
+        }
+        return null;
+      },
+      onChanged: (newValue) => setState(() => _description = newValue),
+    );
+  }
+
+  Widget _buildStartDateField() {
+    return Theme(
+        data: ThemeData(
+          colorScheme: ColorScheme.light(
+            primary: Color(0xFF103465),
+            onPrimary: Colors.white,
+          ),
+        ),
+        child: DateTimePicker(
+          type: DateTimePickerType.date,
+          initialValue: _startDate.toString(),
+          firstDate: DateTime(2000),
+          lastDate: DateTime(2100),
+          dateLabelText: 'Start Date',
+          onChanged: (value) {
+            setState(() {
+              _startDate = DateTime.parse(value);
+            });
+          },
+          validator: (value) {
+            if (value?.isEmpty ?? true) {
+              return 'Please select start date';
+            }
+            return null;
+          },
+          onSaved: (value) => _startDate = DateTime.parse(value!),
+        ));
+  }
+
+  Widget _buildEffortPointsField() {
+    return DropdownButtonFormField<int>(
+      decoration: InputDecoration(labelText: 'Effort points'),
+      value: _effortPoints,
+      onChanged: (newValue) => setState(() => _effortPoints = newValue),
+      items: <int>[1, 2, 3].map<DropdownMenuItem<int>>((int value) {
+        return DropdownMenuItem<int>(
+          value: value,
+          child: Text(value.toString()),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildSubmitButton() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 16.0),
+      child: SizedBox(
+        width: double.infinity,
+        height: 50.0,
+        child: ElevatedButton(
+          onPressed: () async {
+            final currentUser = Supabase.instance.client.auth.currentUser;
+            final userId = currentUser?.id;
+
+            final assignedUserIdResponse = await supabase
+                .from('profiles')
+                .select('id')
+                .eq('username', _assignedUser)
+                .execute();
+            final assignedUserId = assignedUserIdResponse.data[0]['id'];
+
+            // insert data into the 'chores' table
+            final response = await supabase.from('chores').insert({
+              'created_user_id': userId,
+              'assigned_user_id': assignedUserId,
+              'category': _category,
+              'description': _description,
+              'start_date': _startDate.toString().substring(0, 10),
+              'effort_points': _effortPoints,
+              'status': false,
+            }).execute();
+
+            if (response.status == 201) {
+              Fluttertoast.showToast(
+                  msg: 'Chore created successfully.',
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.BOTTOM,
+                  timeInSecForIosWeb: 1,
+                  backgroundColor: Colors.lightGreen,
+                  textColor: Colors.black,
+                  fontSize: 16.0);
+            } else {
+              Fluttertoast.showToast(
+                  msg: 'Failed to create chore.',
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.BOTTOM,
+                  timeInSecForIosWeb: 1,
+                  backgroundColor: Colors.grey,
+                  textColor: Colors.black,
+                  fontSize: 16.0);
+              throw Exception('Failed to create chore: ${response.status}');
+            }
+
+            Navigator.of(context).push(Home.route(initialIndex: 2));
+          },
+          style: ElevatedButton.styleFrom(
+            primary: Color(0xFF103465), // Set the background color here
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('Done'),
+              SizedBox(width: 8.0),
+              Icon(Icons.check),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        title: Text('Create a new chore',
+            style: GoogleFonts.arvo(
+                textStyle: TextStyle(
+                    color: Colors.black, fontWeight: FontWeight.bold))),
+      ),
+      //body: // TODO: implement the chore form here
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _buildCategoryField(),
+                SizedBox(height: 16.0),
+                _buildDescriptionField(),
+                SizedBox(height: 16.0),
+                _buildAssignedUserField(),
+                SizedBox(height: 16.0),
+                _buildStartDateField(),
+                SizedBox(height: 16.0),
+                _buildEffortPointsField(),
+                SizedBox(height: 16.0),
+                _buildSubmitButton(),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
