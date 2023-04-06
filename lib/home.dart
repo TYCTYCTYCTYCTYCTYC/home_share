@@ -11,8 +11,7 @@ import 'package:home_share/create_new_home.dart';
 import 'package:home_share/join_existing_home.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
-
+import 'package:google_fonts/google_fonts.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -41,13 +40,15 @@ class _HomeState extends State<Home> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         centerTitle: true,
-        title: const Text('HomeShare', style: TextStyle(color: Colors.white)),
+        title: Text('HomeShare',
+            style: GoogleFonts.arvo(
+                textStyle: TextStyle(
+                    color: Colors.white, fontWeight: FontWeight.bold))),
         backgroundColor: Color(0xFF103465),
       ),
       body: screen[_selectedIndex],
       backgroundColor: Color(0xFF103465),
       bottomNavigationBar: GNav(
-
           backgroundColor: Color(0xFF103465),
           color: Colors.white,
           activeColor: Colors.black,
@@ -57,26 +58,31 @@ class _HomeState extends State<Home> {
           gap: 8,
           mainAxisAlignment: MainAxisAlignment.center,
           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-          tabs: const [
+          tabs: [
             GButton(
               icon: Icons.home_outlined,
               text: 'Home',
+              textStyle: GoogleFonts.arvo(fontWeight: FontWeight.bold),
             ),
             GButton(
               icon: Icons.kitchen_outlined,
               text: 'Fridge',
+              textStyle: GoogleFonts.arvo(fontWeight: FontWeight.bold),
             ),
             GButton(
               icon: Icons.cleaning_services_outlined,
-              text: 'chores',
+              text: 'Chores',
+              textStyle: GoogleFonts.arvo(fontWeight: FontWeight.bold),
             ),
             GButton(
               icon: Icons.date_range,
               text: 'Schedule',
+              textStyle: GoogleFonts.arvo(fontWeight: FontWeight.bold),
             ),
             GButton(
               icon: Icons.account_circle_outlined,
               text: 'Profile',
+              textStyle: GoogleFonts.arvo(fontWeight: FontWeight.bold),
             ),
           ],
           selectedIndex: _selectedIndex,
@@ -94,7 +100,6 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     // final currentUser = Supabase.instance.client.auth.currentUser;
     // final userId = currentUser?.id;
 
@@ -103,7 +108,6 @@ class HomePage extends StatelessWidget {
     // .select('name', )
     // .eq('user_home:user_id', userId)
     // .innerJoin('user_home', 'home.id', 'user_home.home_id');};
-
 
     return const Scaffold(
       body: Center(
@@ -117,7 +121,3 @@ class HomePage extends StatelessWidget {
     );
   }
 }
-
-
-
-

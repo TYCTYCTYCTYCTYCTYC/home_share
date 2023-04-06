@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:google_fonts/google_fonts.dart';
 import 'package:home_share/main.dart';
 
 class Chores extends StatefulWidget {
@@ -14,36 +14,35 @@ class _ChoresState extends State<Chores> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: "HomeShare",
-        home: Scaffold(
-          appBar: AppBar(),
-          backgroundColor: const Color.fromARGB(255, 180, 231, 255),
-          body: Container(
-              //code here
-              child: Center(
-                  child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              const Text(
-                'Chores Page',
-              ),
-              Text(
-                '$_counter',
-                style: Theme.of(context).textTheme.headline4,
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    _counter++;
-                  });
-                },
-                child: Text('Click me!'),
-              ),
-            ],
-          ))),
-        ));
+    return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 180, 231, 255),
+      body: SizedBox(
+        width: MediaQuery.of(context).size.width,
+        child: Center(
+          child: Text(
+            "You have not created any chore yet! \nClick on the button below to create a new chore.",
+            textAlign: TextAlign.center,
+            style: GoogleFonts.arvo(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            // TODO: navigate to the page with the chore form
+          },
+          backgroundColor: Colors.amber,
+          child: Text(
+            '+',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+              fontSize: 24,
+            ),
+          )),
+    );
   }
 
   // @override
