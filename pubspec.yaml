@@ -72,7 +72,8 @@ flutter:
   - assets/images/create_home.png
   - assets/images/join_home.png
   - assets/images/icon.png
-
+  - assets/images/linus.jpg
+  - assets/images/anwar.jpg
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

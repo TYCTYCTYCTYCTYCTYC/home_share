@@ -12,6 +12,9 @@ import 'package:home_share/join_existing_home.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:home_share/setting.dart';
+
 
 class Home extends StatefulWidget {
   final int initialIndex;
@@ -54,6 +57,22 @@ class _HomeState extends State<Home> {
                 textStyle: TextStyle(
                     color: Colors.white, fontWeight: FontWeight.bold))),
         backgroundColor: Color(0xFF103465),
+      actions: [
+        GestureDetector(
+            child: IconTheme(
+              data: IconThemeData(color: Colors.white),
+              child: IconButton(
+                icon: Icon(Icons.settings),
+                onPressed: (){
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => SettingsPage()),
+                  );
+                },
+              ),
+            ),
+        ),
+      ],
       ),
       body: screen[_selectedIndex],
       backgroundColor: Color(0xFF103465),
@@ -129,4 +148,15 @@ class HomePage extends StatelessWidget {
       ),
     );
   }
+}
+
+
+void _showToast() {
+  Fluttertoast.showToast(
+    msg: "pressed again to logout",
+    gravity: ToastGravity.BOTTOM,
+    backgroundColor: Colors.black54,
+    textColor: Colors.white,
+    fontSize: 16.0,
+  );
 }
