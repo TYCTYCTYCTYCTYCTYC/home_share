@@ -47,23 +47,85 @@ class _ChoreFormPageState extends State<ChoreFormPage> {
     );
   }
 
+  // Widget _buildAssignedUserField() {
+
+  //   return DropdownButtonFormField<String>(
+  //     decoration: InputDecoration(labelText: 'Assigned user'),
+  //     value: _assignedUser,
+  //     onChanged: (newValue) => setState(() => _assignedUser = newValue),
+  //     items: <String>[
+  //       'user1',
+  //       'user2',
+  //       'user3',
+  //       'user4',
+  //     ].map<DropdownMenuItem<String>>((String value) {
+  //       return DropdownMenuItem<String>(
+  //         value: value,
+  //         child: Text(value),
+  //       );
+  //     }).toList(),
+  //   );
+  // }
+
   Widget _buildAssignedUserField() {
-    return DropdownButtonFormField<String>(
-      decoration: InputDecoration(labelText: 'Assigned user'),
-      value: _assignedUser,
-      onChanged: (newValue) => setState(() => _assignedUser = newValue),
-      items: <String>[
-        'user1',
-        'user2',
-        'user3',
-        'user4',
-      ].map<DropdownMenuItem<String>>((String value) {
-        return DropdownMenuItem<String>(
-          value: value,
-          child: Text(value),
-        );
-      }).toList(),
+    return FutureBuilder<List<String>>(
+      future: _getHomeUsernames(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return DropdownButtonFormField<String>(
+            decoration: InputDecoration(labelText: 'Assigned user'),
+            value: _assignedUser,
+            onChanged: (newValue) => setState(() => _assignedUser = newValue),
+            items: snapshot.data!.map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value),
+              );
+            }).toList(),
+          );
+        } else if (snapshot.hasError) {
+          return Text('${snapshot.error}');
+        } else {
+          return CircularProgressIndicator();
+        }
+      },
     );
+  }
+
+  Future<List<String>> _getHomeUsernames() async {
+    final currentUser = Supabase.instance.client.auth.currentUser;
+    final currentUserId = currentUser?.id;
+
+    final response = await supabase
+        .from('user_home')
+        .select('home_id')
+        .eq('user_id', currentUserId)
+        .single()
+        .execute();
+
+    final homeId = response.data['home_id'] as int;
+
+    final response2 = await supabase
+        .from('user_home')
+        .select('user_id')
+        .eq('home_id', homeId)
+        .execute();
+
+    final userIds = response2.data
+        .map<String>((item) => item['user_id'] as String)
+        .toList();
+
+    final response3 = await supabase
+        .from('profiles')
+        .select('username')
+        .in_('id', userIds)
+        .execute();
+
+    final usernames = response3.data
+        .map<String>((item) => item['username'] as String)
+        .toList();
+
+    return usernames;
   }
 
   Widget _buildDescriptionField() {
@@ -132,6 +194,25 @@ class _ChoreFormPageState extends State<ChoreFormPage> {
         height: 50.0,
         child: ElevatedButton(
           onPressed: () async {
+            if ((_assignedUser?.isEmpty ?? true) ||
+                (_category?.isEmpty ?? true) ||
+                (_description?.isEmpty ?? true) ||
+                (_startDate == null) ||
+                (_effortPoints == null)) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Please fill in all fields.',
+                      style: GoogleFonts.arvo(
+                          textStyle: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold))),
+                  backgroundColor: Colors.amber,
+                  duration: Duration(seconds: 2),
+                ),
+              );
+              return;
+            }
+
             final currentUser = Supabase.instance.client.auth.currentUser;
             final userId = currentUser?.id;
 
@@ -182,7 +263,10 @@ class _ChoreFormPageState extends State<ChoreFormPage> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('Done'),
+              Text('Done',
+                  style: GoogleFonts.arvo(
+                      textStyle: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold))),
               SizedBox(width: 8.0),
               Icon(Icons.check),
             ],
