@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:home_share/main.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:google_fonts/google_fonts.dart';
+
 import 'package:supabase/supabase.dart';
 
 class DashBoard extends StatefulWidget {
@@ -48,8 +51,9 @@ class _DashBoardState extends State<DashBoard> {
         child: homeName != null && username != null
             ? Text(
                 'Welcome to your home $homeName, $username!',
-                style: const TextStyle(
+                style: GoogleFonts.arvo(
                   fontSize: 20,
+                  fontWeight: FontWeight.bold,
                 ),
               )
             : const CircularProgressIndicator(),
