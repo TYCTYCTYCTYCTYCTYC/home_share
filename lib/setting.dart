@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:home_share/pages/login_page.dart';
 
 class SettingsPage extends StatefulWidget {
   @override
@@ -48,12 +49,15 @@ class _SettingsPageState extends State<SettingsPage> {
 
             //logout
             ListTile(
-                leading: Icon(Icons.exit_to_app),
-                title: Text('Logout'),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.pushNamed(context);
-                })
+              leading: Icon(Icons.exit_to_app),
+              title: Text('Logout'),
+              onTap: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginPage()),
+                );
+              },
+            ),
           ],
         ),
       ),

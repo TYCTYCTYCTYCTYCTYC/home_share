@@ -46,7 +46,7 @@ dependencies:
   fluttertoast: ^8.2.1
   syncfusion_flutter_charts: ^21.1.38
   image_picker: ^0.8.7+1
-
+#
 dev_dependencies:
   flutter_test:
     sdk: flutter

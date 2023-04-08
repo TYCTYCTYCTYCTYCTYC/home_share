@@ -26,6 +26,7 @@ class _ChoresStatisticsPageState extends State<ChoresStatisticsPage> {
 //       return _getAllData();
 //   }
 // }
+//s
 
   @override
   Widget build(BuildContext context) {
