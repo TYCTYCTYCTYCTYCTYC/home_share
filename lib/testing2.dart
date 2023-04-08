@@ -1,15 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:home_share/main.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:home_share/pages/login_page.dart';
-
 
 class InputPage extends StatefulWidget {
   @override
   _InputPageState createState() => _InputPageState();
 }
-
 //
 class _InputPageState extends State<InputPage> {
   final _formKey = GlobalKey<FormState>();
@@ -17,9 +13,11 @@ class _InputPageState extends State<InputPage> {
   String _email = '';
   final _nameController = TextEditingController();
   final _nameFocusNode = FocusNode();
-
+  
+  
   final _emailController = TextEditingController();
   final _emailFocusNode = FocusNode();
+
 
   @override
   void initState() {
@@ -45,19 +43,15 @@ class _InputPageState extends State<InputPage> {
   void getProfileData() async {
     final currentUser = Supabase.instance.client.auth.currentUser;
     final currentUserId = currentUser?.id;
-    final currentUserEmail = currentUser?.email ?? '';
-    final response = await supabase
-        .from('profiles')
-        .select('username')
-        .eq('id', currentUserId)
-        .execute();
+    //final currentUserEmail = currentUser?.email;
+    final response = await supabase.from('profiles').select('username,email').eq('id', currentUserId).execute();
     if (response.data != null) {
       final List<dynamic> data = response.data!;
       setState(() {
         _username = data[0]['username'];
         _nameController.text = _username;
-        //_email = data[0]['email'];
-        _emailController.text = currentUserEmail;
+        _email = data[0]['email'];
+        _emailController.text = _email;
       });
     }
   }
@@ -66,10 +60,6 @@ class _InputPageState extends State<InputPage> {
   Widget build(BuildContext context) {
     final currentUser = Supabase.instance.client.auth.currentUser;
     final currentUserId = currentUser?.id;
-
-    //get the current user email to display in the application
-    final currentUserEmail = currentUser?.email;
-
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -100,11 +90,7 @@ class _InputPageState extends State<InputPage> {
                     if (_formKey.currentState?.validate() ?? false) {
                       _formKey.currentState?.save();
                       // Insert the data to Supabase
-                      final response = await supabase
-                          .from('profiles')
-                          .update({'username': _username})
-                          .eq('id', currentUserId)
-                          .execute();
+                      final response = await supabase.from('profiles').update({'username': _username}).eq('id', currentUserId).execute();
                       // Hide the button after submission
                       _nameFocusNode.unfocus();
                     }
@@ -114,7 +100,6 @@ class _InputPageState extends State<InputPage> {
               TextFormField(
                 focusNode: _emailFocusNode,
                 controller: _emailController,
-                //initialValue: currentUserEmail,
                 validator: (value) {
                   if (value?.isEmpty ?? true) {
                     return 'Please enter your email';
@@ -129,39 +114,14 @@ class _InputPageState extends State<InputPage> {
               Visibility(
                 visible: (_emailFocusNode.hasFocus) ? true : false,
                 child: ElevatedButton(
-                  child: Text('Update Email'),
+                  child: Text('Submit Email'),
                   onPressed: () async {
                     if (_formKey.currentState?.validate() ?? false) {
-                      final newEmail = _emailController.text.trim();
+                      _formKey.currentState?.save();
+                      // Insert the data to Supabase
+                      final response = await supabase.from('profiles').update({'email': _email}).eq('id', currentUserId).execute();
+                      // Hide the button after submission
                       _emailFocusNode.unfocus();
-                      bool isConfirmed = await showDialog(
-                        context: context,
-                        builder: (BuildContext contex){
-                          return AlertDialog(
-                            title: Text('Confirm Email Update'),
-                            content: Text('Are you sure you want to update your email?'),
-                            actions: <Widget>[
-                              TextButton(
-                                child: Text('Cancel'),
-                                onPressed: (){
-                                  Navigator.pop(context, false);
-                                },
-                              ),
-                              TextButton(
-                                child: Text('Update'),
-                                onPressed:(){
-                                  Navigator.pop(context, true);
-                                },
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                      if(isConfirmed != null && isConfirmed){
-                        await updateUserAndNavigateToLoginPage(context, newEmail);
-                      }
-                      // await updateUserAndNavigateToLoginPage(context, newEmail);
-                      // _emailFocusNode.unfocus();
                     }
                   },
                 ),
@@ -174,31 +134,3 @@ class _InputPageState extends State<InputPage> {
   }
 }
 
-
-Future<void> updateUserAndNavigateToLoginPage(BuildContext context, String newEmail) async {
-  final currentUser = Supabase.instance.client.auth.currentUser;
-  final currentUserId = currentUser?.id;
-  final auth = Supabase.instance.client.auth;
-
-  if (currentUser != null) {
-    final updatedUser = await auth.updateUser(
-      UserAttributes(email: newEmail),
-    );
-
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const LoginPage()),
-    );
-  } else {
-    Fluttertoast.showToast(
-      msg: 'Email cannot be updated',
-      toastLength: Toast.LENGTH_SHORT,
-      gravity: ToastGravity.CENTER,
-      timeInSecForIosWeb: 1,
-      backgroundColor: Colors.amber,
-      textColor: Colors.black,
-      fontSize: 16.0,
-    );
-    // user is not authenticated
-  }
-}

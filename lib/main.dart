@@ -16,17 +16,18 @@ void main() async {
   await Supabase.initialize(
     url: 'https://mcedvwisatrnerrojfbe.supabase.co',
     anonKey:
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1jZWR2d2lzYXRybmVycm9qZmJlIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODA1NDExMjksImV4cCI6MTk5NjExNzEyOX0.zbYqEmU2OtBkl1B_qbQcaKOlPDMfD3UGP02I12ZE_a4',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1jZWR2d2lzYXRybmVycm9qZmJlIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTY4MDU0MTEyOSwiZXhwIjoxOTk2MTE3MTI5fQ.UQ4UywVVts_8E5nMpG4_xDXQQE0kVBhhw4T5iYyC5Q8',
   );
   final supabaseClient = SupabaseClient(
     'https://mcedvwisatrnerrojfbe.supabase.co', // <- Copy and paste your URL
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1jZWR2d2lzYXRybmVycm9qZmJlIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODA1NDExMjksImV4cCI6MTk5NjExNzEyOX0.zbYqEmU2OtBkl1B_qbQcaKOlPDMfD3UGP02I12ZE_a4', // <- Copy and paste your public key
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1jZWR2d2lzYXRybmVycm9qZmJlIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTY4MDU0MTEyOSwiZXhwIjoxOTk2MTE3MTI5fQ.UQ4UywVVts_8E5nMpG4_xDXQQE0kVBhhw4T5iYyC5Q8', // <- Copy and paste your public key
   );
   //await Firebase.initializeApp();/
   runApp(const MyApp());
 }
 
 final supabase = Supabase.instance.client;
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
