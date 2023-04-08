@@ -17,7 +17,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:home_share/setting.dart';
 
-
 class Home extends StatefulWidget {
   final int initialIndex;
 
@@ -130,15 +129,6 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final currentUser = Supabase.instance.client.auth.currentUser;
-    // final userId = currentUser?.id;
-
-    // final homeName = ()async{await Supabase.instance.client
-    //                            .from('home')
-    // .select('name', )
-    // .eq('user_home:user_id', userId)
-    // .innerJoin('user_home', 'home.id', 'user_home.home_id');};
-
     return const Scaffold(
       body: Center(
         child: Text(
