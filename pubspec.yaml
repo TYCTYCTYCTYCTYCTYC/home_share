@@ -44,7 +44,7 @@ dependencies:
   google_fonts: ^4.0.3
   date_time_picker: ^2.1.0  
   fluttertoast: ^8.2.1
-
+  image_picker: ^0.8.7+1
 
 dev_dependencies:
   flutter_test:

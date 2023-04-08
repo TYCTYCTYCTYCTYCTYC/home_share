@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:home_share/fridge.dart';
 import 'package:home_share/chores.dart';
+import 'package:home_share/insert_image_test.dart';
 import 'package:home_share/schedule.dart';
 import 'package:home_share/profile.dart';
 import 'package:home_share/fridge.dart';
@@ -14,6 +15,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:home_share/setting.dart';
+
+import 'package:home_share/testing.dart';
 
 
 class Home extends StatefulWidget {
