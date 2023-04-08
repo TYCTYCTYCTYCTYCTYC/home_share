@@ -54,7 +54,7 @@ class _SettingsPageState extends State<SettingsPage> {
               title: Text('Logout'),
               onTap:(){
                 Navigator.pop(context);
-                
+                Navigator.pushNamed(context)
               }
             )
 

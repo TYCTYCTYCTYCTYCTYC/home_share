@@ -130,9 +130,11 @@ class _ChoreFormPageState extends State<ChoreFormPage> {
 
   Widget _buildDescriptionField() {
     return TextFormField(
-      decoration: InputDecoration(labelText: 'Description'),
+      decoration: InputDecoration(labelText: 'Short Description'),
       keyboardType: TextInputType.multiline,
       maxLines: null,
+      maxLength: 16, // set maximum length here
+
       validator: (value) {
         if (value == null || value.isEmpty) {
           return 'Please enter a description';
@@ -238,9 +240,9 @@ class _ChoreFormPageState extends State<ChoreFormPage> {
               Fluttertoast.showToast(
                   msg: 'Chore created successfully.',
                   toastLength: Toast.LENGTH_SHORT,
-                  gravity: ToastGravity.BOTTOM,
+                  gravity: ToastGravity.CENTER,
                   timeInSecForIosWeb: 1,
-                  backgroundColor: Colors.lightGreen,
+                  backgroundColor: Colors.amber,
                   textColor: Colors.black,
                   fontSize: 16.0);
             } else {

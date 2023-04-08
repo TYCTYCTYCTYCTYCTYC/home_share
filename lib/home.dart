@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:home_share/fridge.dart';
-import 'package:home_share/chores.dart';
+import 'package:home_share/chores/chores.dart';
 import 'package:home_share/insert_image_test.dart';
 import 'package:home_share/schedule.dart';
 import 'package:home_share/profile.dart';
 import 'package:home_share/fridge.dart';
+import 'package:home_share/chores/main_chores_page.dart';
 import 'package:home_share/dashboard.dart';
 import 'package:home_share/main.dart';
 import 'package:home_share/pages/create_or_join.dart';
@@ -15,8 +16,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:home_share/setting.dart';
-
-import 'package:home_share/testing.dart';
 
 
 class Home extends StatefulWidget {
@@ -38,7 +37,7 @@ class _HomeState extends State<Home> {
   final screen = [
     const DashBoard(),
     const Fridge(),
-    const Chores(),
+    MainChoresPage(),
     const Schedule(),
     const Profile(),
   ];
@@ -60,13 +59,13 @@ class _HomeState extends State<Home> {
                 textStyle: TextStyle(
                     color: Colors.white, fontWeight: FontWeight.bold))),
         backgroundColor: Color(0xFF103465),
-      actions: [
-        GestureDetector(
+        actions: [
+          GestureDetector(
             child: IconTheme(
               data: IconThemeData(color: Colors.white),
               child: IconButton(
                 icon: Icon(Icons.settings),
-                onPressed: (){
+                onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => SettingsPage()),
@@ -74,8 +73,8 @@ class _HomeState extends State<Home> {
                 },
               ),
             ),
-        ),
-      ],
+          ),
+        ],
       ),
       body: screen[_selectedIndex],
       backgroundColor: Color(0xFF103465),
@@ -152,7 +151,6 @@ class HomePage extends StatelessWidget {
     );
   }
 }
-
 
 void _showToast() {
   Fluttertoast.showToast(
