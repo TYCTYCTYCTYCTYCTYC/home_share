@@ -6,6 +6,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:home_share/chores/chores_form_page.dart';
 import 'package:home_share/chores/chores.dart';
 import 'package:home_share/chores/chores_leaderboard.dart';
+import 'package:home_share/chores/chores_statistics.dart';
 
 class MainChoresPage extends StatefulWidget {
   @override
@@ -20,7 +21,7 @@ class _MainChoresPageState extends State<MainChoresPage>
   void initState() {
     super.initState();
     _tabController = TabController(
-        length: 2,
+        length: 3,
         vsync: this); //set the length to the number of tabs you want to have
   }
 
@@ -50,7 +51,17 @@ class _MainChoresPageState extends State<MainChoresPage>
               ),
               Tab(
                 child: Text(
-                  'Leaderboard',
+                  'Leader\nBoard',
+                  style: GoogleFonts.arvo(
+                    fontSize: 18,
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              Tab(
+                child: Text(
+                  'Statistics',
                   style: GoogleFonts.arvo(
                     fontSize: 18,
                     color: Colors.black,
@@ -76,6 +87,7 @@ class _MainChoresPageState extends State<MainChoresPage>
                 Chores(),
                 // The second tab view, here you can display the leaderboard
                 LeaderboardPage(),
+                ChoresStatisticsPage(),
               ],
             ),
           )

@@ -123,11 +123,22 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                     style: GoogleFonts.arvo(
                         textStyle: TextStyle(
                             fontSize: 16, fontWeight: FontWeight.bold))),
-                trailing: Text(
-                  '${_choresPoints[index].effortPoints}',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+                trailing: SizedBox(
+                  width: 35,
+                  child: Row(
+                    children: [
+                      Text(
+                        '${_choresPoints[index].effortPoints}',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Icon(
+                        Icons.star,
+                        color: Colors.black,
+                      ),
+                    ],
                   ),
                 ),
               ));
