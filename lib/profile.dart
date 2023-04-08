@@ -128,29 +128,6 @@ class _ProfileState extends State<Profile> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 10.0),
-                    Container(
-                      alignment: Alignment.centerRight,
-                      child: ElevatedButton(
-                        child: Text('Logout',
-                            style: GoogleFonts.arvo(
-                              fontWeight: FontWeight.bold,
-                            )),
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all<Color>(
-                              Color(0xFF103465)),
-                          foregroundColor:
-                              MaterialStateProperty.all<Color>(Colors.red),
-                          shape:
-                              MaterialStateProperty.all<RoundedRectangleBorder>(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(18.0),
-                            ),
-                          ),
-                        ),
-                        onPressed: _showToast,
-                      ),
-                    ),
                   ],
                 ),
               ),
