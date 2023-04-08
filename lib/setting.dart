@@ -12,6 +12,7 @@ class _SettingsPageState extends State<SettingsPage> {
       appBar: AppBar(
         title: Text('Settings'),
         backgroundColor: Color(0xFF103465),
+        iconTheme: IconThemeData(color: Colors.white),
       ),
       body: Container(
         padding: EdgeInsets.all(16.0),
@@ -44,6 +45,15 @@ class _SettingsPageState extends State<SettingsPage> {
               title: Text('Change Password'),
               onTap: () {},
             ),
+
+            //logout
+            ListTile(
+                leading: Icon(Icons.exit_to_app),
+                title: Text('Logout'),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.pushNamed(context);
+                })
           ],
         ),
       ),
