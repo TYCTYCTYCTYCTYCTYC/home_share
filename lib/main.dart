@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:home_share/home.dart';
 import 'package:home_share/chores/chores.dart';
 import 'package:home_share/fridge.dart';
-import 'package:home_share/profile.dart';
+import 'package:home_share/profile/profile.dart';
 import 'package:home_share/schedule.dart';
 import 'package:home_share/chores/main_chores_page.dart';
 import 'package:home_share/pages/splash_page.dart';

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:home_share/create_new_home.dart';
-import 'package:home_share/join_existing_home.dart';
+import 'package:home_share/pages/create_new_home.dart';
+import 'package:home_share/pages/join_existing_home.dart';
 
 
 
