@@ -28,7 +28,6 @@ void main() async {
 
 final supabase = Supabase.instance.client;
 
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -38,7 +37,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-          primaryColor: Colors.blue,
+          primaryColor: Color(0xFF103465),
           appBarTheme: AppBarTheme(
             iconTheme: IconThemeData(color: Colors.black),
             color: Colors.white,
