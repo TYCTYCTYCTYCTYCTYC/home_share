@@ -3,7 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:home_share/main.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:home_share/pages/login_page.dart';
-
+import 'package:home_share/profile/avatar.dart';
 
 class InputPage extends StatefulWidget {
   @override
@@ -21,6 +21,125 @@ class _InputPageState extends State<InputPage> {
   final _emailController = TextEditingController();
   final _emailFocusNode = FocusNode();
 
+  String? _avatarUrl;
+  var _loading = false;
+
+  Future<void> _getProfile() async {
+    setState(() {
+      _loading = true;
+    });
+
+    try {
+      final userId = supabase.auth.currentUser!.id;
+      final data = await supabase
+          .from('profiles')
+          .select()
+          .eq('id', userId)
+          .single() as Map;
+
+      _avatarUrl = (data['avatar_url'] ?? '') as String;
+    } on PostgrestException catch (error) {
+      Fluttertoast.showToast(
+        msg: 'Error',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.amber,
+        textColor: Colors.black,
+        fontSize: 16.0,
+      );
+    } catch (error) {
+      //context.showErrorSnackBar(message: 'Unexpected exception occurred');
+    }
+
+    setState(() {
+      _loading = false;
+    });
+  }
+
+  /// Called when user taps `Update` button
+  Future<void> _updateProfile() async {
+    setState(() {
+      _loading = true;
+    });
+
+    final user = supabase.auth.currentUser;
+    final updates = {
+      'id': user!.id,
+      'updated_at': DateTime.now().toIso8601String(),
+    };
+    try {
+      await supabase.from('profiles').upsert(updates);
+      if (mounted) {
+        Fluttertoast.showToast(
+          msg: 'Successfully update profile',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.amber,
+          textColor: Colors.black,
+          fontSize: 16.0,
+        );
+      }
+    } on PostgrestException catch (error) {
+      Fluttertoast.showToast(
+        msg: 'error',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.amber,
+        textColor: Colors.black,
+        fontSize: 16.0,
+      );
+    } catch (error) {
+      //context.showErrorSnackBar(message: 'Unexpeted error occurred');
+    }
+    setState(() {
+      _loading = false;
+    });
+  }
+
+  /// Called when image has been uploaded to Supabase storage from within Avatar widget
+  Future<void> _onUpload(String imageUrl) async {
+    try {
+      final userId = supabase.auth.currentUser!.id;
+      await supabase.from('profiles').upsert({
+        'id': userId,
+        'avatar_url': imageUrl,
+      });
+      if (mounted) {
+        Fluttertoast.showToast(
+          msg: 'profile image updated',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.amber,
+          textColor: Colors.black,
+          fontSize: 16.0,
+        );
+      }
+    } on PostgrestException catch (error) {
+      Fluttertoast.showToast(
+        msg: 'error',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.amber,
+        textColor: Colors.black,
+        fontSize: 16.0,
+      );
+    } catch (error) {
+      //context.showErrorSnackBar(message: 'Unexpected error has occurred');
+    }
+    if (!mounted) {
+      return;
+    }
+
+    setState(() {
+      _avatarUrl = imageUrl;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -31,6 +150,8 @@ class _InputPageState extends State<InputPage> {
     _emailFocusNode.addListener(() {
       setState(() {});
     });
+
+    _getProfile();
   }
 
   @override
@@ -56,7 +177,6 @@ class _InputPageState extends State<InputPage> {
       setState(() {
         _username = data[0]['username'];
         _nameController.text = _username;
-        //_email = data[0]['email'];
         _emailController.text = currentUserEmail;
       });
     }
@@ -78,6 +198,13 @@ class _InputPageState extends State<InputPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
+              Center(
+                child: Avatar(
+                  imageUrl: _avatarUrl,
+                  onUpload: _onUpload,
+                ),
+              ),
+              const SizedBox(height: 18),
               TextFormField(
                 focusNode: _nameFocusNode,
                 controller: _nameController,
@@ -95,7 +222,7 @@ class _InputPageState extends State<InputPage> {
               Visibility(
                 visible: (_nameFocusNode.hasFocus) ? true : false,
                 child: ElevatedButton(
-                  child: Text('Submit Name'),
+                  child: Text('update username'),
                   onPressed: () async {
                     if (_formKey.currentState?.validate() ?? false) {
                       _formKey.currentState?.save();
@@ -129,27 +256,28 @@ class _InputPageState extends State<InputPage> {
               Visibility(
                 visible: (_emailFocusNode.hasFocus) ? true : false,
                 child: ElevatedButton(
-                  child: Text('Update Email'),
+                  child: Text('update Email'),
                   onPressed: () async {
                     if (_formKey.currentState?.validate() ?? false) {
                       final newEmail = _emailController.text.trim();
                       _emailFocusNode.unfocus();
                       bool isConfirmed = await showDialog(
                         context: context,
-                        builder: (BuildContext contex){
+                        builder: (BuildContext contex) {
                           return AlertDialog(
                             title: Text('Confirm Email Update'),
-                            content: Text('Are you sure you want to update your email?'),
+                            content: Text(
+                                'Are you sure you want to update your email?'),
                             actions: <Widget>[
                               TextButton(
                                 child: Text('Cancel'),
-                                onPressed: (){
+                                onPressed: () {
                                   Navigator.pop(context, false);
                                 },
                               ),
                               TextButton(
                                 child: Text('Update'),
-                                onPressed:(){
+                                onPressed: () {
                                   Navigator.pop(context, true);
                                 },
                               ),
@@ -157,8 +285,9 @@ class _InputPageState extends State<InputPage> {
                           );
                         },
                       );
-                      if(isConfirmed != null && isConfirmed){
-                        await updateUserAndNavigateToLoginPage(context, newEmail);
+                      if (isConfirmed != null && isConfirmed) {
+                        await updateUserAndNavigateToLoginPage(
+                            context, newEmail);
                       }
                       // await updateUserAndNavigateToLoginPage(context, newEmail);
                       // _emailFocusNode.unfocus();
@@ -174,8 +303,8 @@ class _InputPageState extends State<InputPage> {
   }
 }
 
-
-Future<void> updateUserAndNavigateToLoginPage(BuildContext context, String newEmail) async {
+Future<void> updateUserAndNavigateToLoginPage(
+    BuildContext context, String newEmail) async {
   final currentUser = Supabase.instance.client.auth.currentUser;
   final currentUserId = currentUser?.id;
   final auth = Supabase.instance.client.auth;
