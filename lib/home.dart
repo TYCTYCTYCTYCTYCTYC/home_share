@@ -11,8 +11,9 @@ import 'package:home_share/pages/create_or_join.dart';
 import 'package:home_share/pages/create_new_home.dart';
 import 'package:home_share/pages/join_existing_home.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:home_share/profile/testing.dart';
+//import 'package:home_share/profile/testing.dart';
 //import 'package:home_share/profile/testing2.dart';
+//import 'package:home_share/profile/testing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -41,7 +42,6 @@ class _HomeState extends State<Home> {
     const Schedule(),
     InputPage(),
     //SupabaseImagePage(),
-    //Profile(),
   ];
 
   @override
