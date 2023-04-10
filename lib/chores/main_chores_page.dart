@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:home_share/main.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:home_share/chores/chores_form_page.dart';
 import 'package:home_share/chores/chores.dart';
 import 'package:home_share/chores/chores_leaderboard.dart';
 import 'package:home_share/chores/chores_statistics.dart';
@@ -21,8 +17,7 @@ class _MainChoresPageState extends State<MainChoresPage>
   void initState() {
     super.initState();
     _tabController = TabController(
-        length: 3,
-        vsync: this); //set the length to the number of tabs you want to have
+        length: 3, vsync: this); //set the length of the number of tabs
   }
 
   @override
@@ -70,11 +65,11 @@ class _MainChoresPageState extends State<MainChoresPage>
                 ),
               ),
             ],
-            indicator: BoxDecoration(
+            indicator: const BoxDecoration(
               border: Border(
                 bottom: BorderSide(
-                  color: Colors.amber, // Specify the color you want here
-                  width: 3, // Customize the width of the underline here
+                  color: Colors.amber, // Specify the color
+                  width: 3, // Customize the width of the underline
                 ),
               ),
             ),
@@ -83,10 +78,11 @@ class _MainChoresPageState extends State<MainChoresPage>
             child: TabBarView(
               controller: _tabController,
               children: <Widget>[
-                // The first tab view, here you can display the chores
-                Chores(),
-                // The second tab view, here you can display the leaderboard
+                // first tab view
+                const Chores(),
+                // second tab view
                 LeaderboardPage(),
+                // third tab view
                 ChoresStatisticsPage(),
               ],
             ),

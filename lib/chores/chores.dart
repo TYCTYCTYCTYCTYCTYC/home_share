@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:home_share/main.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:home_share/chores/chores_form_page.dart';
 
 class Chore {
@@ -47,10 +45,8 @@ class Chore {
     );
   }
 
-  //int choreId = chore.id;
-
   Future<void> updateIsCompleted(int choreId, bool isCompleted) async {
-    final response = await supabase
+    await supabase
         .from('chores')
         .update({'status': isCompleted})
         .eq('chores_id', choreId)
@@ -72,6 +68,7 @@ class Chores extends StatefulWidget {
 class _ChoresState extends State<Chores> {
   List<Chore> _chores = [];
 
+  @override
   void initState() {
     super.initState();
     fetchAndSetChores();
@@ -79,9 +76,11 @@ class _ChoresState extends State<Chores> {
 
   Future<void> fetchAndSetChores() async {
     final chores = await fetchChores();
-    setState(() {
-      _chores = chores;
-    });
+    if (mounted) {
+      setState(() {
+        _chores = chores;
+      });
+    }
   }
 
 //only fetch chores that are not completed yet
@@ -108,176 +107,187 @@ class _ChoresState extends State<Chores> {
         padding: const EdgeInsets.all(10.0),
         child: Container(
             color: Colors.white,
-            child: ListView.builder(
-              itemCount: _chores.length,
-              itemBuilder: (BuildContext context, int index) {
-                return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4.0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10.0),
-                        border: Border.all(
-                          color: Color(0xFF103465),
-                          width: 4.0,
+            child: _chores.isEmpty
+                ? Visibility(
+                    visible: true,
+                    child: Center(
+                      child: Text(
+                        'No chores yet! Tap on the button below to boss your housemates around!',
+                        style: GoogleFonts.arvo(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
                         ),
+                        textAlign: TextAlign.center,
                       ),
-                      margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                      child: ListTile(
-                        tileColor: Colors.transparent,
-                        leading: SizedBox(
-                          width: 40,
-                          child: Align(
-                            alignment: Alignment.topLeft,
-                            child: Checkbox(
-                              value: _chores[index].isCompleted,
-                              onChanged: (bool? value) async {
-                                final isCompleted = value ?? false;
-                                setState(() {
-                                  _chores[index].isCompleted = isCompleted;
-                                });
-                                await _chores[index].updateIsCompleted(
-                                    _chores[index].choreId, isCompleted);
-                                if (isCompleted) {
-                                  final userId = _chores[index].assignedUserId;
-                                  final effortPoints =
-                                      _chores[index].effortPoints;
-                                  final now = DateTime.now();
-                                  final obtainedDate =
-                                      DateTime(now.year, now.month, now.day);
-
-                                  // final response = await supabase
-                                  //     .from('user_home')
-                                  //     .select('chores_points')
-                                  //     .eq('user_id', userId)
-                                  //     .execute();
-                                  // final data = response.data;
-
-                                  // await supabase
-                                  //     .from('user_home')
-                                  //     .update({
-                                  //       'chores_points': data[0]
-                                  //               ['chores_points'] +
-                                  //           effortPoints
-                                  //     })
-                                  //     .eq('user_id', userId)
-                                  //     .execute();
-
-                                  await supabase.from('user_points').insert({
-                                    'user_id': userId,
-                                    'effort_points': effortPoints,
-                                    'obtained_date':
-                                        obtainedDate.toIso8601String()
-                                  }).execute();
-
-                                  setState(() {
-                                    _chores.removeAt(index);
-                                  });
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text('Chore completed!',
-                                          style: GoogleFonts.arvo(
-                                              textStyle: TextStyle(
-                                                  color: Colors.black,
-                                                  fontWeight:
-                                                      FontWeight.bold))),
-                                      backgroundColor: Colors.amber,
-                                    ),
-                                  );
-                                }
-                              },
-                            ),
-                          ),
-                        ),
-                        title: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 10, horizontal: 5),
-                              child: Text(
-                                _chores[index].description,
-                                style: GoogleFonts.arvo(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
-                                ),
+                    ),
+                  )
+                : ListView.builder(
+                    itemCount: _chores.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 4.0),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10.0),
+                              border: Border.all(
+                                color: const Color(0xFF103465),
+                                width: 4.0,
                               ),
                             ),
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.star,
-                                  color: Colors.black,
-                                ),
-                                Text(
-                                  '${_chores[index].effortPoints}',
-                                  style: TextStyle(
-                                    color: Colors.black,
+                            margin: const EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 10),
+                            child: ListTile(
+                              tileColor: Colors.transparent,
+                              leading: SizedBox(
+                                width: 40,
+                                child: Align(
+                                  alignment: Alignment.topLeft,
+                                  child: Checkbox(
+                                    value: _chores[index].isCompleted,
+                                    onChanged: (bool? value) async {
+                                      final isCompleted = value ?? false;
+                                      if (mounted) {
+                                        setState(() {
+                                          _chores[index].isCompleted =
+                                              isCompleted;
+                                        });
+                                      }
+
+                                      await _chores[index].updateIsCompleted(
+                                          _chores[index].choreId, isCompleted);
+                                      if (isCompleted) {
+                                        final userId =
+                                            _chores[index].assignedUserId;
+                                        final effortPoints =
+                                            _chores[index].effortPoints;
+                                        final now = DateTime.now();
+                                        final obtainedDate = DateTime(
+                                            now.year, now.month, now.day);
+
+                                        await supabase
+                                            .from('user_points')
+                                            .insert({
+                                          'user_id': userId,
+                                          'effort_points': effortPoints,
+                                          'obtained_date':
+                                              obtainedDate.toIso8601String()
+                                        }).execute();
+                                        if (mounted) {
+                                          setState(() {
+                                            _chores.removeAt(index);
+                                          });
+                                        }
+
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            content: Text('Chore completed!',
+                                                style: GoogleFonts.arvo(
+                                                    textStyle: const TextStyle(
+                                                        color: Colors.black,
+                                                        fontWeight:
+                                                            FontWeight.bold))),
+                                            backgroundColor: Colors.amber,
+                                          ),
+                                        );
+                                      }
+                                    },
                                   ),
                                 ),
-                              ],
-                            ),
-                          ],
-                        ),
-                        subtitle: Padding(
-                            padding: EdgeInsets.symmetric(
-                                vertical: 5, horizontal: 5),
-                            child: Column(children: [
-                              Row(
+                              ),
+                              title: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Icon(Icons.list, color: Colors.black),
-                                  SizedBox(width: 5),
-                                  Text(
-                                    '${_chores[index].category}',
-                                    style: TextStyle(
-                                      color: Colors.black,
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 10, horizontal: 5),
+                                    child: Text(
+                                      _chores[index].description,
+                                      style: GoogleFonts.arvo(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black,
+                                      ),
                                     ),
                                   ),
-                                  VerticalDivider(
-                                    thickness: 3,
-                                    color: Colors.black,
-                                    width: 10,
-                                  ),
-                                  Icon(Icons.person, color: Colors.black),
-                                  SizedBox(width: 5),
-                                  Text(
-                                    '${_chores[index].username}',
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                    ),
+                                  Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.star,
+                                        color: Colors.black,
+                                      ),
+                                      Text(
+                                        '${_chores[index].effortPoints}',
+                                        style: const TextStyle(
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
-                              SizedBox(height: 10),
-                              Row(
-                                children: [
-                                  Icon(Icons.calendar_today,
-                                      color: Colors.black),
-                                  SizedBox(width: 5),
-                                  Text(
-                                    '${_chores[index].startDate}',
-                                    style: TextStyle(
-                                      color: Colors.black,
+                              subtitle: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 5, horizontal: 5),
+                                  child: Column(children: [
+                                    Row(
+                                      children: [
+                                        const Icon(Icons.list,
+                                            color: Colors.black),
+                                        const SizedBox(width: 5),
+                                        Text(
+                                          '${_chores[index].category}',
+                                          style: const TextStyle(
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                        const VerticalDivider(
+                                          thickness: 3,
+                                          color: Colors.black,
+                                          width: 10,
+                                        ),
+                                        const Icon(Icons.person,
+                                            color: Colors.black),
+                                        const SizedBox(width: 5),
+                                        Text(
+                                          '${_chores[index].username}',
+                                          style: const TextStyle(
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  ),
-                                ],
-                              ),
-                            ])),
-                      ),
-                    ));
-              },
-            )),
+                                    const SizedBox(height: 10),
+                                    Row(
+                                      children: [
+                                        const Icon(Icons.calendar_today,
+                                            color: Colors.black),
+                                        const SizedBox(width: 5),
+                                        Text(
+                                          '${_chores[index].startDate}',
+                                          style: const TextStyle(
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ])),
+                            ),
+                          ));
+                    },
+                  )),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Navigate to the page with the chore form
+          // Navigate to ChoreFormPage
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => ChoreFormPage()),
           );
         },
         backgroundColor: Colors.amber,
-        child: Text(
+        child: const Text(
           '+',
           style: TextStyle(
             fontWeight: FontWeight.bold,

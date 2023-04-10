@@ -1,22 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:home_share/fridge.dart';
-import 'package:home_share/chores/chores.dart';
 import 'package:home_share/schedule.dart';
 import 'package:home_share/profile/profile.dart';
-import 'package:home_share/fridge.dart';
 import 'package:home_share/chores/main_chores_page.dart';
 import 'package:home_share/dashboard.dart';
-import 'package:home_share/main.dart';
-import 'package:home_share/pages/create_or_join.dart';
-import 'package:home_share/pages/create_new_home.dart';
-import 'package:home_share/pages/join_existing_home.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
-//import 'package:home_share/profile/testing.dart';
-//import 'package:home_share/profile/testing2.dart';
-//import 'package:home_share/profile/testing.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:home_share/profile/settings.dart';
 
 class Home extends StatefulWidget {
@@ -41,7 +30,6 @@ class _HomeState extends State<Home> {
     MainChoresPage(),
     const Schedule(),
     InputPage(),
-    //SupabaseImagePage(),
   ];
 
   @override
@@ -52,78 +40,84 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        centerTitle: true,
-        title: Text('HomeShare',
-            style: GoogleFonts.arvo(
-                textStyle: TextStyle(
-                    color: Colors.white, fontWeight: FontWeight.bold))),
-        backgroundColor: Color(0xFF103465),
-        actions: [
-          GestureDetector(
-            child: IconTheme(
-              data: IconThemeData(color: Colors.white),
-              child: IconButton(
-                icon: Icon(Icons.settings),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => SettingsPage()),
-                  );
-                },
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          centerTitle: true,
+          title: Text('HomeShare',
+              style: GoogleFonts.arvo(
+                  textStyle: const TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold))),
+          backgroundColor: const Color(0xFF103465),
+          actions: [
+            GestureDetector(
+              child: IconTheme(
+                data: const IconThemeData(color: Colors.white),
+                child: IconButton(
+                  icon: const Icon(Icons.settings),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => SettingsPage()),
+                    );
+                  },
+                ),
               ),
             ),
-          ),
-        ],
-      ),
-      body: screen[_selectedIndex],
-      backgroundColor: Color(0xFF103465),
-      bottomNavigationBar: GNav(
-          backgroundColor: Color(0xFF103465),
-          color: Colors.white,
-          activeColor: Colors.black,
-          tabBackgroundColor: Colors.amber,
-          iconSize: 24,
-          tabMargin: EdgeInsets.symmetric(vertical: 8),
-          gap: 8,
-          mainAxisAlignment: MainAxisAlignment.center,
-          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-          tabs: [
-            GButton(
-              icon: Icons.home_outlined,
-              text: 'Home',
-              textStyle: GoogleFonts.arvo(fontWeight: FontWeight.bold),
-            ),
-            GButton(
-              icon: Icons.kitchen_outlined,
-              text: 'Fridge',
-              textStyle: GoogleFonts.arvo(fontWeight: FontWeight.bold),
-            ),
-            GButton(
-              icon: Icons.cleaning_services_outlined,
-              text: 'Chores',
-              textStyle: GoogleFonts.arvo(fontWeight: FontWeight.bold),
-            ),
-            GButton(
-              icon: Icons.date_range,
-              text: 'Schedule',
-              textStyle: GoogleFonts.arvo(fontWeight: FontWeight.bold),
-            ),
-            GButton(
-              icon: Icons.account_circle_outlined,
-              text: 'Profile',
-              textStyle: GoogleFonts.arvo(fontWeight: FontWeight.bold),
-            ),
           ],
-          selectedIndex: _selectedIndex,
-          onTabChange: (index) {
-            setState(() {
-              _selectedIndex = index;
-            });
-          }),
-    );
+        ),
+        body: screen[_selectedIndex],
+        backgroundColor: const Color(0xFF103465),
+        bottomNavigationBar: Container(
+          width: width,
+          child: GNav(
+              backgroundColor: const Color(0xFF103465),
+              color: Colors.white,
+              activeColor: Colors.black,
+              tabBackgroundColor: Colors.amber,
+              iconSize: 20,
+              tabMargin: const EdgeInsets.symmetric(vertical: 8),
+              gap: 8,
+              mainAxisAlignment: MainAxisAlignment.center,
+              padding: const EdgeInsets.symmetric(horizontal: 17, vertical: 12),
+              tabs: [
+                GButton(
+                  icon: Icons.home_outlined,
+                  text: 'Home',
+                  textStyle: GoogleFonts.arvo(fontWeight: FontWeight.bold),
+                ),
+                GButton(
+                  icon: Icons.kitchen_outlined,
+                  text: 'Fridge',
+                  textStyle: GoogleFonts.arvo(fontWeight: FontWeight.bold),
+                ),
+                GButton(
+                  icon: Icons.cleaning_services_outlined,
+                  text: 'Chores',
+                  textStyle: GoogleFonts.arvo(fontWeight: FontWeight.bold),
+                ),
+                GButton(
+                  icon: Icons.date_range,
+                  text: 'Schedule',
+                  textStyle: GoogleFonts.arvo(fontWeight: FontWeight.bold),
+                ),
+                GButton(
+                  icon: Icons.account_circle_outlined,
+                  text: 'Profile',
+                  textStyle: GoogleFonts.arvo(fontWeight: FontWeight.bold),
+                ),
+              ],
+              selectedIndex: _selectedIndex,
+              onTabChange: (index) {
+                if (mounted) {
+                  setState(() {
+                    _selectedIndex = index;
+                  });
+                }
+              }),
+        ));
   }
 }
 
@@ -143,14 +137,4 @@ class HomePage extends StatelessWidget {
       ),
     );
   }
-}
-
-void _showToast() {
-  Fluttertoast.showToast(
-    msg: "pressed again to logout",
-    gravity: ToastGravity.BOTTOM,
-    backgroundColor: Colors.black54,
-    textColor: Colors.white,
-    fontSize: 16.0,
-  );
 }

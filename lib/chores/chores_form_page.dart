@@ -3,7 +3,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:date_time_picker/date_time_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-
 import 'package:home_share/main.dart';
 import 'package:home_share/home.dart';
 
@@ -11,7 +10,7 @@ class ChoreFormPage extends StatefulWidget {
   const ChoreFormPage({Key? key}) : super(key: key);
 
   static Route<void> route() {
-    return MaterialPageRoute(builder: (context) => ChoreFormPage());
+    return MaterialPageRoute(builder: (context) => const ChoreFormPage());
   }
 
   @override
@@ -29,7 +28,7 @@ class _ChoreFormPageState extends State<ChoreFormPage> {
 
   Widget _buildCategoryField() {
     return DropdownButtonFormField<String>(
-      decoration: InputDecoration(labelText: 'Category'),
+      decoration: const InputDecoration(labelText: 'Category'),
       value: _category,
       onChanged: (newValue) => setState(() => _category = newValue),
       items: <String>[
@@ -47,33 +46,13 @@ class _ChoreFormPageState extends State<ChoreFormPage> {
     );
   }
 
-  // Widget _buildAssignedUserField() {
-
-  //   return DropdownButtonFormField<String>(
-  //     decoration: InputDecoration(labelText: 'Assigned user'),
-  //     value: _assignedUser,
-  //     onChanged: (newValue) => setState(() => _assignedUser = newValue),
-  //     items: <String>[
-  //       'user1',
-  //       'user2',
-  //       'user3',
-  //       'user4',
-  //     ].map<DropdownMenuItem<String>>((String value) {
-  //       return DropdownMenuItem<String>(
-  //         value: value,
-  //         child: Text(value),
-  //       );
-  //     }).toList(),
-  //   );
-  // }
-
   Widget _buildAssignedUserField() {
     return FutureBuilder<List<String>>(
       future: _getHomeUsernames(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return DropdownButtonFormField<String>(
-            decoration: InputDecoration(labelText: 'Assigned user'),
+            decoration: const InputDecoration(labelText: 'Assigned user'),
             value: _assignedUser,
             onChanged: (newValue) => setState(() => _assignedUser = newValue),
             items: snapshot.data!.map<DropdownMenuItem<String>>((String value) {
@@ -86,7 +65,7 @@ class _ChoreFormPageState extends State<ChoreFormPage> {
         } else if (snapshot.hasError) {
           return Text('${snapshot.error}');
         } else {
-          return CircularProgressIndicator();
+          return const CircularProgressIndicator();
         }
       },
     );
@@ -130,7 +109,7 @@ class _ChoreFormPageState extends State<ChoreFormPage> {
 
   Widget _buildDescriptionField() {
     return TextFormField(
-      decoration: InputDecoration(labelText: 'Short Description'),
+      decoration: const InputDecoration(labelText: 'Short Description'),
       keyboardType: TextInputType.multiline,
       maxLines: null,
       maxLength: 16, // set maximum length here
@@ -176,7 +155,7 @@ class _ChoreFormPageState extends State<ChoreFormPage> {
 
   Widget _buildEffortPointsField() {
     return DropdownButtonFormField<int>(
-      decoration: InputDecoration(labelText: 'Effort points'),
+      decoration: const InputDecoration(labelText: 'Effort points'),
       value: _effortPoints,
       onChanged: (newValue) => setState(() => _effortPoints = newValue),
       items: <int>[1, 2, 3].map<DropdownMenuItem<int>>((int value) {
@@ -205,11 +184,11 @@ class _ChoreFormPageState extends State<ChoreFormPage> {
                 SnackBar(
                   content: Text('Please fill in all fields.',
                       style: GoogleFonts.arvo(
-                          textStyle: TextStyle(
+                          textStyle: const TextStyle(
                               color: Colors.black,
                               fontWeight: FontWeight.bold))),
                   backgroundColor: Colors.amber,
-                  duration: Duration(seconds: 2),
+                  duration: const Duration(seconds: 2),
                 ),
               );
               return;
@@ -260,17 +239,17 @@ class _ChoreFormPageState extends State<ChoreFormPage> {
             Navigator.of(context).push(Home.route(initialIndex: 2));
           },
           style: ElevatedButton.styleFrom(
-            primary: Color(0xFF103465), // Set the background color here
+            primary: const Color(0xFF103465), // Set the background color here
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text('Done',
                   style: GoogleFonts.arvo(
-                      textStyle: TextStyle(
+                      textStyle: const TextStyle(
                           color: Colors.white, fontWeight: FontWeight.bold))),
-              SizedBox(width: 8.0),
-              Icon(Icons.check),
+              const SizedBox(width: 8.0),
+              const Icon(Icons.check),
             ],
           ),
         ),
@@ -283,17 +262,16 @@ class _ChoreFormPageState extends State<ChoreFormPage> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
         title: Text('Create a new chore',
             style: GoogleFonts.arvo(
-                textStyle: TextStyle(
+                textStyle: const TextStyle(
                     color: Colors.black, fontWeight: FontWeight.bold))),
       ),
-      //body: // TODO: implement the chore form here
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -303,15 +281,15 @@ class _ChoreFormPageState extends State<ChoreFormPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 _buildCategoryField(),
-                SizedBox(height: 16.0),
+                const SizedBox(height: 16.0),
                 _buildDescriptionField(),
-                SizedBox(height: 16.0),
+                const SizedBox(height: 16.0),
                 _buildAssignedUserField(),
-                SizedBox(height: 16.0),
+                const SizedBox(height: 16.0),
                 _buildStartDateField(),
-                SizedBox(height: 16.0),
+                const SizedBox(height: 16.0),
                 _buildEffortPointsField(),
-                SizedBox(height: 16.0),
+                const SizedBox(height: 16.0),
                 _buildSubmitButton(),
               ],
             ),

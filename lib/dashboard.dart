@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:home_share/main.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:google_fonts/google_fonts.dart';
-
-import 'package:supabase/supabase.dart';
 
 class DashBoard extends StatefulWidget {
   const DashBoard({Key? key}) : super(key: key);
@@ -51,6 +48,7 @@ class _DashBoardState extends State<DashBoard> {
         child: homeName != null && username != null
             ? Text(
                 'Welcome to your home $homeName, $username!',
+                textAlign: TextAlign.center,
                 style: GoogleFonts.arvo(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
