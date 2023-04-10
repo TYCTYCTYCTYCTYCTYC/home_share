@@ -29,22 +29,26 @@ class _AvatarState extends State<Avatar> {
             width: 150,
             height: 150,
             child: widget.imageUrl == null || widget.imageUrl!.isEmpty
-            ? Container(
-              color: Colors.grey,
-              child: const Center(
-                child: Text('No Image'),
-              ),
-            )
-            :Image.network(
-              widget.imageUrl!,
-              fit: BoxFit.cover,
-            ),
+                ? Container(
+                    color: Colors.amber,
+                    child: const Center(
+                      child: Text(
+                        'Update your profile picture below',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  )
+                : Image.network(
+                    widget.imageUrl!,
+                    fit: BoxFit.cover,
+                  ),
           ),
         ),
         ElevatedButton(
           onPressed: _isLoading ? null : _upload,
           style: ElevatedButton.styleFrom(
-            backgroundColor: Color(0xFF103465),
+            backgroundColor: const Color(0xFF103465),
           ),
           child: const Text('Upload'),
         ),

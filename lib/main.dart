@@ -32,19 +32,19 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       // theme: DarkMode ? ThemeData.dark() : ThemeData.light(),
       theme: ThemeData(
-          primaryColor: const Color(0xFF103465),
-          appBarTheme: const const AppBarTheme(
-            iconTheme: IconThemeData(color: Colors.black),
-            color: Colors.white,
-            ),
-          ),
-          // darkTheme: ThemeData(
-          //   primaryColor: Colors.black,
-          //   appBarTheme: const AppBarTheme(
-          //     iconTheme: IconThemeData(color: Colors.white),
-          //     color: Colors.white,
-          //   ),
-          // ),
+        primaryColor: const Color(0xFF103465),
+        appBarTheme: const AppBarTheme(
+          iconTheme: IconThemeData(color: Colors.black),
+          color: Colors.white,
+        ),
+      ),
+      // darkTheme: ThemeData(
+      //   primaryColor: Colors.black,
+      //   appBarTheme: const AppBarTheme(
+      //     iconTheme: IconThemeData(color: Colors.white),
+      //     color: Colors.white,
+      //   ),
+      // ),
       home: const SplashPage(),
     );
   }

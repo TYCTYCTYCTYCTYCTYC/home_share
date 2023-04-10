@@ -24,7 +24,7 @@ class _SettingsPageState extends State<SettingsPage> {
   final _homeAddressController = TextEditingController();
   final _homeAddressFocusNode = FocusNode();
 
-  var _loading = false;
+  bool _loading = false;
 
   Future<void> _getProfile() async {
     setState(() {
@@ -136,7 +136,7 @@ class _SettingsPageState extends State<SettingsPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 ListTile(
-                  leading: Icon(Icons.home, color: Colors.black),
+                  leading: const Icon(Icons.home, color: Colors.black),
                   title: Text(
                     'Home Settings',
                     style: GoogleFonts.arvo(
@@ -148,7 +148,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 Container(
                   decoration: BoxDecoration(
                     border: Border.all(
-                      color: Color(0xFF103465),
+                      color: const Color(0xFF103465),
                       width: 5.0,
                     ),
                     borderRadius: BorderRadius.circular(10.0),
@@ -156,7 +156,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   child: Row(
                     children: [
                       Padding(
-                        padding: EdgeInsets.only(left: 10.0, right: 5.0),
+                        padding: const EdgeInsets.only(left: 10.0, right: 5.0),
                         child: Text(
                           'Name:',
                           style: GoogleFonts.arvo(
@@ -179,12 +179,19 @@ class _SettingsPageState extends State<SettingsPage> {
                             controller: _homeNameController,
                             validator: (value) {
                               if (value?.isEmpty ?? true) {
-                                return 'please enter your home name';
+                                return 'Please enter your home name';
                               }
                               return null;
                             },
                             onSaved: (value) {
                               _homeName = value ?? '';
+                            },
+                            onTap: () {
+                              _homeNameController.selection = TextSelection(
+                                baseOffset: 0,
+                                extentOffset:
+                                    _homeNameController.value.text.length,
+                              );
                             },
                           ),
                         ),
@@ -192,12 +199,12 @@ class _SettingsPageState extends State<SettingsPage> {
                       Visibility(
                         visible: (_homeNameFocusNode.hasFocus) ? true : false,
                         child: Padding(
-                          padding: EdgeInsets.only(right: 10.0),
+                          padding: const EdgeInsets.only(right: 10.0),
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFF103465),
+                              backgroundColor: const Color(0xFF103465),
                             ),
-                            child: Text('Save'),
+                            child: const Text('Save'),
                             onPressed: () async {
                               if (_formKey.currentState?.validate() ?? false) {
                                 _formKey.currentState?.save();
@@ -229,7 +236,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 Container(
                   decoration: BoxDecoration(
                     border: Border.all(
-                      color: Color(0xFF103465),
+                      color: const Color(0xFF103465),
                       width: 5.0,
                     ),
                     borderRadius: BorderRadius.circular(10.0),
@@ -237,7 +244,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   child: Row(
                     children: [
                       Padding(
-                        padding: EdgeInsets.only(left: 10.0, right: 5.0),
+                        padding: const EdgeInsets.only(left: 10.0, right: 5.0),
                         child: Text(
                           'Code:',
                           style: GoogleFonts.arvo(
@@ -267,18 +274,25 @@ class _SettingsPageState extends State<SettingsPage> {
                             onSaved: (value) {
                               _homeCode = value ?? '';
                             },
+                            onTap: () {
+                              _homeCodeController.selection = TextSelection(
+                                baseOffset: 0,
+                                extentOffset:
+                                    _homeCodeController.value.text.length,
+                              );
+                            },
                           ),
                         ),
                       ),
                       Visibility(
                         visible: (_homeCodeFocusNode.hasFocus) ? true : false,
                         child: Padding(
-                          padding: EdgeInsets.only(right: 10.0),
+                          padding: const EdgeInsets.only(right: 10.0),
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFF103465),
+                              backgroundColor: const Color(0xFF103465),
                             ),
-                            child: Text('Save'),
+                            child: const Text('Save'),
                             onPressed: () async {
                               if (_formKey.currentState?.validate() ?? false) {
                                 _formKey.currentState?.save();
@@ -311,7 +325,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 Container(
                   decoration: BoxDecoration(
                     border: Border.all(
-                      color: Color(0xFF103465),
+                      color: const Color(0xFF103465),
                       width: 5.0,
                     ),
                     borderRadius: BorderRadius.circular(10.0),
@@ -319,7 +333,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   child: Row(
                     children: [
                       Padding(
-                        padding: EdgeInsets.only(left: 10.0, right: 5.0),
+                        padding: const EdgeInsets.only(left: 10.0, right: 5.0),
                         child: Text(
                           'Address:',
                           style: GoogleFonts.arvo(
@@ -349,6 +363,13 @@ class _SettingsPageState extends State<SettingsPage> {
                             onSaved: (value) {
                               _homeAddress = value ?? '';
                             },
+                            onTap: () {
+                              _homeAddressController.selection = TextSelection(
+                                baseOffset: 0,
+                                extentOffset:
+                                    _homeAddressController.value.text.length,
+                              );
+                            },
                           ),
                         ),
                       ),
@@ -356,12 +377,12 @@ class _SettingsPageState extends State<SettingsPage> {
                         visible:
                             (_homeAddressFocusNode.hasFocus) ? true : false,
                         child: Padding(
-                          padding: EdgeInsets.only(right: 10.0),
+                          padding: const EdgeInsets.only(right: 10.0),
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFF103465),
+                              backgroundColor: const Color(0xFF103465),
                             ),
-                            child: Text('Save'),
+                            child: const Text('Save'),
                             onPressed: () async {
                               if (_formKey.currentState?.validate() ?? false) {
                                 _formKey.currentState?.save();
@@ -438,7 +459,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           child: ListTile(
                             leading: const Icon(Icons.exit_to_app,
                                 color: Colors.black),
-                                horizontalTitleGap: 1,
+                            horizontalTitleGap: 1,
                             title: Text(
                               'Logout',
                               style: GoogleFonts.arvo(
