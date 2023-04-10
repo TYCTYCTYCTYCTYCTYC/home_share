@@ -24,22 +24,23 @@ class _AvatarState extends State<Avatar> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        if (widget.imageUrl == null || widget.imageUrl!.isEmpty)
-          Container(
+        ClipOval(
+          child: SizedBox(
             width: 150,
             height: 150,
-            color: Colors.grey,
-            child: const Center(
-              child: Text('No Image'),
+            child: widget.imageUrl == null || widget.imageUrl!.isEmpty
+            ? Container(
+              color: Colors.grey,
+              child: const Center(
+                child: Text('No Image'),
+              ),
+            )
+            :Image.network(
+              widget.imageUrl!,
+              fit: BoxFit.cover,
             ),
-          )
-        else
-          Image.network(
-            widget.imageUrl!,
-            width: 150,
-            height: 150,
-            fit: BoxFit.cover,
           ),
+        ),
         ElevatedButton(
           onPressed: _isLoading ? null : _upload,
           style: ElevatedButton.styleFrom(
