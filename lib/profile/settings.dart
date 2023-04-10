@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:home_share/pages/login_page.dart';
 import 'package:home_share/main.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class SettingsPage extends StatefulWidget {
   @override
@@ -134,12 +135,14 @@ class _SettingsPageState extends State<SettingsPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                const ListTile(
+                ListTile(
                   leading: Icon(Icons.home, color: Colors.black),
                   title: Text(
                     'Home Settings',
-                    style:
-                        TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                    style: GoogleFonts.arvo(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
                 Container(
@@ -152,10 +155,15 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                   child: Row(
                     children: [
-                      const Padding(
+                      Padding(
                         padding: EdgeInsets.only(left: 10.0, right: 5.0),
-                        child: Text('Name:',
-                            style: TextStyle(color: Colors.black)),
+                        child: Text(
+                          'Name:',
+                          style: GoogleFonts.arvo(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                       Expanded(
                         child: Padding(
@@ -163,6 +171,9 @@ class _SettingsPageState extends State<SettingsPage> {
                           child: TextFormField(
                             decoration: const InputDecoration(
                               border: InputBorder.none,
+                            ),
+                            style: GoogleFonts.arvo(
+                              fontSize: 16,
                             ),
                             focusNode: _homeNameFocusNode,
                             controller: _homeNameController,
@@ -186,16 +197,10 @@ class _SettingsPageState extends State<SettingsPage> {
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Color(0xFF103465),
                             ),
-                            child: Text('save'),
+                            child: Text('Save'),
                             onPressed: () async {
                               if (_formKey.currentState?.validate() ?? false) {
                                 _formKey.currentState?.save();
-
-                                // final response = await supabase
-                                //     .from('home')
-                                //     .update({'name': _homeName})
-                                //     .eq('id', currentUserId)
-                                //     .execute();
 
                                 final response = await supabase
                                     .from('user_home')
@@ -231,10 +236,15 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                   child: Row(
                     children: [
-                      const Padding(
+                      Padding(
                         padding: EdgeInsets.only(left: 10.0, right: 5.0),
-                        child:
-                          Text('Code:', style: TextStyle(color: Colors.black)),
+                        child: Text(
+                          'Code:',
+                          style: GoogleFonts.arvo(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                       Expanded(
                         child: Padding(
@@ -242,6 +252,9 @@ class _SettingsPageState extends State<SettingsPage> {
                           child: TextFormField(
                             decoration: const InputDecoration(
                               border: InputBorder.none,
+                            ),
+                            style: GoogleFonts.arvo(
+                              fontSize: 16,
                             ),
                             focusNode: _homeCodeFocusNode,
                             controller: _homeCodeController,
@@ -265,7 +278,7 @@ class _SettingsPageState extends State<SettingsPage> {
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Color(0xFF103465),
                             ),
-                            child: Text('save'),
+                            child: Text('Save'),
                             onPressed: () async {
                               if (_formKey.currentState?.validate() ?? false) {
                                 _formKey.currentState?.save();
@@ -305,10 +318,15 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                   child: Row(
                     children: [
-                      const Padding(
+                      Padding(
                         padding: EdgeInsets.only(left: 10.0, right: 5.0),
-                        child:
-                            Text('Address:', style: TextStyle(color: Colors.black)),
+                        child: Text(
+                          'Address:',
+                          style: GoogleFonts.arvo(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                       Expanded(
                         child: Padding(
@@ -316,6 +334,9 @@ class _SettingsPageState extends State<SettingsPage> {
                           child: TextFormField(
                             decoration: const InputDecoration(
                               border: InputBorder.none,
+                            ),
+                            style: GoogleFonts.arvo(
+                              fontSize: 16,
                             ),
                             focusNode: _homeAddressFocusNode,
                             controller: _homeAddressController,
@@ -332,14 +353,15 @@ class _SettingsPageState extends State<SettingsPage> {
                         ),
                       ),
                       Visibility(
-                        visible: (_homeAddressFocusNode.hasFocus) ? true : false,
+                        visible:
+                            (_homeAddressFocusNode.hasFocus) ? true : false,
                         child: Padding(
                           padding: EdgeInsets.only(right: 10.0),
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Color(0xFF103465),
                             ),
-                            child: Text('save'),
+                            child: Text('Save'),
                             onPressed: () async {
                               if (_formKey.currentState?.validate() ?? false) {
                                 _formKey.currentState?.save();
@@ -368,120 +390,76 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                 ),
 
-                const Divider(),
+                const SizedBox(height: 50.0),
 
-                ListTile(
-                  leading: const Icon(Icons.exit_to_app, color: Colors.black),
-                  title: const Text('Logout'),
-                  onTap:(){
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => const LoginPage()),
-                    );
-                  },
-                ),
+                //dark mode
+                // const ListTile(
+                //   leading: Icon(Icons.settings, color: Colors.black),
+                //   title: Text(
+                //     'Genral Settings',
+                //     style:
+                //         TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                //   ),
+                // ),
 
+                // const SizedBox(height: 10.0),
 
+                // //dark mode
+                // SwitchListTile(
+                //   title: const Text('Dark Mode'),
+                //   value: false,
+                //   onChanged: (value) {
 
+                //   },
+                // ),
+
+                // const SizedBox(height: 20.0),
+
+                // const ListTile(
+                //   leading: Icon(Icons.lock, color: Colors.black),
+                //   title: Text(
+                //     'Privacy Settings',
+                //     style:
+                //         TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                //   ),
+                // ),
+
+                // const Divider(),
+                Align(
+                    alignment: Alignment.topRight,
+                    child: SizedBox(
+                        width: 130,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20.0),
+                            border: Border.all(color: Colors.grey.shade300),
+                            color: Colors.redAccent,
+                          ),
+                          child: ListTile(
+                            leading: const Icon(Icons.exit_to_app,
+                                color: Colors.black),
+                                horizontalTitleGap: 1,
+                            title: Text(
+                              'Logout',
+                              style: GoogleFonts.arvo(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
+                            onTap: () {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const LoginPage()),
+                              );
+                            },
+                          ),
+                        )))
               ],
             ),
           ),
         ),
       ),
-      // body: SingleChildScrollView(
-      //   child: Container(
-      //     padding: EdgeInsets.all(16.0),
-      //     child: Column(
-      //       crossAxisAlignment: CrossAxisAlignment.start,
-      //       children: [
-      //         const ListTile(
-      //           leading: Icon(Icons.home, color: Colors.black),
-      //           title: Text(
-      //             'Home Settings',
-      //             style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-      //           ),
-      //         ),
-
-      //         Container(
-      //           decoration: BoxDecoration(
-      //             border: Border.all(
-      //               color: Color(0xFF103465),
-      //               width: 5.0,
-      //             ),
-      //             borderRadius: BorderRadius.circular(10.0),
-      //           ),
-      //         child: Row(
-      //           children: [
-      //             const Padding(
-      //               padding: EdgeInsets.only(left: 10.0),
-      //               child: Text('Name:', style: TextStyle(color: Colors.black)),
-      //             ),
-      //             Expanded(
-      //               child: Padding(
-      //                 padding: const EdgeInsets.only(left: 5.0),
-      //                 child: TextFormField(
-      //                   decoration: const InputDecoration(
-      //                     border: InputBorder.none,
-      //                   ),
-      //                 ),
-      //               ),
-      //             ),
-      //           ],
-      //         ),
-      //         ),
-
-      //         const Text(
-      //           'Home Name(name)',
-      //           style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-      //         ),
-      //         const Text(
-      //           'Home Code(code)',
-      //           style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-      //         ),
-      //         const Text(
-      //           'Home Address(address)',
-      //           style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-      //         ),
-
-      //                       const SizedBox(height: 50.0),
-
-      //         Text(
-      //           'General Settings',
-      //           style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-      //         ),
-      //         SizedBox(height: 16.0),
-      //         SwitchListTile(
-      //           title: Text('Dark Mode'),
-      //           value: false,
-      //           onChanged: (value) {},
-      //         ),
-      //         Divider(),
-      //         Text(
-      //           'Account Settings',
-      //           style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-      //         ),
-      //         SizedBox(height: 16.0),
-      //         ListTile(
-      //           leading: Icon(Icons.lock),
-      //           title: Text('Change Password'),
-      //           onTap: () {},
-      //         ),
-
-      //         //logout
-      //         ListTile(
-      //           leading: Icon(Icons.exit_to_app),
-      //           title: Text('Logout'),
-      //           onTap: () {
-      //             Navigator.pushReplacement(
-      //               context,
-      //               MaterialPageRoute(builder: (context) => const LoginPage()),
-      //             );
-      //           },
-      //         ),
-      //       ],
-      //     ),
-      //   ),
-      // ),
     );
   }
 }
