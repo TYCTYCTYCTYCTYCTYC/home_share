@@ -1,72 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
 import 'package:google_fonts/google_fonts.dart';
-
 import 'package:home_share/main.dart';
 
 class ChoresPoints {
-  final String userId;
   final String username;
   final int? effortPoints;
 
   ChoresPoints({
-    required this.userId,
     required this.username,
     required this.effortPoints,
   });
-
-  static Future<List<ChoresPoints>> fromJson() async {
-    final currentUser = Supabase.instance.client.auth.currentUser;
-    final userId = currentUser?.id;
-
-    final homeIdResponse = await supabase
-        .from('user_home')
-        .select('home_id')
-        .eq('user_id', userId)
-        .single()
-        .execute();
-
-    final homeId = homeIdResponse.data['home_id'] as int;
-
-    final usersAndPoints = await supabase
-        .from('user_home')
-        .select('user_id, chores_points')
-        .eq('home_id', homeId)
-        .execute();
-
-    final userIds = (usersAndPoints.data as List<dynamic>)
-        .map((item) => item['user_id'].toString())
-        .toList();
-
-    final response = await supabase
-        .from('profiles')
-        .select('id, username')
-        .in_('id', userIds)
-        .execute();
-
-    final usernameMap = Map<String, String>.fromIterable(
-      response.data,
-      key: (item) => item['id'].toString(),
-      value: (item) => item['username'].toString(),
-    );
-
-    final choresPoints = List<ChoresPoints>.generate(
-      usersAndPoints.data.length,
-      (index) {
-        final userId = usersAndPoints.data[index]['user_id'].toString();
-        final username = usernameMap[userId] ?? "Unknown";
-        final points = usersAndPoints.data[index]['chores_points'] as int;
-        return ChoresPoints(
-          userId: userId,
-          username: username,
-          effortPoints: points,
-        );
-      },
-    );
-
-    return choresPoints;
-  }
 }
 
 class LeaderboardPage extends StatefulWidget {
@@ -94,7 +38,20 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
   }
 
   Future<List<ChoresPoints>> fetchPoints() async {
-    return ChoresPoints.fromJson();
+    final currentUser = Supabase.instance.client.auth.currentUser;
+    final userId = currentUser?.id;
+
+    final response = await supabase.rpc('get_points_leaderboard',
+        params: {'current_user_id': userId}).execute();
+
+    final pointsList = (response.data as List<dynamic>)
+        .map((item) => ChoresPoints(
+              username: item['username'] as String,
+              effortPoints: item['points'] as int,
+            ))
+        .toList();
+
+    return pointsList;
   }
 
   @override

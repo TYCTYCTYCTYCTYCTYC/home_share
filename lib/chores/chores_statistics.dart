@@ -4,6 +4,7 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:home_share/main.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class ChoresStatisticsPage extends StatefulWidget {
   @override
@@ -21,11 +22,15 @@ class _ChoresStatisticsPageState extends State<ChoresStatisticsPage> {
   List<PointsData> _pointsData = [];
 
   bool _isDropdownOpen = false;
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
     getDataStatistics();
+    setState(() {
+      _isLoading = true;
+    });
   }
 
   Future<void> getDataStatistics() async {
@@ -85,8 +90,11 @@ class _ChoresStatisticsPageState extends State<ChoresStatisticsPage> {
         });
       }
     } else if (_selectedValueIndex == 1) {
-      final response = await supabase.rpc('get_points_statistics',
-          params: {'current_user_id': userId}).execute();
+      final response = await supabase.rpc('get_points_statistics', params: {
+        'current_user_id': userId,
+        'filter_start_date': startDate,
+        'filter_end_date': endDate
+      }).execute();
       if (response.status == 200) {
         final List<dynamic> data = response.data;
 
@@ -105,6 +113,8 @@ class _ChoresStatisticsPageState extends State<ChoresStatisticsPage> {
 
   @override
   Widget build(BuildContext context) {
+    String selectedFilter = _filterChoices[_selectedFilterIndex];
+
     return Scaffold(
         body: Padding(
       padding: const EdgeInsets.all(16.0),
@@ -178,13 +188,11 @@ class _ChoresStatisticsPageState extends State<ChoresStatisticsPage> {
                     },
                     selectedColor: Colors.black,
                     fillColor: Colors.amber,
-                    //add this
                     borderWidth: 1,
                     borderRadius: BorderRadius.circular(16),
                     constraints: BoxConstraints(
                       maxHeight: 36,
                     ),
-
                     children: List.generate(
                         _filterChoices.length,
                         (index) => Padding(
@@ -212,69 +220,119 @@ class _ChoresStatisticsPageState extends State<ChoresStatisticsPage> {
                 child: _chartData.isNotEmpty
                     ? Stack(
                         children: <Widget>[
-                          // Bar chart
-                          if (_selectedValueIndex == 0)
-                            Expanded(
-                              child: SfCartesianChart(
-                                  primaryXAxis: CategoryAxis(
-                                    majorGridLines: const MajorGridLines(
-                                        color: Colors.transparent),
-                                    labelStyle: TextStyle(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                  primaryYAxis: NumericAxis(
-                                    majorGridLines: const MajorGridLines(
-                                        color: Colors.transparent),
-                                    labelStyle: TextStyle(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                  series: <BarSeries<ChartData, String>>[
-                                    BarSeries<ChartData, String>(
-                                      dataSource: _chartData,
-                                      xValueMapper: (ChartData data, _) =>
-                                          data.username,
-                                      yValueMapper: (ChartData data, _) =>
-                                          data.total_chores,
-                                      color: Colors.amber,
-                                    ),
-                                  ]),
-                            ),
-                          // Doughnut chart
-                          if (_selectedValueIndex == 1)
-                            Expanded(
-                                child: SfCircularChart(
-                              legend: Legend(
-                                  isVisible: true,
-                                  position: LegendPosition.bottom,
-                                  overflowMode: LegendItemOverflowMode.wrap),
-                              series: <CircularSeries>[
-                                RadialBarSeries<PointsData, String>(
-                                  dataSource: _pointsData,
-                                  xValueMapper: (PointsData data, _) =>
-                                      data.username,
-                                  yValueMapper: (PointsData data, _) =>
-                                      data.points,
-                                  dataLabelMapper: (PointsData data, _) =>
-                                      data.username,
-                                  useSeriesColor: true,
-                                  enableTooltip: true,
-                                  cornerStyle: CornerStyle.bothCurve,
-                                  radius: '100%',
-                                  innerRadius: '10%',
-                                  trackBorderWidth: 1,
-                                  trackColor: Color(0xFF103465),
-                                  trackOpacity: 0.3,
-                                  gap: '0.8%',
-                                  maximumValue: 20,
-                                ),
-                              ],
-                            ))
+                          Container(
+                            child: _selectedValueIndex == 0
+                                ? _isLoading
+                                    ? Center(
+                                        child: CircularProgressIndicator(),
+                                      )
+                                    : _chartData.isNotEmpty
+                                        ? Expanded(
+                                            child: SfCartesianChart(
+                                                primaryXAxis: CategoryAxis(
+                                                  majorGridLines:
+                                                      const MajorGridLines(
+                                                          color: Colors
+                                                              .transparent),
+                                                  labelStyle: TextStyle(
+                                                    color: Colors.black,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 12,
+                                                  ),
+                                                ),
+                                                primaryYAxis: NumericAxis(
+                                                  majorGridLines:
+                                                      const MajorGridLines(
+                                                          color: Colors
+                                                              .transparent),
+                                                  labelStyle: TextStyle(
+                                                    color: Colors.black,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 12,
+                                                  ),
+                                                ),
+                                                series: <
+                                                    BarSeries<ChartData,
+                                                        String>>[
+                                                  BarSeries<ChartData, String>(
+                                                    dataSource: _chartData,
+                                                    xValueMapper:
+                                                        (ChartData data, _) =>
+                                                            data.username,
+                                                    yValueMapper:
+                                                        (ChartData data, _) =>
+                                                            data.total_chores,
+                                                    color: Colors.amber,
+                                                  ),
+                                                ]),
+                                          )
+                                        : Visibility(
+                                            visible: true,
+                                            child: Center(
+                                              child: Text(
+                                                'No data for $selectedFilter',
+                                                style: GoogleFonts.arvo(
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ),
+                                          )
+                                : _selectedValueIndex == 1
+                                    ? _isLoading
+                                        ? Center(
+                                            child: CircularProgressIndicator(),
+                                          )
+                                        : _pointsData.isNotEmpty
+                                            ? Expanded(
+                                                child: SfCircularChart(
+                                                legend: Legend(
+                                                    isVisible: true,
+                                                    position:
+                                                        LegendPosition.bottom,
+                                                    overflowMode:
+                                                        LegendItemOverflowMode
+                                                            .wrap),
+                                                series: <CircularSeries>[
+                                                  RadialBarSeries<PointsData,
+                                                      String>(
+                                                    dataSource: _pointsData,
+                                                    xValueMapper:
+                                                        (PointsData data, _) =>
+                                                            data.username,
+                                                    yValueMapper:
+                                                        (PointsData data, _) =>
+                                                            data.points,
+                                                    useSeriesColor: true,
+                                                    enableTooltip: true,
+                                                    cornerStyle:
+                                                        CornerStyle.bothCurve,
+                                                    radius: '100%',
+                                                    innerRadius: '10%',
+                                                    trackBorderWidth: 1,
+                                                    trackColor:
+                                                        Color(0xFF103465),
+                                                    trackOpacity: 0.3,
+                                                    gap: '0.8%',
+                                                    maximumValue: 20,
+                                                  ),
+                                                ],
+                                              ))
+                                            : Visibility(
+                                                visible: !_isLoading,
+                                                child: Center(
+                                                  child: Text(
+                                                    'No data for $selectedFilter',
+                                                    style: GoogleFonts.arvo(
+                                                      fontSize: 20,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                ),
+                                              )
+                                    : Container(),
+                          ),
                         ],
                       )
                     : Container(),
@@ -286,193 +344,6 @@ class _ChoresStatisticsPageState extends State<ChoresStatisticsPage> {
     ));
   }
 }
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//         body: Padding(
-//             padding: const EdgeInsets.all(16.0),
-//             child: Column(
-//                 mainAxisSize: MainAxisSize.min,
-//                 crossAxisAlignment: CrossAxisAlignment.stretch,
-//                 children: [
-//                   Padding(
-//                     padding: EdgeInsets.all(8.0),
-//                     child: Stack(
-//                       children: [
-//                         Container(
-//                           constraints: BoxConstraints(
-//                             maxWidth: MediaQuery.of(context).size.width,
-//                             maxHeight: MediaQuery.of(context).size.height * 0.5,
-//                           ),
-//                           child: Flexible(
-//                             fit: FlexFit.loose,
-//                             flex: 1,
-//                             child: _chartData.isNotEmpty
-//                                 ? Stack(
-//                                     children: <Widget>[
-//                                       // Bar chart
-//                                       if (_selectedValueIndex == 0)
-//                                         Flexible(
-//                                           fit: FlexFit.loose,
-//                                           flex: 1,
-//                                           child: SfCartesianChart(
-//                                               primaryXAxis: CategoryAxis(
-//                                                 majorGridLines:
-//                                                     const MajorGridLines(
-//                                                         color:
-//                                                             Colors.transparent),
-//                                                 labelStyle: TextStyle(
-//                                                   color: Colors.black,
-//                                                   fontWeight: FontWeight.bold,
-//                                                   fontSize: 12,
-//                                                 ),
-//                                               ),
-//                                               primaryYAxis: NumericAxis(
-//                                                 majorGridLines:
-//                                                     const MajorGridLines(
-//                                                         color:
-//                                                             Colors.transparent),
-//                                                 labelStyle: TextStyle(
-//                                                   color: Colors.black,
-//                                                   fontWeight: FontWeight.bold,
-//                                                   fontSize: 12,
-//                                                 ),
-//                                               ),
-//                                               series: <
-//                                                   BarSeries<ChartData, String>>[
-//                                                 BarSeries<ChartData, String>(
-//                                                   dataSource: _chartData,
-//                                                   xValueMapper:
-//                                                       (ChartData data, _) =>
-//                                                           data.username,
-//                                                   yValueMapper:
-//                                                       (ChartData data, _) =>
-//                                                           data.total_chores,
-//                                                   color: Colors.amber,
-//                                                 ),
-//                                               ]),
-//                                         ),
-//                                       // Doughnut chart
-//                                       if (_selectedValueIndex == 1)
-//                                         Flexible(
-//                                             fit: FlexFit.loose,
-//                                             flex: 1,
-//                                             child: SfCircularChart(
-//                                               legend: Legend(
-//                                                   isVisible: true,
-//                                                   position:
-//                                                       LegendPosition.bottom,
-//                                                   overflowMode:
-//                                                       LegendItemOverflowMode
-//                                                           .wrap),
-//                                               series: <CircularSeries>[
-//                                                 RadialBarSeries<PointsData,
-//                                                     String>(
-//                                                   dataSource: _pointsData,
-//                                                   xValueMapper:
-//                                                       (PointsData data, _) =>
-//                                                           data.username,
-//                                                   yValueMapper:
-//                                                       (PointsData data, _) =>
-//                                                           data.points,
-//                                                   dataLabelMapper:
-//                                                       (PointsData data, _) =>
-//                                                           data.username,
-//                                                   useSeriesColor: true,
-//                                                   enableTooltip: true,
-//                                                   cornerStyle:
-//                                                       CornerStyle.bothCurve,
-//                                                   radius: '100%',
-//                                                   innerRadius: '10%',
-//                                                   trackBorderWidth: 1,
-//                                                   trackColor: Color(0xFF103465),
-//                                                   trackOpacity: 0.3,
-//                                                   gap: '0.8%',
-//                                                   maximumValue: 20,
-//                                                 ),
-//                                               ],
-//                                             ))
-//                                     ],
-//                                   )
-//                                 : Container(),
-//                           ),
-//                         ),
-//                         SingleChildScrollView(
-//                           child: Row(
-//                             mainAxisSize: MainAxisSize.min,
-//                             children: [
-//                               Expanded(
-//                                 child: Column(
-//                                   mainAxisSize: MainAxisSize.min,
-//                                   crossAxisAlignment:
-//                                       CrossAxisAlignment.stretch,
-//                                   children: [
-//                                     TextButton(
-//                                       onPressed: () {
-//                                         setState(() {
-//                                           _isDropdownOpen = !_isDropdownOpen;
-//                                         });
-//                                       },
-//                                       child: Text('Filter'),
-//                                     ),
-//                                     if (_isDropdownOpen)
-//                                       Expanded(
-//                                         child: DropdownButton(
-//                                           value: _selectedValueIndex,
-//                                           onChanged: (int? index) {
-//                                             setState(() {
-//                                               _selectedValueIndex = index ?? 0;
-//                                               getDataStatistics();
-//                                             });
-//                                           },
-//                                           items: _valueChoices
-//                                               .map((item) => DropdownMenuItem(
-//                                                     value: _valueChoices
-//                                                         .indexOf(item),
-//                                                     child: Text(item),
-//                                                   ))
-//                                               .toList(),
-//                                         ),
-//                                       ),
-//                                   ],
-//                                 ),
-//                               ),
-//                               SizedBox(width: 16.0),
-//                               ToggleButtons(
-//                                 isSelected: List.generate(_filterChoices.length,
-//                                     (index) => _selectedFilterIndex == index),
-//                                 onPressed: (int index) {
-//                                   setState(() {
-//                                     _selectedFilterIndex = index;
-//                                     getDataStatistics();
-//                                   });
-//                                 },
-//                                 selectedColor: Colors.black,
-//                                 fillColor: Colors.amber,
-//                                 //add this
-//                                 borderWidth: 1,
-//                                 borderRadius: BorderRadius.circular(16),
-//                                 constraints: BoxConstraints(
-//                                   maxHeight: 36,
-//                                 ),
-
-//                                 children: List.generate(
-//                                     _filterChoices.length,
-//                                     (index) => Padding(
-//                                           padding: EdgeInsets.symmetric(
-//                                               horizontal: 16.0, vertical: 8.0),
-//                                           child: Text(_filterChoices[index]),
-//                                         )),
-//                               ),
-//                             ],
-//                           ),
-//                         ),
-//                       ],
-//                     ),
-//                   ),
-//                 ])));
-//   }
-// }
 
 class ChartData {
   final String username;

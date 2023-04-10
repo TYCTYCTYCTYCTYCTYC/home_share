@@ -141,23 +141,33 @@ class _ChoresState extends State<Chores> {
                                   final userId = _chores[index].assignedUserId;
                                   final effortPoints =
                                       _chores[index].effortPoints;
+                                  final now = DateTime.now();
+                                  final obtainedDate =
+                                      DateTime(now.year, now.month, now.day);
 
-                                  final response = await supabase
-                                      .from('user_home')
-                                      .select('chores_points')
-                                      .eq('user_id', userId)
-                                      .execute();
-                                  final data = response.data;
+                                  // final response = await supabase
+                                  //     .from('user_home')
+                                  //     .select('chores_points')
+                                  //     .eq('user_id', userId)
+                                  //     .execute();
+                                  // final data = response.data;
 
-                                  await supabase
-                                      .from('user_home')
-                                      .update({
-                                        'chores_points': data[0]
-                                                ['chores_points'] +
-                                            effortPoints
-                                      })
-                                      .eq('user_id', userId)
-                                      .execute();
+                                  // await supabase
+                                  //     .from('user_home')
+                                  //     .update({
+                                  //       'chores_points': data[0]
+                                  //               ['chores_points'] +
+                                  //           effortPoints
+                                  //     })
+                                  //     .eq('user_id', userId)
+                                  //     .execute();
+
+                                  await supabase.from('user_points').insert({
+                                    'user_id': userId,
+                                    'effort_points': effortPoints,
+                                    'obtained_date':
+                                        obtainedDate.toIso8601String()
+                                  }).execute();
 
                                   setState(() {
                                     _chores.removeAt(index);
