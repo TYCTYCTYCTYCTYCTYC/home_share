@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:home_share/home.dart';
+import 'package:home_share/pages/create_or_join.dart';
 
 class NewHomeScreen extends StatelessWidget {
   NewHomeScreen({Key? key}) : super(key: key);
@@ -12,6 +14,9 @@ class NewHomeScreen extends StatelessWidget {
   final _homeNameController = TextEditingController();
   final _addressController = TextEditingController();
 
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,15 +26,25 @@ class NewHomeScreen extends StatelessWidget {
           color: Colors.white,
         ),
         backgroundColor: const Color(0xFF103465), // Change the color here
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (context) => const CreateOrJoin()
+              )
+            );
+          }
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             const SizedBox(height: 8.0),
-            TextField(
+            TextFormField(
               controller: _homeNameController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Home Name',
                 labelStyle: TextStyle(color: Colors.amber),
                 enabledBorder: OutlineInputBorder(

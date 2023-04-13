@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:home_share/home.dart';
+import 'package:home_share/pages/create_or_join.dart';
 
 class JoinHomeScreen extends StatelessWidget {
   JoinHomeScreen({Key? key}) : super(key: key);
@@ -19,6 +20,16 @@ class JoinHomeScreen extends StatelessWidget {
           color: Colors.white,
         ),
         backgroundColor: Color(0xFF103465),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (context) => const CreateOrJoin()
+              )
+            );
+          }
+        ),
       ),
       body: Center(
         child: Column(
