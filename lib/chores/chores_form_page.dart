@@ -261,6 +261,7 @@ class _ChoreFormPageState extends State<ChoreFormPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: const Color(0xFF103465),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {

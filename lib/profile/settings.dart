@@ -44,9 +44,11 @@ class _SettingsPageState extends State<SettingsPage> {
       print('Eror getting the user data');
     }
 
-    setState(() {
-      _loading = false;
-    });
+    if(mounted){
+        setState(() {
+        _loading = false;
+      });
+    }
   }
 
   @override
@@ -103,16 +105,18 @@ class _SettingsPageState extends State<SettingsPage> {
     if (response.data != null) {
       //response2 will return name, code, address
       final List<dynamic> data = response2.data!;
-      setState(() {
-        _homeName = data[0]['name'];
-        _homeNameController.text = _homeName;
+      if (mounted) {
+        setState(() {
+          _homeName = data[0]['name'];
+          _homeNameController.text = _homeName;
 
-        _homeCode = data[0]['code'];
-        _homeCodeController.text = _homeCode;
+          _homeCode = data[0]['code'];
+          _homeCodeController.text = _homeCode;
 
-        _homeAddress = data[0]['address'];
-        _homeAddressController.text = _homeAddress;
-      });
+          _homeAddress = data[0]['address'];
+          _homeAddressController.text = _homeAddress;
+        });
+      }
     }
   }
 

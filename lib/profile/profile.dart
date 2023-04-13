@@ -67,10 +67,11 @@ class _ProfileState extends State<Profile> {
     } catch (error) {
       //context.showErrorSnackBar(message: 'Unexpected exception occurred');
     }
-
-    setState(() {
-      _loading = false;
-    });
+    if(mounted){
+      setState(() {
+        _loading = false;
+      });
+    }
   }
 
   // Called when image has been uploaded to Supabase storage from within Avatar widget
@@ -109,9 +110,11 @@ class _ProfileState extends State<Profile> {
       return;
     }
 
-    setState(() {
-      _avatarUrl = imageUrl;
-    });
+    if(mounted){
+      setState(() {
+        _avatarUrl = imageUrl;
+      });
+    }
   }
 
   @override

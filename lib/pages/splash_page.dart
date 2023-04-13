@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:home_share/pages/register_page.dart';
 import 'package:home_share/utils/constants.dart';
 import 'package:home_share/home.dart';
+import 'package:home_share/pages/login_page.dart';
+
 
 /// Page to redirect users to the appropriate page depending on the initial auth state
 class SplashPage extends StatefulWidget {
@@ -26,7 +28,7 @@ class SplashPageState extends State<SplashPage> {
     final session = supabase.auth.currentSession;
     if (session == null) {
       Navigator.of(context)
-          .pushAndRemoveUntil(RegisterPage.route(), (route) => false);
+          .pushAndRemoveUntil(LoginPage.route(), (route) => false);
     } else {
       Navigator.of(context)
           .pushAndRemoveUntil(Home.route(), (route) => false);

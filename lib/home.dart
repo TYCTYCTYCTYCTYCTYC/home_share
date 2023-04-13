@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:home_share/bulletin_board/bulletin_board.dart';
 import 'package:home_share/fridge.dart';
 import 'package:home_share/schedule.dart';
 import 'package:home_share/profile/profile.dart';
