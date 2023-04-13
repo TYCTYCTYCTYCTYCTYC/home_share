@@ -130,7 +130,7 @@ class _ChoresStatisticsPageState extends State<ChoresStatisticsPage> {
                             onPressed: () {
                               final RenderBox button =
                                   context.findRenderObject() as RenderBox;
-                              final RenderBox overlay = Overlay.of(context)!
+                              final RenderBox overlay = Overlay.of(context)
                                   .context
                                   .findRenderObject() as RenderBox;
                               final buttonTopLeft = button.localToGlobal(
