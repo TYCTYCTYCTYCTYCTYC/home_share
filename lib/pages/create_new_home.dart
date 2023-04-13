@@ -14,9 +14,6 @@ class NewHomeScreen extends StatelessWidget {
   final _homeNameController = TextEditingController();
   final _addressController = TextEditingController();
 
-
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,15 +24,11 @@ class NewHomeScreen extends StatelessWidget {
         ),
         backgroundColor: const Color(0xFF103465), // Change the color here
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(
-                builder: (context) => const CreateOrJoin()
-              )
-            );
-          }
-        ),
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.of(context).pushReplacement(MaterialPageRoute(
+                  builder: (context) => const CreateOrJoin()));
+            }),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -46,7 +39,7 @@ class NewHomeScreen extends StatelessWidget {
               controller: _homeNameController,
               decoration: const InputDecoration(
                 labelText: 'Home Name',
-                labelStyle: TextStyle(color: Colors.amber),
+                labelStyle: TextStyle(color: Colors.black),
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(
                     color: Color(0xFF103465),
@@ -62,9 +55,9 @@ class NewHomeScreen extends StatelessWidget {
             const SizedBox(height: 20.0),
             TextField(
               controller: _addressController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Address',
-                labelStyle: TextStyle(color: Colors.amber),
+                labelStyle: TextStyle(color: Colors.black),
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(
                     color: Color(0xFF103465),
@@ -107,8 +100,6 @@ class NewHomeScreen extends StatelessWidget {
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all<Color>(
                           const Color(0xFF103465)),
-                      foregroundColor:
-                          MaterialStateProperty.all<Color>(Colors.amber),
                     ),
                     child: const Text('Save'),
                   ),
