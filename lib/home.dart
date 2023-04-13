@@ -7,7 +7,6 @@ import 'package:home_share/dashboard.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:home_share/profile/settings.dart';
-import 'package:home_share/pages/testing.dart';
 
 class Home extends StatefulWidget {
   final int initialIndex;
@@ -30,8 +29,7 @@ class _HomeState extends State<Home> {
     const Fridge(),
     MainChoresPage(),
     const Schedule(),
-    //InputPage(),
-    NewHomeScreen(),
+    Profile(),
 
   ];
 

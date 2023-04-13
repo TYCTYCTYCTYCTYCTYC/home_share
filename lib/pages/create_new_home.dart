@@ -79,7 +79,19 @@ class NewHomeScreen extends StatelessWidget {
                     onPressed: () async {
                       final homeName = _homeNameController.text;
                       final address = _addressController.text;
-
+                      if (homeName.isEmpty || address.isEmpty) {
+                        FocusScope.of(context).unfocus();
+                        Fluttertoast.showToast(
+                          msg: 'Please enter both home name and address.',
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          timeInSecForIosWeb: 2,
+                          backgroundColor: Colors.grey,
+                          textColor: Colors.black,
+                          fontSize: 16.0,
+                        );
+                        return;
+                      }
                       final currentUser =
                           Supabase.instance.client.auth.currentUser;
                       final userId = currentUser?.id;

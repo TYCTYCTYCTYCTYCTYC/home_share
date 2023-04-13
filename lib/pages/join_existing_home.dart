@@ -75,7 +75,18 @@ class JoinHomeScreen extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: () async {
                       final homeCode = _codeController.text;
-
+                      if (_codeController.text.isEmpty) {
+                        Fluttertoast.showToast(
+                          msg: 'Please enter a home code!',
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          timeInSecForIosWeb: 2,
+                          backgroundColor: Colors.grey,
+                          textColor: Colors.black,
+                          fontSize: 16.0,
+                        );
+                        return;
+                      }
                       try {
                         final homeQuery = await Supabase.instance.client
                             .from('home')
@@ -117,7 +128,6 @@ class JoinHomeScreen extends StatelessWidget {
                       minimumSize: MaterialStateProperty.all(const Size(0, 40)),
                       backgroundColor: MaterialStateProperty.all<Color>(
                           const Color(0xFF103465)),
-                     
                     ),
                     child: const Text('Join Home'),
                   ),
