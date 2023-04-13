@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
 import 'package:home_share/main.dart';
 import 'package:home_share/chores/chores_form_page.dart';
 
@@ -85,12 +87,35 @@ class _ChoresState extends State<Chores> {
 
 //only fetch chores that are not completed yet
   Future<List<Chore>> fetchChores() async {
+    final currentUser = Supabase.instance.client.auth.currentUser;
+    final currentUserId = currentUser?.id;
+
     final response = await supabase
+        .from('user_home')
+        .select('home_id')
+        .eq('user_id', currentUserId)
+        .single()
+        .execute();
+
+    final homeId = response.data['home_id'] as int;
+
+    final response2 = await supabase
+        .from('user_home')
+        .select('user_id')
+        .eq('home_id', homeId)
+        .execute();
+
+    final userIds = response2.data
+        .map<String>((item) => item['user_id'] as String)
+        .toList();
+
+    final fetchChores = await supabase
         .from('chores')
         .select()
         .not('status', 'eq', true)
+        .in_('created_user_id', userIds)
         .execute();
-    final data = response.data as List<dynamic>;
+    final data = fetchChores.data as List<dynamic>;
 
     final chores = await Future.wait(data.map((item) async {
       final chore = await Chore.fromJson(item);

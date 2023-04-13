@@ -57,50 +57,62 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.all(16),
-      child: ListView.builder(
-        itemCount: _choresPoints.length,
-        itemBuilder: (BuildContext context, int index) {
-          ChoresPoints chorePoints = _choresPoints[index];
-          return Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
-                side: BorderSide(color: Color(0xFF103465), width: 1),
+        margin: const EdgeInsets.all(16),
+        child: Visibility(
+          visible: _choresPoints.isEmpty,
+          replacement: ListView.builder(
+            itemCount: _choresPoints.length,
+            itemBuilder: (BuildContext context, int index) {
+              ChoresPoints chorePoints = _choresPoints[index];
+              return Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    side: const BorderSide(color: Color(0xFF103465), width: 1),
+                  ),
+                  child: ListTile(
+                    leading: Text(
+                      '${index + 1}',
+                      style: GoogleFonts.pacifico(
+                        fontSize: 24,
+                        color: Color(0xFFFFD700),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    title: Text(_choresPoints[index].username,
+                        style: GoogleFonts.arvo(
+                            textStyle: const TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold))),
+                    trailing: SizedBox(
+                      width: 35,
+                      child: Row(
+                        children: [
+                          Text(
+                            '${_choresPoints[index].effortPoints}',
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const Icon(
+                            Icons.star,
+                            color: Colors.black,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ));
+            },
+          ),
+          child: Center(
+            child: Text(
+              'No data yet, start doing chores to beat your housemate high scores!',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.arvo(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
               ),
-              child: ListTile(
-                leading: Text(
-                  '${index + 1}',
-                  style: GoogleFonts.pacifico(
-                    fontSize: 24,
-                    color: Color(0xFFFFD700),
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                title: Text(_choresPoints[index].username,
-                    style: GoogleFonts.arvo(
-                        textStyle: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold))),
-                trailing: SizedBox(
-                  width: 35,
-                  child: Row(
-                    children: [
-                      Text(
-                        '${_choresPoints[index].effortPoints}',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Icon(
-                        Icons.star,
-                        color: Colors.black,
-                      ),
-                    ],
-                  ),
-                ),
-              ));
-        },
-      ),
-    );
+            ),
+          ),
+        ));
   }
 }
