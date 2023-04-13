@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:home_share/home.dart';
+import 'package:home_share/pages/create_or_join.dart';
 
 class JoinHomeScreen extends StatelessWidget {
   JoinHomeScreen({Key? key}) : super(key: key);
@@ -14,11 +16,17 @@ class JoinHomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Join an existing home'),
-        iconTheme: IconThemeData(
+        title: const Text('Join an existing home'),
+        iconTheme: const IconThemeData(
           color: Colors.white,
         ),
-        backgroundColor: Color(0xFF103465),
+        backgroundColor: const Color(0xFF103465),
+        leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.of(context).pushReplacement(MaterialPageRoute(
+                  builder: (context) => const CreateOrJoin()));
+            }),
       ),
       body: Center(
         child: Column(
@@ -28,7 +36,7 @@ class JoinHomeScreen extends StatelessWidget {
               'Enter Home Code:',
               style: TextStyle(fontSize: 20),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Row(
               children: [
                 Expanded(
@@ -38,9 +46,9 @@ class JoinHomeScreen extends StatelessWidget {
                       width: 350,
                       child: TextField(
                         controller: _codeController,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           labelText: 'Home Code',
-                          labelStyle: TextStyle(color: Colors.amber),
+                          labelStyle: TextStyle(color: Colors.black),
                           enabledBorder: OutlineInputBorder(
                             borderSide: BorderSide(
                               color: Color(0xFF103465),
@@ -67,6 +75,38 @@ class JoinHomeScreen extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: () async {
                       final homeCode = _codeController.text;
+                      if (_codeController.text.isEmpty) {
+                        Fluttertoast.showToast(
+                          msg: 'Please enter a home code!',
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          timeInSecForIosWeb: 2,
+                          backgroundColor: Colors.grey,
+                          textColor: Colors.black,
+                          fontSize: 16.0,
+                        );
+                        return;
+                      }
+                      try {
+                        final homeQuery = await Supabase.instance.client
+                            .from('home')
+                            .select()
+                            .eq('home_code', homeCode)
+                            .execute();
+                      } catch (e) {
+                        print('Error fetching home query: $e');
+                        FocusScope.of(context).unfocus();
+                        Fluttertoast.showToast(
+                            msg:
+                                'Home does not exist! Consider creating your own home.',
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.BOTTOM,
+                            timeInSecForIosWeb: 2,
+                            backgroundColor: Colors.grey,
+                            textColor: Colors.black,
+                            fontSize: 16.0);
+                        return;
+                      }
 
                       final currentUser =
                           Supabase.instance.client.auth.currentUser;
@@ -85,13 +125,11 @@ class JoinHomeScreen extends StatelessWidget {
                       );
                     },
                     style: ButtonStyle(
-                      minimumSize: MaterialStateProperty.all(Size(0, 40)),
-                      backgroundColor:
-                          MaterialStateProperty.all<Color>(Color(0xFF103465)),
-                      foregroundColor:
-                          MaterialStateProperty.all<Color>(Colors.amber),
+                      minimumSize: MaterialStateProperty.all(const Size(0, 40)),
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          const Color(0xFF103465)),
                     ),
-                    child: Text('Join Home'),
+                    child: const Text('Join Home'),
                   ),
                 ),
               ],

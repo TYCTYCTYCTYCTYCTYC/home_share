@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:home_share/home.dart';
+import 'package:home_share/pages/create_or_join.dart';
 
 class NewHomeScreen extends StatelessWidget {
   NewHomeScreen({Key? key}) : super(key: key);
@@ -21,17 +23,23 @@ class NewHomeScreen extends StatelessWidget {
           color: Colors.white,
         ),
         backgroundColor: const Color(0xFF103465), // Change the color here
+        leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.of(context).pushReplacement(MaterialPageRoute(
+                  builder: (context) => const CreateOrJoin()));
+            }),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             const SizedBox(height: 8.0),
-            TextField(
+            TextFormField(
               controller: _homeNameController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Home Name',
-                labelStyle: TextStyle(color: Colors.amber),
+                labelStyle: TextStyle(color: Colors.black),
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(
                     color: Color(0xFF103465),
@@ -47,9 +55,9 @@ class NewHomeScreen extends StatelessWidget {
             const SizedBox(height: 20.0),
             TextField(
               controller: _addressController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Address',
-                labelStyle: TextStyle(color: Colors.amber),
+                labelStyle: TextStyle(color: Colors.black),
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(
                     color: Color(0xFF103465),
@@ -71,7 +79,19 @@ class NewHomeScreen extends StatelessWidget {
                     onPressed: () async {
                       final homeName = _homeNameController.text;
                       final address = _addressController.text;
-
+                      if (homeName.isEmpty || address.isEmpty) {
+                        FocusScope.of(context).unfocus();
+                        Fluttertoast.showToast(
+                          msg: 'Please enter both home name and address.',
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          timeInSecForIosWeb: 2,
+                          backgroundColor: Colors.grey,
+                          textColor: Colors.black,
+                          fontSize: 16.0,
+                        );
+                        return;
+                      }
                       final currentUser =
                           Supabase.instance.client.auth.currentUser;
                       final userId = currentUser?.id;
@@ -92,8 +112,6 @@ class NewHomeScreen extends StatelessWidget {
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all<Color>(
                           const Color(0xFF103465)),
-                      foregroundColor:
-                          MaterialStateProperty.all<Color>(Colors.amber),
                     ),
                     child: const Text('Save'),
                   ),

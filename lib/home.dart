@@ -29,7 +29,8 @@ class _HomeState extends State<Home> {
     const Fridge(),
     MainChoresPage(),
     const Schedule(),
-    InputPage(),
+    Profile(),
+
   ];
 
   @override

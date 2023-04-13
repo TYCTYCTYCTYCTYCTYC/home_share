@@ -8,12 +8,12 @@ import 'package:intl/intl.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:date_time_picker/date_time_picker.dart';
 
-class InputPage extends StatefulWidget {
+class Profile extends StatefulWidget {
   @override
-  _InputPageState createState() => _InputPageState();
+  _ProfileState createState() => _ProfileState();
 }
 
-class _InputPageState extends State<InputPage> {
+class _ProfileState extends State<Profile> {
   final _formKey = GlobalKey<FormState>();
   String _username = '';
   String? _email = '';
