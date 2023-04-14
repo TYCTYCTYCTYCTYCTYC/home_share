@@ -73,17 +73,11 @@ class _DashBoardState extends State<DashBoard> with WidgetsBindingObserver {
     }
   }
 
-  // Future<void> _fetchRecentBulletinBoardMessages() async {
-  //   // your code to fetch 2 most recent bulletin board messages
-  // }
   Future<void> fetchAndSetBulletin() async {
     final bulletins = await fetchBulletin();
     if (mounted) {
       setState(() {
         _bulletinBoardMessages = bulletins;
-        //   _posts
-        //       .sort((a, b) => b.effortPoints!.compareTo(a.effortPoints!));
-        //
       });
     }
   }
@@ -116,17 +110,25 @@ class _DashBoardState extends State<DashBoard> with WidgetsBindingObserver {
     done = data[0]['done'] as int;
 
     final total = notDone + done;
-    final percentNotDone = notDone / total * 100;
 
     if (total == 0) {
       setState(() {
         choreStatistics = 'You do not have any chores for this week!';
       });
     } else {
-      setState(() {
-        choreStatistics =
-            'You only did ${percentNotDone.toStringAsFixed(2)}% of your chores this week';
-      });
+      final percentDone = done / total * 100;
+      final percentNotDone = 100 - percentDone;
+
+      if (percentDone == 100) {
+        setState(() {
+          choreStatistics = 'Congrats! You did all your chores this week!';
+        });
+      } else {
+        setState(() {
+          choreStatistics =
+              'You only did ${percentDone.toStringAsFixed(2)}% of your chores this week!';
+        });
+      }
     }
   }
 
@@ -137,8 +139,8 @@ class _DashBoardState extends State<DashBoard> with WidgetsBindingObserver {
         params: {'current_user_id': userId}).execute();
     final data = response.data as List<dynamic>;
     data.sort((a, b) => b['points'] - a['points']);
-    highestChorePoints = data.first['points'];
-    highestChoreUsername = data.first['username'];
+    highestChorePoints = data.isNotEmpty ? data.first['points'] ?? 0 : 0;
+    highestChoreUsername = data.isNotEmpty ? data.first['username'] ?? '' : '';
   }
 
   Future<List<Post>> fetchBulletin() async {
@@ -445,7 +447,7 @@ class _DashBoardState extends State<DashBoard> with WidgetsBindingObserver {
                                           RangePointer(
                                             value: notDone + done == 0
                                                 ? 0
-                                                : (notDone / (notDone + done)) *
+                                                : (done / (notDone + done)) *
                                                     100,
                                             width: 0.2,
                                             sizeUnit: GaugeSizeUnit.factor,
@@ -477,8 +479,13 @@ class _DashBoardState extends State<DashBoard> with WidgetsBindingObserver {
                                 color: Colors.amber,
                               ),
                               const SizedBox(width: 34),
-                              Text(
-                                  '${highestChoreUsername} is the kakak of the week!'),
+                              Flexible(
+                                child: highestChorePoints == 0
+                                    ? Text(
+                                        "No one is leading, score some points to have your name on the dashboard!")
+                                    : Text(
+                                        "${highestChoreUsername} is the kakak of the week!"),
+                              ),
                             ],
                           )
                         ],
