@@ -161,12 +161,16 @@ class _SettingsPageState extends State<SettingsPage> {
         .execute();
 
     final data = result.data as List<dynamic>;
-    usernames = data
+    final updatedUsernames = data
         .map((dynamic item) => {
               'username': item['username'] as String,
               'avatar_url': item['avatar_url'] as String?,
             })
         .toList();
+
+    setState(() {
+      usernames = updatedUsernames;
+    });
   }
 
   @override
