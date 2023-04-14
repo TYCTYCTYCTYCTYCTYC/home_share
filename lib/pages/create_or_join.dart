@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:home_share/pages/create_new_home.dart';
 import 'package:home_share/pages/join_existing_home.dart';
-
-
+import 'package:home_share/pages/login_page.dart';
 
 class CreateOrJoin extends StatelessWidget {
   const CreateOrJoin({Key? key});
@@ -14,112 +13,114 @@ class CreateOrJoin extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Testing',
-      home: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          centerTitle: true,
-          title: const Text('HomeShare', style: TextStyle(color: Colors.white)),
-          backgroundColor: Color(0xFF103465),
-          
-
-        ),
-        body: Padding(
-  padding: EdgeInsets.only(left: 20.0),
-  child:Column(
-          children: [
-            Expanded(
-              child: GestureDetector(
-                onTap: () {
+        debugShowCheckedModeBanner: false,
+        title: 'Testing',
+        home: Scaffold(
+          backgroundColor: Colors.white,
+          appBar: AppBar(
+              automaticallyImplyLeading: false,
+              centerTitle: true,
+              title: const Text('HomeShare',
+                  style: TextStyle(color: Colors.white)),
+              backgroundColor: Color(0xFF103465),
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () {
                   Navigator.of(context)
-          .pushAndRemoveUntil(NewHomeScreen.route(), (route) => false);
+                      .push(MaterialPageRoute(builder: (_) => const LoginPage()));
                 },
-                child: Container(
-                  margin: EdgeInsets.all(14.0),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20.0),
-                      border: Border.all(
-                        color: Color(0xFF103465),
-                        width: 3.0,
-                      ),
-                    ),
-                    child: SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.8,
-                      height: 30.0,
-                      child: Image.asset(
-                        'assets/images/create_home.png',
-                        fit: BoxFit.contain,
-                      ),
-                    )
+              )),
+          body: Padding(
+            padding: EdgeInsets.only(left: 20.0),
+            child: Column(
+              children: [
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).pushAndRemoveUntil(
+                          NewHomeScreen.route(), (route) => false);
+                    },
+                    child: Container(
+                        margin: EdgeInsets.all(14.0),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20.0),
+                          border: Border.all(
+                            color: Color(0xFF103465),
+                            width: 3.0,
+                          ),
+                        ),
+                        child: SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.8,
+                          height: 30.0,
+                          child: Image.asset(
+                            'assets/images/create_home.png',
+                            fit: BoxFit.contain,
+                          ),
+                        )),
                   ),
-              ),
-            ),
-
+                ),
 
 //create the divider here
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.8,
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Divider(
-                      thickness: 2,
-                      color: Color(0xFF103465),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                    child: Text(
-                      "or",
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.grey[600],
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Divider(
+                          thickness: 2,
+                          color: Color(0xFF103465),
+                        ),
                       ),
-                    ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                        child: Text(
+                          "or",
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Divider(
+                          thickness: 2,
+                          color: Color(0xFF103465),
+                        ),
+                      ),
+                    ],
                   ),
-                  Expanded(
-                    child: Divider(
-                      thickness: 2,
-                      color: Color(0xFF103465),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+                ),
 
-            Expanded(
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.of(context)
-          .pushAndRemoveUntil(JoinHomeScreen.route(), (route) => false);
-                },
-                child: Container(
-                  margin: EdgeInsets.all(14.0),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20.0),
-                      border: Border.all(
-                        color: Color(0xFF103465),
-                        width: 3.0,
-                      ),
-                    ),
-                    child: SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.8,
-                      height: 30.0,
-                      child: Image.asset(
-                        'assets/images/join_home.png',
-                        fit: BoxFit.contain,
-                      ),
-                    )
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).pushAndRemoveUntil(
+                          JoinHomeScreen.route(), (route) => false);
+                    },
+                    child: Container(
+                        margin: EdgeInsets.all(14.0),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20.0),
+                          border: Border.all(
+                            color: Color(0xFF103465),
+                            width: 3.0,
+                          ),
+                        ),
+                        child: SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.8,
+                          height: 30.0,
+                          child: Image.asset(
+                            'assets/images/join_home.png',
+                            fit: BoxFit.contain,
+                          ),
+                        )),
                   ),
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
-    ));
+          ),
+        ));
   }
 }
 
