@@ -4,6 +4,16 @@ import 'package:home_share/main.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+class HomeMembers {
+  final String username;
+  final String effortPoints;
+
+  HomeMembers({
+    required this.username,
+    required this.effortPoints,
+  });
+}
+
 class SettingsPage extends StatefulWidget {
   @override
   _SettingsPageState createState() => _SettingsPageState();
@@ -14,6 +24,7 @@ class _SettingsPageState extends State<SettingsPage> {
   String _homeName = '';
   String _homeCode = '';
   String _homeAddress = '';
+  List<Map<String, dynamic>> usernames = [];
 
   final _homeNameController = TextEditingController();
   final _homeNameFocusNode = FocusNode();
@@ -44,8 +55,8 @@ class _SettingsPageState extends State<SettingsPage> {
       print('Eror getting the user data');
     }
 
-    if(mounted){
-        setState(() {
+    if (mounted) {
+      setState(() {
         _loading = false;
       });
     }
@@ -56,7 +67,7 @@ class _SettingsPageState extends State<SettingsPage> {
     super.initState();
 
     getProfileData();
-
+    getHomeMembers();
     _homeNameFocusNode.addListener(() {
       setState(() {});
     });
@@ -118,6 +129,44 @@ class _SettingsPageState extends State<SettingsPage> {
         });
       }
     }
+  }
+
+  void getHomeMembers() async {
+    final currentUser = Supabase.instance.client.auth.currentUser;
+    final userId = currentUser?.id;
+
+    final response = await supabase
+        .from('user_home')
+        .select('home_id')
+        .eq('user_id', userId)
+        .single()
+        .execute();
+
+    final homeId = response.data['home_id'] as int;
+
+    final response2 = await supabase
+        .from('user_home')
+        .select('user_id')
+        .eq('home_id', homeId)
+        .execute();
+
+    final userIds = response2.data
+        .map<String>((item) => item['user_id'] as String)
+        .toList();
+
+    final result = await supabase
+        .from('profiles')
+        .select('username, avatar_url')
+        .in_('id', userIds)
+        .execute();
+
+    final data = result.data as List<dynamic>;
+    usernames = data
+        .map((dynamic item) => {
+              'username': item['username'] as String,
+              'avatar_url': item['avatar_url'] as String?,
+            })
+        .toList();
   }
 
   @override
@@ -414,7 +463,85 @@ class _SettingsPageState extends State<SettingsPage> {
                     ],
                   ),
                 ),
+                const SizedBox(height: 10.0),
+                Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: const Color(0xFF103465),
+                      width: 5.0,
+                    ),
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  height: 200,
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.only(left: 10.0, right: 5.0, top: 5.0),
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Members:',
+                            style: GoogleFonts.arvo(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                            textAlign: TextAlign.left,
+                          ),
+                          Expanded(
+                            child: Scrollbar(
+                              child: SingleChildScrollView(
+                                child: Column(
+                                  children: [
+                                    Container(
+                                        height: usernames.length *
+                                            55.0, // adjust this to fit your needs
+                                        child: ListView.builder(
+                                          physics:
+                                              NeverScrollableScrollPhysics(),
+                                          itemCount: usernames.length,
+                                          itemBuilder: (BuildContext context,
+                                              int index) {
+                                            final username = usernames[index];
 
+                                            return ListTile(
+                                              leading: CircleAvatar(
+                                                backgroundImage: username[
+                                                            'avatar_url'] !=
+                                                        null
+                                                    ? NetworkImage(
+                                                        username['avatar_url']!)
+                                                    : null,
+                                                backgroundColor:
+                                                    Colors.blueGrey,
+                                                child: username['avatar_url'] ==
+                                                        null
+                                                    ? Text(
+                                                        username['username'][0]
+                                                            .toUpperCase(),
+                                                        style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          color: Colors.white,
+                                                        ),
+                                                      )
+                                                    : null,
+                                              ),
+                                              title: Text(username['username']),
+                                              contentPadding:
+                                                  EdgeInsets.symmetric(
+                                                      vertical: 0.0,
+                                                      horizontal: 5.0),
+                                            );
+                                          },
+                                        )),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ]),
+                  ),
+                ),
                 const SizedBox(height: 50.0),
 
                 //dark mode

@@ -78,7 +78,7 @@ class _LoginPageState extends State<LoginPage> {
       body: Container(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
-        color: Color(0xFF103465),
+        color: const Color(0xFF103465),
         child: SingleChildScrollView(
           child: Padding(
             padding: EdgeInsets.fromLTRB(
@@ -93,7 +93,7 @@ class _LoginPageState extends State<LoginPage> {
                   'assets/images/icon.png',
                   height: 200,
                 ),
-                SizedBox(height: 40),
+                const SizedBox(height: 40),
                 reusableTextField(
                     "Email", Icons.person_outline, false, _emailController,
                     (val) {
@@ -102,7 +102,7 @@ class _LoginPageState extends State<LoginPage> {
                   }
                   return ' ';
                 }),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 reusableTextField(
@@ -116,7 +116,7 @@ class _LoginPageState extends State<LoginPage> {
                   }
                   return ' ';
                 }),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 Container(
