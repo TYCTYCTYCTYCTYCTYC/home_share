@@ -472,7 +472,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     ),
                     borderRadius: BorderRadius.circular(10.0),
                   ),
-                  height: 200,
+                  height: 230,
                   child: Padding(
                     padding:
                         const EdgeInsets.only(left: 10.0, right: 5.0, top: 5.0),
@@ -542,7 +542,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         ]),
                   ),
                 ),
-                const SizedBox(height: 50.0),
+                const SizedBox(height: 30.0),
 
                 //dark mode
                 // const ListTile(
