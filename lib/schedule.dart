@@ -58,7 +58,7 @@ class _ScheduleState extends State<Schedule> {
         debugShowCheckedModeBanner: false,
         title: "HomeShare",
         home: Scaffold(
-          backgroundColor: const Color.fromARGB(255, 180, 231, 255),
+          backgroundColor: Colors.white,
           body: Column(
             children: <Widget>[
               SingleChildScrollView(
