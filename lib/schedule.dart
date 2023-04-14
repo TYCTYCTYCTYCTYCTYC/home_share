@@ -22,9 +22,27 @@ class _ScheduleState extends State<Schedule> {
   // double width = MediaQuery.of(context).size.width;
 
   Future<void> loadDB() async {
-    final response = await supabase.from('profiles').select();
+    final currentUser = Supabase.instance.client.auth.currentUser;
+    final userId = currentUser?.id;
+
+    //get home_id
+    final response = await supabase
+        .from('user_home')
+        .select('home_id')
+        .eq('user_id', userId)
+        .single()
+        .execute();
+
+    final homeId = response.data['home_id'] as int;
+
+    final response2 = await supabase
+        .from('profiles')
+        .select('*, user_home!inner(*)')
+        .eq('user_home.home_id', homeId)
+        .execute();
+
     setState(() {
-      _accounts = response;
+      _accounts = response2.data as List<dynamic>;
     });
   }
 
