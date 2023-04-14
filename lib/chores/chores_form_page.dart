@@ -271,7 +271,7 @@ class _ChoreFormPageState extends State<ChoreFormPage> {
         title: Text('Create a new chore',
             style: GoogleFonts.arvo(
                 textStyle: const TextStyle(
-                    color: Colors.black, fontWeight: FontWeight.bold))),
+                    color: Colors.white, fontWeight: FontWeight.bold))),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
