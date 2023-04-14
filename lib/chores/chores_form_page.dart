@@ -263,7 +263,7 @@ class _ChoreFormPageState extends State<ChoreFormPage> {
       appBar: AppBar(
         backgroundColor: const Color(0xFF103465),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
             Navigator.pop(context);
           },
