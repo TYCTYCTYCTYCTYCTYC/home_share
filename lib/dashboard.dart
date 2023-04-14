@@ -19,7 +19,7 @@ class DashBoard extends StatefulWidget {
   _DashBoardState createState() => _DashBoardState();
 }
 
-class _DashBoardState extends State<DashBoard> {
+class _DashBoardState extends State<DashBoard> with WidgetsBindingObserver {
   String? homeName;
   String? username;
   List<Post> _bulletinBoardMessages = [];
@@ -37,6 +37,21 @@ class _DashBoardState extends State<DashBoard> {
     fetchAndSetBulletin();
     getChoreStatistics();
     getLeaderboardStatics();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance?.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      fetchAndSetBulletin();
+      getChoreStatistics();
+      getLeaderboardStatics();
+    }
   }
 
   Future<void> myFunction() async {
@@ -102,10 +117,17 @@ class _DashBoardState extends State<DashBoard> {
 
     final total = notDone + done;
     final percentNotDone = notDone / total * 100;
-    setState(() {
-      choreStatistics =
-          'You only did ${percentNotDone.toStringAsFixed(2)}% of your chores this week';
-    });
+
+    if (total == 0) {
+      setState(() {
+        choreStatistics = 'You do not have any chores for this week!';
+      });
+    } else {
+      setState(() {
+        choreStatistics =
+            'You only did ${percentNotDone.toStringAsFixed(2)}% of your chores this week';
+      });
+    }
   }
 
   Future<void> getLeaderboardStatics() async {
@@ -248,25 +270,26 @@ class _DashBoardState extends State<DashBoard> {
                                             Align(
                                               alignment: Alignment.topLeft,
                                               child: Padding(
-                                                padding: const EdgeInsets.only(left:34),
+                                                padding: const EdgeInsets.only(
+                                                    left: 34),
                                                 child: Text(
                                                   message.title,
                                                   style: const TextStyle(
-                                                    fontSize: 16,
-                                                    fontWeight: FontWeight.bold
-                                                  ),
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.bold),
                                                 ),
-                                              ), 
+                                              ),
                                             ),
                                             Align(
                                               alignment: Alignment.topLeft,
                                               child: Padding(
-                                                padding: const EdgeInsets.only(left: 34),
+                                                padding: const EdgeInsets.only(
+                                                    left: 34),
                                                 child: Text(
                                                   message.message,
                                                   style: const TextStyle(
-                                                    fontSize: 16
-                                                  ),
+                                                      fontSize: 16),
                                                 ),
                                               ),
                                             ),
@@ -311,8 +334,7 @@ class _DashBoardState extends State<DashBoard> {
                                 ],
                               ),
                               GestureDetector(
-                                onTap: () {
-                                },
+                                onTap: () {},
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: const [
@@ -421,8 +443,9 @@ class _DashBoardState extends State<DashBoard> {
                                         ),
                                         pointers: [
                                           RangePointer(
-                                            value:
-                                                (notDone / (notDone + done)) *
+                                            value: notDone + done == 0
+                                                ? 0
+                                                : (notDone / (notDone + done)) *
                                                     100,
                                             width: 0.2,
                                             sizeUnit: GaugeSizeUnit.factor,
