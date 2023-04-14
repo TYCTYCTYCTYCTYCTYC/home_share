@@ -88,7 +88,8 @@ class _ScheduleState extends State<Schedule> {
                               //         'assets/images/icon.png',
                               //         fit: BoxFit.cover,
                               //       ),
-                              cropCircleImage(account['avatar_url'], context),
+                              cropCircleImage(
+                                  account['avatar_url'], context, account),
                               Text(account['username']),
                             ],
                           ),
@@ -115,19 +116,33 @@ class _ScheduleState extends State<Schedule> {
   // bool get wantKeepAlive => true;
 }
 
-Widget cropCircleImage(String? imageUrl, BuildContext context) {
+Widget cropCircleImage(String? imageUrl, BuildContext context, final account) {
+  double size = MediaQuery.of(context).size.width / 3;
   return imageUrl != null
-      ? ClipOval(
-          child: Image.network(
-          imageUrl,
-          width: MediaQuery.of(context).size.width / 3,
-          height: MediaQuery.of(context).size.width / 3,
-          fit: BoxFit.cover,
-        ))
-      : ClipOval(
-          child: Image.asset(
-            'assets/images/icon.png',
+      ? Container(
+          // color: Colors.green,
+          child: ClipOval(
+              child: Image.network(
+            imageUrl,
+            width: size,
+            height: size,
             fit: BoxFit.cover,
-          ),
-        );
+          )),
+        )
+      : Container(
+          height: size,
+          width: size,
+          // color: Colors.green,
+          child: CircleAvatar(
+            radius: size,
+            backgroundImage: null,
+            backgroundColor: Colors.blueGrey,
+            child: Text(
+              account['username'][0].toUpperCase(),
+              style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  fontSize: 30),
+            ),
+          ));
 }
