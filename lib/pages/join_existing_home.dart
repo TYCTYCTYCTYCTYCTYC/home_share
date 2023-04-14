@@ -87,26 +87,29 @@ class JoinHomeScreen extends StatelessWidget {
                         );
                         return;
                       }
-                      try {
-                        final homeQuery = await Supabase.instance.client
-                            .from('home')
-                            .select()
-                            .eq('home_code', homeCode)
-                            .execute();
-                      } catch (e) {
-                        print('Error fetching home query: $e');
+                      final homeQuery = await Supabase.instance.client
+                          .from('home')
+                          .select()
+                          .eq('code', homeCode)
+                          .execute();
+
+                      if (homeQuery.data.length == 0) {
+                        // handle home not found
                         FocusScope.of(context).unfocus();
                         Fluttertoast.showToast(
-                            msg:
-                                'Home does not exist! Consider creating your own home.',
-                            toastLength: Toast.LENGTH_SHORT,
-                            gravity: ToastGravity.BOTTOM,
-                            timeInSecForIosWeb: 2,
-                            backgroundColor: Colors.grey,
-                            textColor: Colors.black,
-                            fontSize: 16.0);
+                          msg:
+                              'Home does not exist! Consider creating your own home.',
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          timeInSecForIosWeb: 2,
+                          backgroundColor: Colors.grey,
+                          textColor: Colors.black,
+                          fontSize: 16.0,
+                        );
                         return;
                       }
+
+// home found, continue with your code
 
                       final currentUser =
                           Supabase.instance.client.auth.currentUser;
