@@ -4,6 +4,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:home_share/main.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:convert';
@@ -31,6 +32,7 @@ class _ScheduleState extends State<Schedule> {
   dynamic curProfile = null;
   int selectedIndex = 0;
   int rowIndex = 0;
+  String? _scheduleUrl = null;
 
   Future<void> loadDB() async {
     final currentUser = Supabase.instance.client.auth.currentUser;
@@ -60,6 +62,48 @@ class _ScheduleState extends State<Schedule> {
       _accounts = response2.data as List<dynamic>;
     });
   }
+
+  // Future<void> _onUpload(String scheduleUrl) async {
+  //   try {
+  //     final userId = supabase.auth.currentUser!.id;
+  //     await supabase.from('profiles').upsert({
+  //       'id': userId,
+  //       'schedule_url': scheduleUrl,
+  //     });
+  //     if (mounted) {
+  //       Fluttertoast.showToast(
+  //         msg: 'schedule image updated',
+  //         toastLength: Toast.LENGTH_SHORT,
+  //         gravity: ToastGravity.CENTER,
+  //         timeInSecForIosWeb: 1,
+  //         backgroundColor: Colors.amber,
+  //         textColor: Colors.black,
+  //         fontSize: 16.0,
+  //       );
+  //     }
+  //   } on PostgrestException catch (error) {
+  //     Fluttertoast.showToast(
+  //       msg: 'Error updating schedule image',
+  //       toastLength: Toast.LENGTH_SHORT,
+  //       gravity: ToastGravity.CENTER,
+  //       timeInSecForIosWeb: 1,
+  //       backgroundColor: Colors.amber,
+  //       textColor: Colors.black,
+  //       fontSize: 16.0,
+  //     );
+  //   } catch (error) {
+  //     //context.showErrorSnackBar(message: 'Unexpected error has occurred');
+  //   }
+  //   if (!mounted) {
+  //     return;
+  //   }
+
+  //   if (mounted) {
+  //     setState(() {
+  //       _scheduleUrl = scheduleUrl;
+  //     });
+  //   }
+  // }
 
   @override
   void initState() {
@@ -125,17 +169,19 @@ class _ScheduleState extends State<Schedule> {
                         fontSize: 24,
                       ),
                     ),
-                    Container(
-                      height: height * 2,
-                      child: curProfile['avatar_url'] != null
-                          ? Image.network(
-                              curProfile['avatar_url'],
-                              fit: BoxFit.cover,
-                            )
-                          : const Text(
-                              'This user has not uploaded their schedule yet'),
-                    ),
+                    if (curProfile != null)
+                      Container(
+                        height: height * 2,
+                        child: curProfile['schedule_url'] != null
+                            ? Image.network(
+                                curProfile['schedule_url'],
+                                fit: BoxFit.cover,
+                              )
+                            : const Text(
+                                'This user has not uploaded their schedule yet'),
+                      ),
                     ElevatedButton(
+                      // onPressed: _onUpload,
                       onPressed: () {},
                       child: Text('Upload ' + 'your schedule'),
                     )
@@ -213,20 +259,15 @@ class _ScheduleState extends State<Schedule> {
                           bottom: BorderSide(width: 3.0, color: clr3)),
                     ),
                     child: Center(
-                      child:
-                          // Text(
-                          //   'selected index: ${selectedIndex}\nexpandedID: row index: ${rowIndex}\nexpandedID: ${(expandedID == null) ? 'null' : expandedID}',
-                          // ),
-                          _accounts[selectedIndex]['avatar_url'] != null
-                              ? Image.network(
-                                  _accounts[selectedIndex]['avatar_url'],
-                                  // width: size,
-                                  // height: size,
-                                  fit: BoxFit.cover,
-                                )
-                              : const Text(
-                                  // 'selected index: ${selectedIndex}\nexpandedID: row index: ${rowIndex}\nexpandedID: ${(expandedID == null) ? 'null' : expandedID}',
-                                  'This user has not uploaded their schedule yet'),
+                      child: _accounts[selectedIndex]['schedule_url'] != null
+                          ? Image.network(
+                              _accounts[selectedIndex]['schedule_url'],
+                              // width: size,
+                              // height: size,
+                              fit: BoxFit.cover,
+                            )
+                          : const Text(
+                              'This user has not uploaded their schedule yet'),
                     )),
 
               GridView.count(
