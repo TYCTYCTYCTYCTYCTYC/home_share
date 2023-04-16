@@ -154,9 +154,7 @@ class _FridgeFormPageState extends State<FridgeFormPage> {
                     },
                     child: Text('Upload Image'),
                   ),
-                  uploadState
-                      ? Text("Upload Completed")
-                      : CircularProgressIndicator()
+                  if (uploadState) Text("Upload Completed"),
                 ],
               )),
       ],
