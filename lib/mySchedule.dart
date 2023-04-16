@@ -30,12 +30,50 @@ class _MyScheduleState extends State<MySchedule> {
           padding: const EdgeInsets.symmetric(vertical: 10),
           child: widget.imageUrl == null || widget.imageUrl!.isEmpty
               ? const Text('You have not uploaded your schedule yet')
-              : Container(
-                  height: height * 2,
+              : GestureDetector(
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (BuildContext dialogContext) {
+                        return Dialog(
+                          backgroundColor: Colors.transparent,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Expanded(
+                                child: SizedBox(
+                                  width:
+                                      MediaQuery.of(dialogContext).size.width,
+                                  height:
+                                      MediaQuery.of(dialogContext).size.height,
+                                  child: PhotoView(
+                                    imageProvider: NetworkImage(
+                                      widget.imageUrl!,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.pop(dialogContext);
+                                  },
+                                  child: Text('Close'),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    );
+                  },
                   child: Image.network(
                     widget.imageUrl!,
                     fit: BoxFit.cover,
-                  )),
+                  ),
+                ),
         ),
         widget.imageUrl == null || widget.imageUrl!.isEmpty
             ? Padding(
