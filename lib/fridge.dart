@@ -53,8 +53,9 @@ class _FridgeState extends State<Fridge> {
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 shrinkWrap: true,
-                itemCount: 15,
+                itemCount: _rowItems.length,
                 itemBuilder: (BuildContext context, int index) {
+                  final item = _rowItems[index];
                   return Container(
                       decoration: BoxDecoration(
                         color: Colors.green,
@@ -62,8 +63,12 @@ class _FridgeState extends State<Fridge> {
                       ),
                       child: Column(
                         children: [
-                          Text("This my photo"),
-                          Text("This my expiry date")
+                          Image.network(
+                            item['item_image_url'],
+                            fit: BoxFit.cover,
+                          ),
+                          Text(item['date_expiring']),
+                          // Text(item['description'])
                         ],
                       ));
                 },
@@ -218,14 +223,14 @@ class _FridgeState extends State<Fridge> {
   @override
   void initState() {
     super.initState();
-    _loadSharedPrefs();
+    loadDB();
+    // _loadSharedPrefs();
     _loadLocalTimeZone();
   }
 
   Future<void> loadDB() async {
     try {
       final currentUser = Supabase.instance.client.auth.currentUser;
-
       userId = currentUser?.id;
 
       //get home_id

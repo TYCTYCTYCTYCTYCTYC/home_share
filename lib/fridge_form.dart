@@ -27,10 +27,10 @@ class _FridgeFormPageState extends State<FridgeFormPage> {
   String? _description;
   String? _item_name;
   DateTime? _expiry_date;
-  File? _image;
+  // File? _image;
   late final userId;
   late final homeId;
-
+  late dynamic _imageUrl = null;
   static String supabaseURL = "https://mcedvwisatrnerrojfbe.supabase.co";
   static String supabaseKey =
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1jZWR2d2lzYXRybmVycm9qZmJlIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODA1NDExMjksImV4cCI6MTk5NjExNzEyOX0.zbYqEmU2OtBkl1B_qbQcaKOlPDMfD3UGP02I12ZE_a4";
@@ -79,68 +79,15 @@ class _FridgeFormPageState extends State<FridgeFormPage> {
     );
   }
 
-  // Function to pick an image from the gallery
-  Future<void> _pickImageFromGallery() async {
-    final pickedImage =
-        await ImagePicker().getImage(source: ImageSource.gallery);
-    if (pickedImage != null) {
-      _image = File(pickedImage.path);
-      await client.storage
-          .from("image")
-          .upload(pickedImage.path, _image!)
-          .then((value) {
-        print(value);
-        setState(() {
-          uploadState = true;
-        });
-      });
-    }
-  }
-
-  // Future<void> _uploadImage() async {
-  //   String url = "https://mcedvwisatrnerrojfbe.supabase.co";
-  //   var request = url;
-  //   request.files.add(await http.MultipartFile.fromPath(
-  //       'image', _image?.path)); // Add the image file to the request
-  //   var response = await request.send();
-  //   if (response.statusCode == 200) {
-  //     // Image uploaded successfully
-  //     print('Image uploaded successfully');
-  //   } else {
-  //     // Handle error
-  //     print('Failed to upload image');
-  //   }
-  // }
-
-  // // Function to upload the picked image to a server or storage service
-  // Future<void> uploadImageToSupabaseStorage(File imageFile) async {
-  //   try {
-  //     String fileName = DateTime.now()
-  //         .millisecondsSinceEpoch
-  //         .toString(); // Set a unique file name
-  //     String uploadPath =
-  //         'public/$fileName'; // Set the upload path in Supabase Storage
-  //     final storage = Supabase.instance.client.storage;
-  //     final response = await client.storage.from("image").upload(
-  //         imageFile.images.first.path,
-  //         imageFile); // Use the upload() method to upload the file
-  //     if (response.error == null) {
-  //       String downloadUrl = response.data?.url ?? '';
-  //       print('Image uploaded successfully. Download URL: $downloadUrl');
-  //     } else {
-  //       print('Error uploading image to Supabase Storage: ${response.error}');
-  //     }
-  //   } catch (error) {
-  //     print('Error uploading image to Supabase Storage: $error');
-  //   }
-  // }
-
   Widget _buildImageUploadField() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        _image != null
-            ? Image.file(_image!)
+        _imageUrl != null
+            ? Image.network(
+                _imageUrl,
+                fit: BoxFit.cover,
+              )
             : Container(
                 child: Column(
                 children: [
@@ -150,7 +97,7 @@ class _FridgeFormPageState extends State<FridgeFormPage> {
                       setState(() {
                         uploadState = false;
                       });
-                      _pickImageFromGallery();
+                      await _pickImageFromGallery();
                     },
                     child: Text('Upload Image'),
                   ),
@@ -160,6 +107,100 @@ class _FridgeFormPageState extends State<FridgeFormPage> {
       ],
     );
   }
+
+//   // Function to pick an image from the gallery
+//   Future<void> _pickImageFromGallery() async {
+//     final pickedImage =
+//         await ImagePicker().getImage(source: ImageSource.gallery);
+//     if (pickedImage != null) {
+//       _image = File(pickedImage.path);
+//       await client.storage
+//           .from("image")
+//           .upload(pickedImage.path, _image!)
+//           .then((value) {
+//         print(value);
+//         setState(() {
+//           uploadState = true;
+//         });
+//       });
+//     }
+//   }
+
+  Future<void> _pickImageFromGallery() async {
+    final picker = ImagePicker();
+    final imageFile = await picker.pickImage(
+      source: ImageSource.gallery,
+      // maxWidth: 300,
+      // maxHeight: 300,
+    );
+    if (imageFile == null) {
+      return;
+    }
+
+    try {
+      final bytes = await imageFile.readAsBytes();
+      final fileExt = imageFile.path.split('.').last;
+      final fileName = '${DateTime.now().toIso8601String()}.$fileExt';
+      final filePath = fileName;
+      await supabase.storage.from('image').uploadBinary(filePath, bytes,
+          fileOptions: FileOptions(contentType: imageFile.mimeType));
+      final imageUrlResponse = await supabase.storage
+          .from('image')
+          .createSignedUrl(filePath, 60 * 60 * 24 * 365 * 10);
+
+      setState(() {
+        _imageUrl = imageUrlResponse;
+      });
+    } on StorageException catch (error) {
+      if (mounted) {
+        //context.showErrorSnackBar(message: error.message);
+      }
+    } catch (error) {
+      if (mounted) {
+        //context.showErrorSnackBar(message: 'Unexpected error occurred');
+      }
+    }
+
+    setState(() {
+      uploadState = true;
+    });
+  }
+
+// Future<void> _pickImageFromGallery() async {
+//     final picker = ImagePicker();
+//     final imageFile = await picker.pickImage(
+//       source: ImageSource.gallery,
+//       // maxWidth: 300,
+//       // maxHeight: 300,
+//     );
+//     if (imageFile == null) {
+//       return;
+//     }
+
+//     try {
+//       final bytes = await imageFile.readAsBytes();
+//       final fileExt = imageFile.path.split('.').last;
+//       final fileName = '${DateTime.now().toIso8601String()}.$fileExt';
+//       final filePath = fileName;
+//       await supabase.storage.from('schedule').uploadBinary(
+//             filePath,
+//             bytes,
+//             fileOptions: FileOptions(contentType: imageFile.mimeType),
+//           );
+//       final imageUrlResponse = await supabase.storage
+//           .from('schedule')
+//           .createSignedUrl(filePath, 60 * 60 * 24 * 365 * 10);
+//       widget.onUpload(imageUrlResponse);
+//     } on StorageException catch (error) {
+//       if (mounted) {
+//         //context.showErrorSnackBar(message: error.message);
+//       }
+//     } catch (error) {
+//       if (mounted) {
+//         //context.showErrorSnackBar(message: 'Unexpected error occurred');
+//       }
+//     }
+//   }
 
   Widget _buildItemNameField() {
     return TextFormField(
@@ -220,20 +261,6 @@ class _FridgeFormPageState extends State<FridgeFormPage> {
         ));
   }
 
-  // Widget _buildEffortPointsField() {
-  //   return DropdownButtonFormField<int>(
-  //     decoration: const InputDecoration(labelText: 'Effort points'),
-  //     value: _effortPoints,
-  //     onChanged: (newValue) => setState(() => _effortPoints = newValue),
-  //     items: <int>[1, 2, 3].map<DropdownMenuItem<int>>((int value) {
-  //       return DropdownMenuItem<int>(
-  //         value: value,
-  //         child: Text(value.toString()),
-  //       );
-  //     }).toList(),
-  //   );
-  // }
-
   Widget _buildSubmitButton() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -242,7 +269,7 @@ class _FridgeFormPageState extends State<FridgeFormPage> {
         height: 50.0,
         child: ElevatedButton(
           onPressed: () async {
-            if ((_image == null) ||
+            if ((_imageUrl == null) ||
                 (_category?.isEmpty ?? true) ||
                 (_description?.isEmpty ?? true) ||
                 (_expiry_date == null) ||
@@ -259,8 +286,8 @@ class _FridgeFormPageState extends State<FridgeFormPage> {
                 ),
               );
             } else {
-              final currentUser = Supabase.instance.client.auth.currentUser;
-              final userId = currentUser?.id;
+              // final currentUser = Supabase.instance.client.auth.currentUser;
+              // final userId = currentUser?.id;
 
               final response = await supabase.from('fridge').insert({
                 'home_id': homeId,
@@ -268,7 +295,7 @@ class _FridgeFormPageState extends State<FridgeFormPage> {
                 'category': _category,
                 'item_name': _item_name,
                 'description': _description,
-                'item_image_url': _image?.path,
+                'item_image_url': _imageUrl,
                 'date_expiring': _expiry_date.toString().substring(0, 10),
               }).execute();
 
