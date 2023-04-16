@@ -45,10 +45,14 @@ class _OtherUserScheduleState extends State<OtherUserSchedule> {
   }
 
   void _saveNetworkImage() async {
-    String path = widget.account['schedule_url'];
-    GallerySaver.saveImage(path).then((success) {
-      showToast('Schedule downloaded successfully');
-    });
+    try {
+      String path = widget.account['schedule_url'];
+      GallerySaver.saveImage(path, toDcim: true).then((success) {
+        showToast('Schedule downloaded successfully');
+      });
+    } catch (error) {
+      log(123);
+    }
   }
 
   @override
