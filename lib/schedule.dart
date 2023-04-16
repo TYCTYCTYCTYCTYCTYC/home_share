@@ -9,6 +9,8 @@ import 'package:home_share/main.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:convert';
 
+import 'mySchedule.dart';
+
 Color clr = Color.fromARGB(255, 165, 198, 255);
 Color clr2 = Colors.white;
 Color clr3 = Colors.blueAccent;
@@ -63,47 +65,47 @@ class _ScheduleState extends State<Schedule> {
     });
   }
 
-  // Future<void> _onUpload(String scheduleUrl) async {
-  //   try {
-  //     final userId = supabase.auth.currentUser!.id;
-  //     await supabase.from('profiles').upsert({
-  //       'id': userId,
-  //       'schedule_url': scheduleUrl,
-  //     });
-  //     if (mounted) {
-  //       Fluttertoast.showToast(
-  //         msg: 'schedule image updated',
-  //         toastLength: Toast.LENGTH_SHORT,
-  //         gravity: ToastGravity.CENTER,
-  //         timeInSecForIosWeb: 1,
-  //         backgroundColor: Colors.amber,
-  //         textColor: Colors.black,
-  //         fontSize: 16.0,
-  //       );
-  //     }
-  //   } on PostgrestException catch (error) {
-  //     Fluttertoast.showToast(
-  //       msg: 'Error updating schedule image',
-  //       toastLength: Toast.LENGTH_SHORT,
-  //       gravity: ToastGravity.CENTER,
-  //       timeInSecForIosWeb: 1,
-  //       backgroundColor: Colors.amber,
-  //       textColor: Colors.black,
-  //       fontSize: 16.0,
-  //     );
-  //   } catch (error) {
-  //     //context.showErrorSnackBar(message: 'Unexpected error has occurred');
-  //   }
-  //   if (!mounted) {
-  //     return;
-  //   }
+  Future<void> _onUpload(String scheduleUrl) async {
+    try {
+      final userId = supabase.auth.currentUser!.id;
+      await supabase.from('profiles').upsert({
+        'id': userId,
+        'schedule_url': scheduleUrl,
+      });
+      if (mounted) {
+        Fluttertoast.showToast(
+          msg: 'schedule image updated',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.amber,
+          textColor: Colors.black,
+          fontSize: 16.0,
+        );
+      }
+    } on PostgrestException catch (error) {
+      Fluttertoast.showToast(
+        msg: 'Error updating schedule image',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.amber,
+        textColor: Colors.black,
+        fontSize: 16.0,
+      );
+    } catch (error) {
+      //context.showErrorSnackBar(message: 'Unexpected error has occurred');
+    }
+    if (!mounted) {
+      return;
+    }
 
-  //   if (mounted) {
-  //     setState(() {
-  //       _scheduleUrl = scheduleUrl;
-  //     });
-  //   }
-  // }
+    if (mounted) {
+      setState(() {
+        _scheduleUrl = scheduleUrl;
+      });
+    }
+  }
 
   @override
   void initState() {
@@ -181,10 +183,16 @@ class _ScheduleState extends State<Schedule> {
                                 'This user has not uploaded their schedule yet'),
                       ),
                     ElevatedButton(
-                      // onPressed: _onUpload,
                       onPressed: () {},
+                      // onPressed: () async {
+                      //   await _onUpload('scheduleUrl');
+                      // },
                       child: Text('Upload ' + 'your schedule'),
-                    )
+                    ),
+                    MySchedule(
+                      imageUrl: _scheduleUrl,
+                      onUpload: _onUpload,
+                    ),
                   ],
                 )),
               ),
