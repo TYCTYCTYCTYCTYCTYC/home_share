@@ -9,6 +9,9 @@ import 'package:home_share/main.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:convert';
 
+import 'mySchedule.dart';
+import 'otherUserSchedule.dart';
+
 Color clr = Color.fromARGB(255, 165, 198, 255);
 Color clr2 = Colors.white;
 Color clr3 = Colors.blueAccent;
@@ -33,82 +36,123 @@ class _ScheduleState extends State<Schedule> {
   int selectedIndex = 0;
   int rowIndex = 0;
   String? _scheduleUrl = null;
+  var _loading = false;
 
-  Future<void> loadDB() async {
-    final currentUser = Supabase.instance.client.auth.currentUser;
-    userId = currentUser?.id;
-
-    //get home_id
-    final response = await supabase
-        .from('user_home')
-        .select('home_id')
-        .eq('user_id', userId)
-        .single()
-        .execute();
-
-    final homeId = response.data['home_id'] as int;
-
-    final response2 = await supabase
-        .from('profiles')
-        .select('*, user_home!inner(*)')
-        .eq('user_home.home_id', homeId)
-        .execute();
-
+  Future<void> _getMySchedule() async {
     setState(() {
-      curProfile = response2.data
-          .firstWhere((account) => account['id'] == userId, orElse: () => null);
-      response2.data.removeWhere((account) => account['id'] == userId);
-
-      _accounts = response2.data as List<dynamic>;
+      _loading = true;
     });
+
+    try {
+      final userId = supabase.auth.currentUser!.id;
+      final data = await supabase
+          .from('profiles')
+          .select()
+          .eq('id', userId)
+          .single() as Map;
+
+      _scheduleUrl = (data['schedule_url'] ?? '') as String;
+    } on PostgrestException catch (error) {
+      Fluttertoast.showToast(
+        msg: 'Error',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.amber,
+        textColor: Colors.black,
+        fontSize: 16.0,
+      );
+    } catch (error) {
+      //context.showErrorSnackBar(message: 'Unexpected exception occurred');
+    }
+    if (mounted) {
+      setState(() {
+        _loading = false;
+      });
+    }
   }
 
-  // Future<void> _onUpload(String scheduleUrl) async {
-  //   try {
-  //     final userId = supabase.auth.currentUser!.id;
-  //     await supabase.from('profiles').upsert({
-  //       'id': userId,
-  //       'schedule_url': scheduleUrl,
-  //     });
-  //     if (mounted) {
-  //       Fluttertoast.showToast(
-  //         msg: 'schedule image updated',
-  //         toastLength: Toast.LENGTH_SHORT,
-  //         gravity: ToastGravity.CENTER,
-  //         timeInSecForIosWeb: 1,
-  //         backgroundColor: Colors.amber,
-  //         textColor: Colors.black,
-  //         fontSize: 16.0,
-  //       );
-  //     }
-  //   } on PostgrestException catch (error) {
-  //     Fluttertoast.showToast(
-  //       msg: 'Error updating schedule image',
-  //       toastLength: Toast.LENGTH_SHORT,
-  //       gravity: ToastGravity.CENTER,
-  //       timeInSecForIosWeb: 1,
-  //       backgroundColor: Colors.amber,
-  //       textColor: Colors.black,
-  //       fontSize: 16.0,
-  //     );
-  //   } catch (error) {
-  //     //context.showErrorSnackBar(message: 'Unexpected error has occurred');
-  //   }
-  //   if (!mounted) {
-  //     return;
-  //   }
+  Future<void> loadDB() async {
+    try {
+      final currentUser = Supabase.instance.client.auth.currentUser;
+      userId = currentUser?.id;
 
-  //   if (mounted) {
-  //     setState(() {
-  //       _scheduleUrl = scheduleUrl;
-  //     });
-  //   }
-  // }
+      //get home_id
+      final response = await supabase
+          .from('user_home')
+          .select('home_id')
+          .eq('user_id', userId)
+          .single()
+          .execute();
+
+      final homeId = response.data['home_id'] as int;
+
+      final response2 = await supabase
+          .from('profiles')
+          .select('*, user_home!inner(*)')
+          .eq('user_home.home_id', homeId)
+          .execute();
+
+      setState(() {
+        curProfile = response2.data.firstWhere(
+            (account) => account['id'] == userId,
+            orElse: () => null);
+        response2.data.removeWhere((account) => account['id'] == userId);
+
+        _accounts = response2.data as List<dynamic>;
+      });
+    } catch (error) {
+      //context.showErrorSnackBar(message: 'Unexpected error has occurred');
+    }
+  }
+
+  Future<void> _onUpload(String scheduleUrl) async {
+    try {
+      final userId = supabase.auth.currentUser!.id;
+      await supabase.from('profiles').upsert({
+        'id': userId,
+        'schedule_url': scheduleUrl,
+      });
+      if (mounted) {
+        Fluttertoast.showToast(
+          msg: 'schedule image updated',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.amber,
+          textColor: Colors.black,
+          fontSize: 16.0,
+        );
+      }
+    } on PostgrestException catch (error) {
+      Fluttertoast.showToast(
+        msg: 'Error updating schedule image',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.amber,
+        textColor: Colors.black,
+        fontSize: 16.0,
+      );
+    } catch (error) {
+      //context.showErrorSnackBar(message: 'Unexpected error has occurred');
+    }
+    if (!mounted) {
+      return;
+    }
+
+    if (mounted) {
+      setState(() {
+        _scheduleUrl = scheduleUrl;
+      });
+    }
+  }
 
   @override
   void initState() {
     super.initState();
     loadDB();
+    _getMySchedule();
   }
 
   @override
@@ -169,22 +213,31 @@ class _ScheduleState extends State<Schedule> {
                         fontSize: 24,
                       ),
                     ),
-                    if (curProfile != null)
-                      Container(
-                        height: height * 2,
-                        child: curProfile['schedule_url'] != null
-                            ? Image.network(
-                                curProfile['schedule_url'],
-                                fit: BoxFit.cover,
-                              )
-                            : const Text(
-                                'This user has not uploaded their schedule yet'),
-                      ),
-                    ElevatedButton(
-                      // onPressed: _onUpload,
-                      onPressed: () {},
-                      child: Text('Upload ' + 'your schedule'),
-                    )
+                    // if (curProfile != null)
+                    //   Padding(
+                    //     padding: EdgeInsets.symmetric(vertical: 20),
+                    //     child: Container(
+                    //       height: height * 2,
+                    //       child: curProfile['schedule_url'] != null
+                    //           ? Image.network(
+                    //               curProfile['schedule_url'],
+                    //               fit: BoxFit.cover,
+                    //             )
+                    //           : const Text(
+                    //               'This user has not uploaded their schedule yet'),
+                    //     ),
+                    //   ),
+                    // ElevatedButton(
+                    //   onPressed: () {},
+                    //   // onPressed: () async {
+                    //   //   await _onUpload('scheduleUrl');
+                    //   // },
+                    //   child: Text('Upload ' + 'your schedule'),
+                    // ),
+                    MySchedule(
+                      imageUrl: _scheduleUrl,
+                      onUpload: _onUpload,
+                    ),
                   ],
                 )),
               ),
@@ -204,20 +257,28 @@ class _ScheduleState extends State<Schedule> {
                 childAspectRatio: 0.75,
                 // mainAxisSpacing: 10.0,
                 crossAxisSpacing: 10.0,
-                children: accountsBefore.map((account) {
+                children: _accounts.map((account) {
                   return InkWell(
                       onTap: () {
                         setState(() {
-                          if (expandedID == null) {
-                            //if there isnt any expanded profile
-                            expandedID = account['id'];
-                          } else if (expandedID == account['id']) {
-                            //if clicking already expanded profile
-                            expandedID = null;
-                          } else {
-                            //else clicking on a profile when there is already an expanded profile
-                            expandedID = account['id'];
-                          }
+                          // if (expandedID == null) {
+                          //   //if there isnt any expanded profile
+                          //   expandedID = account['id'];
+                          // } else if (expandedID == account['id']) {
+                          //   //if clicking already expanded profile
+                          //   expandedID = null;
+                          // } else {
+                          //   //else clicking on a profile when there is already an expanded profile
+                          //   expandedID = account['id'];
+                          // }
+
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  OtherUserSchedule(account: account),
+                            ),
+                          );
                         });
                       },
                       child: DecoratedBox(
@@ -248,64 +309,63 @@ class _ScheduleState extends State<Schedule> {
                       ));
                 }).toList(),
               ),
-              //insert container here
-              if (expandedID != null)
-                Container(
-                    height: height * 2,
-                    decoration: BoxDecoration(
-                      color: clr,
-                      border: Border(
-                          top: BorderSide(width: 3.0, color: clr3),
-                          bottom: BorderSide(width: 3.0, color: clr3)),
-                    ),
-                    child: Center(
-                      child: _accounts[selectedIndex]['schedule_url'] != null
-                          ? Image.network(
-                              _accounts[selectedIndex]['schedule_url'],
-                              // width: size,
-                              // height: size,
-                              fit: BoxFit.cover,
-                            )
-                          : const Text(
-                              'This user has not uploaded their schedule yet'),
-                    )),
+              // //insert container here
+              // if (expandedID != null)
+              //   Container(
+              //       height: height * 2,
+              //       padding: EdgeInsets.symmetric(vertical: 20.0),
+              //       decoration: BoxDecoration(
+              //         color: clr,
+              //         border: Border(
+              //             top: BorderSide(width: 3.0, color: clr3),
+              //             bottom: BorderSide(width: 3.0, color: clr3)),
+              //       ),
+              //       child: Center(
+              //         child: _accounts[selectedIndex]['schedule_url'] != null
+              //             ? Image.network(
+              //                 _accounts[selectedIndex]['schedule_url'],
+              //                 fit: BoxFit.cover,
+              //               )
+              //             : const Text(
+              //                 'This user has not uploaded their schedule yet'),
+              //       )),
 
-              GridView.count(
-                padding: EdgeInsets.zero,
-                physics: ScrollPhysics(),
-                shrinkWrap: true,
-                crossAxisCount: 3,
-                childAspectRatio: 0.75,
-                // mainAxisSpacing: 10.0,
-                crossAxisSpacing: 10.0,
-                children: accountsAfter.map((account) {
-                  return InkWell(
-                    onTap: () {
-                      setState(() {
-                        if (expandedID == null) {
-                          //if there isnt any expanded profile
-                          expandedID = account['id'];
-                        } else if (expandedID == account['id']) {
-                          //if clicking already expanded profile
-                          expandedID = null;
-                        } else {
-                          //else clicking on a profile when there is already an expanded profile
-                          expandedID = account['id'];
-                        }
-                      });
-                    },
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.fromLTRB(0, 15, 0, 0),
-                          child: cropCircleImage(context, account, 3),
-                        ),
-                        Text(account['username']),
-                      ],
-                    ),
-                  );
-                }).toList(),
-              ),
+              // GridView.count(
+              //   padding: EdgeInsets.zero,
+              //   physics: ScrollPhysics(),
+              //   shrinkWrap: true,
+              //   crossAxisCount: 3,
+              //   childAspectRatio: 0.75,
+              //   // mainAxisSpacing: 10.0,
+              //   crossAxisSpacing: 10.0,
+              //   children: accountsAfter.map((account) {
+              //     return InkWell(
+              //       onTap: () {
+              //         // setState(() {
+              //         //   if (expandedID == null) {
+              //         //     //if there isnt any expanded profile
+              //         //     expandedID = account['id'];
+              //         //   } else if (expandedID == account['id']) {
+              //         //     //if clicking already expanded profile
+              //         //     expandedID = null;
+              //         //   } else {
+              //         //     //else clicking on a profile when there is already an expanded profile
+              //         //     expandedID = account['id'];
+              //         //   }
+              //         // });
+              //       },
+              //       child: Column(
+              //         children: [
+              //           Padding(
+              //             padding: EdgeInsets.fromLTRB(0, 15, 0, 0),
+              //             child: cropCircleImage(context, account, 3),
+              //           ),
+              //           Text(account['username']),
+              //         ],
+              //       ),
+              //     );
+              //   }).toList(),
+              // ),
             ],
           )),
         ));
