@@ -25,6 +25,7 @@ class OtherUserSchedule extends StatefulWidget {
 class _OtherUserScheduleState extends State<OtherUserSchedule> {
   late GlobalKey<ScaffoldState> _otherUserScheduleKey;
   late BuildContext _ancestorContext;
+  late BuildContext _dialogContext;
 
   @override
   void initState() {
@@ -36,7 +37,14 @@ class _OtherUserScheduleState extends State<OtherUserSchedule> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _ancestorContext = context;
+    _dialogContext = context;
+  }
+
+  @override
+  void dispose() {
+    // Use the saved reference to the dialog context to dismiss the dialog
+    Navigator.of(_dialogContext).pop();
+    super.dispose();
   }
 
   @override
@@ -104,22 +112,43 @@ class _OtherUserScheduleState extends State<OtherUserSchedule> {
                               ? GestureDetector(
                                   onTap: () {
                                     showDialog(
-                                      context: _ancestorContext,
+                                      context: context,
+                                      barrierDismissible: false,
                                       builder: (BuildContext dialogContext) {
                                         return Dialog(
                                           backgroundColor: Colors.transparent,
-                                          child: SizedBox(
-                                            width: MediaQuery.of(dialogContext)
-                                                .size
-                                                .width,
-                                            height: MediaQuery.of(dialogContext)
-                                                .size
-                                                .height,
-                                            child: PhotoView(
-                                              imageProvider: NetworkImage(
-                                                widget.account['schedule_url'],
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Expanded(
+                                                child: SizedBox(
+                                                  width: MediaQuery.of(
+                                                          dialogContext)
+                                                      .size
+                                                      .width,
+                                                  height: MediaQuery.of(
+                                                          dialogContext)
+                                                      .size
+                                                      .height,
+                                                  child: PhotoView(
+                                                    imageProvider: NetworkImage(
+                                                      widget.account[
+                                                          'schedule_url'],
+                                                    ),
+                                                  ),
+                                                ),
                                               ),
-                                            ),
+                                              SizedBox(
+                                                width: double.infinity,
+                                                child: ElevatedButton(
+                                                  onPressed: () {
+                                                    Navigator.pop(
+                                                        dialogContext);
+                                                  },
+                                                  child: Text('Close'),
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         );
                                       },
