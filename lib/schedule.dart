@@ -276,7 +276,7 @@ class _ScheduleState extends State<Schedule> {
                             context,
                             MaterialPageRoute(
                               builder: (context) =>
-                                  OtherUserSchedule(userId: account['id']),
+                                  OtherUserSchedule(account: account),
                             ),
                           );
                         });
