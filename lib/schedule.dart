@@ -36,34 +36,74 @@ class _ScheduleState extends State<Schedule> {
   int selectedIndex = 0;
   int rowIndex = 0;
   String? _scheduleUrl = null;
+  var _loading = false;
+
+  Future<void> _getMySchedule() async {
+    setState(() {
+      _loading = true;
+    });
+
+    try {
+      final userId = supabase.auth.currentUser!.id;
+      final data = await supabase
+          .from('profiles')
+          .select()
+          .eq('id', userId)
+          .single() as Map;
+
+      _scheduleUrl = (data['schedule_url'] ?? '') as String;
+    } on PostgrestException catch (error) {
+      Fluttertoast.showToast(
+        msg: 'Error',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.amber,
+        textColor: Colors.black,
+        fontSize: 16.0,
+      );
+    } catch (error) {
+      //context.showErrorSnackBar(message: 'Unexpected exception occurred');
+    }
+    if (mounted) {
+      setState(() {
+        _loading = false;
+      });
+    }
+  }
 
   Future<void> loadDB() async {
-    final currentUser = Supabase.instance.client.auth.currentUser;
-    userId = currentUser?.id;
+    try {
+      final currentUser = Supabase.instance.client.auth.currentUser;
+      userId = currentUser?.id;
 
-    //get home_id
-    final response = await supabase
-        .from('user_home')
-        .select('home_id')
-        .eq('user_id', userId)
-        .single()
-        .execute();
+      //get home_id
+      final response = await supabase
+          .from('user_home')
+          .select('home_id')
+          .eq('user_id', userId)
+          .single()
+          .execute();
 
-    final homeId = response.data['home_id'] as int;
+      final homeId = response.data['home_id'] as int;
 
-    final response2 = await supabase
-        .from('profiles')
-        .select('*, user_home!inner(*)')
-        .eq('user_home.home_id', homeId)
-        .execute();
+      final response2 = await supabase
+          .from('profiles')
+          .select('*, user_home!inner(*)')
+          .eq('user_home.home_id', homeId)
+          .execute();
 
-    setState(() {
-      curProfile = response2.data
-          .firstWhere((account) => account['id'] == userId, orElse: () => null);
-      response2.data.removeWhere((account) => account['id'] == userId);
+      setState(() {
+        curProfile = response2.data.firstWhere(
+            (account) => account['id'] == userId,
+            orElse: () => null);
+        response2.data.removeWhere((account) => account['id'] == userId);
 
-      _accounts = response2.data as List<dynamic>;
-    });
+        _accounts = response2.data as List<dynamic>;
+      });
+    } catch (error) {
+      //context.showErrorSnackBar(message: 'Unexpected error has occurred');
+    }
   }
 
   Future<void> _onUpload(String scheduleUrl) async {
@@ -112,6 +152,7 @@ class _ScheduleState extends State<Schedule> {
   void initState() {
     super.initState();
     loadDB();
+    _getMySchedule();
   }
 
   @override

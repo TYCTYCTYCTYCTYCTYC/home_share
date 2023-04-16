@@ -175,13 +175,14 @@ class _OtherUserScheduleState extends State<OtherUserSchedule> {
                 child: Center(
                     child: Column(
                   children: [
-                    const Text(
-                      'User Schedule',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 24,
+                    if (curProfile != null)
+                      Text(
+                        curProfile['username'] + '\'s Schedule',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 24,
+                        ),
                       ),
-                    ),
                     if (curProfile != null)
                       Padding(
                         padding: EdgeInsets.symmetric(vertical: 20),

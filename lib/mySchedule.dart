@@ -23,34 +23,41 @@ class _MyScheduleState extends State<MySchedule> {
 
   @override
   Widget build(BuildContext context) {
+    double height = MediaQuery.of(context).size.width / 5;
     return Column(
       children: [
-        SizedBox(
-          width: 150,
-          height: 150,
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10),
           child: widget.imageUrl == null || widget.imageUrl!.isEmpty
-              ? Container(
-                  color: Colors.amber,
-                  child: const Center(
-                    child: Text(
-                      'Update your schedule picture below',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
+              ? const Text('You have not uploaded your schedule yet')
+              : Container(
+                  height: height * 2,
+                  child: Image.network(
+                    widget.imageUrl!,
+                    fit: BoxFit.cover,
+                  )),
+        ),
+        widget.imageUrl == null || widget.imageUrl!.isEmpty
+            ? Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: ElevatedButton(
+                  onPressed: _isLoading ? null : _upload,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF103465),
                   ),
-                )
-              : Image.network(
-                  widget.imageUrl!,
-                  fit: BoxFit.cover,
+                  child: const Text('Upload Schedule'),
                 ),
-        ),
-        ElevatedButton(
-          onPressed: _isLoading ? null : _upload,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF103465),
-          ),
-          child: const Text('Upload'),
-        ),
+              )
+            : Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: ElevatedButton(
+                  onPressed: _isLoading ? null : _upload,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF103465),
+                  ),
+                  child: const Text('Update Schedule'),
+                ),
+              ),
       ],
     );
   }
