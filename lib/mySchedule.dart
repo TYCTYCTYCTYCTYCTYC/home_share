@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:home_share/main.dart';
+import 'package:photo_view/photo_view.dart';
 
 class MySchedule extends StatefulWidget {
   const MySchedule({
