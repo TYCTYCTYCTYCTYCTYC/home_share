@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:home_share/bulletin_board/bulletin_board.dart';
 import 'package:home_share/fridge.dart';
+import 'package:home_share/fridge_form.dart';
 import 'package:home_share/schedule.dart';
 import 'package:home_share/profile/profile.dart';
 import 'package:home_share/chores/main_chores_page.dart';
@@ -27,11 +28,10 @@ class _HomeState extends State<Home> {
   int _selectedIndex = 0;
   final screen = [
     const DashBoard(),
-    const Fridge(),
+    FridgeFormPage(),
     MainChoresPage(),
     const Schedule(),
     Profile(),
-
   ];
 
   @override
