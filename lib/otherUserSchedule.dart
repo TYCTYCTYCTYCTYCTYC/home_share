@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -6,6 +7,10 @@ import 'package:home_share/main.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:gallery_saver/gallery_saver.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import 'mySchedule.dart';
 
@@ -26,6 +31,25 @@ class _OtherUserScheduleState extends State<OtherUserSchedule> {
   late GlobalKey<ScaffoldState> _otherUserScheduleKey;
   late BuildContext _ancestorContext;
   late BuildContext _dialogContext;
+
+  void showToast(String message) {
+    Fluttertoast.showToast(
+      msg: message,
+      toastLength: Toast.LENGTH_LONG,
+      gravity: ToastGravity.BOTTOM,
+      timeInSecForIosWeb: 1,
+      backgroundColor: Colors.grey[600],
+      textColor: Colors.white,
+      fontSize: 16.0,
+    );
+  }
+
+  void _saveNetworkImage() async {
+    String path = widget.account['schedule_url'];
+    GallerySaver.saveImage(path).then((success) {
+      showToast('Schedule downloaded successfully');
+    });
+  }
 
   @override
   void initState() {
@@ -163,16 +187,13 @@ class _OtherUserScheduleState extends State<OtherUserSchedule> {
                                   'This user has not uploaded their schedule yet'),
                         ),
                       ),
-//                     if (widget.account != null)
-
-//                       ElevatedButton(
-//   onPressed: () async {
-//     var response = await http.get(Uri.parse('https://example.com/image.png'));
-//     var filePath = await ImagePickerSaver.saveFile(fileData: response.bodyBytes);
-//     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Image saved to gallery')));
-//   },
-//   child: Text('Download Image'),
-// );
+                    if (widget.account != null)
+                      ElevatedButton(
+                        onPressed: () async {
+                          _saveNetworkImage();
+                        },
+                        child: Text('Download Image'),
+                      )
                   ],
                 )),
               ),
