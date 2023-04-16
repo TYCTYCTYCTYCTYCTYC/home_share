@@ -28,6 +28,8 @@ class _FridgeFormPageState extends State<FridgeFormPage> {
   String? _item_name;
   DateTime? _expiry_date;
   File? _image;
+  late final userId;
+  late final homeId;
 
   static String supabaseURL = "https://mcedvwisatrnerrojfbe.supabase.co";
   static String supabaseKey =
@@ -37,6 +39,25 @@ class _FridgeFormPageState extends State<FridgeFormPage> {
   bool uploadState = false;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  Future<void> loadDB() async {
+    try {
+      final currentUser = Supabase.instance.client.auth.currentUser;
+      userId = currentUser?.id;
+
+      //get home_id
+      final response = await supabase
+          .from('user_home')
+          .select('home_id')
+          .eq('user_id', userId)
+          .single()
+          .execute();
+
+      homeId = response.data['home_id'] as int;
+    } catch (error) {
+      //context.showErrorSnackBar(message: 'Unexpected error has occurred');
+    }
+  }
 
   Widget _buildCategoryField() {
     return DropdownButtonFormField<String>(
@@ -57,7 +78,6 @@ class _FridgeFormPageState extends State<FridgeFormPage> {
       }).toList(),
     );
   }
-
 
   // Function to pick an image from the gallery
   Future<void> _pickImageFromGallery() async {
@@ -245,6 +265,7 @@ class _FridgeFormPageState extends State<FridgeFormPage> {
               final userId = currentUser?.id;
 
               final response = await supabase.from('fridge').insert({
+                'home_id': homeId,
                 'user_id': userId,
                 'category': _category,
                 'item_name': _item_name,
@@ -296,6 +317,12 @@ class _FridgeFormPageState extends State<FridgeFormPage> {
         ),
       ),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    loadDB();
   }
 
   @override

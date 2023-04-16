@@ -32,7 +32,7 @@ dependencies:
     sdk: flutter
   flutter_launcher_icons: ^0.12.0
   http: any
-  shape_of_view: ^1.0.2
+  shape_of_view_null_safe: ^2.0.0
   
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

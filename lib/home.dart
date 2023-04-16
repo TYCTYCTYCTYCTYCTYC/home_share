@@ -28,7 +28,7 @@ class _HomeState extends State<Home> {
   int _selectedIndex = 0;
   final screen = [
     const DashBoard(),
-    FridgeFormPage(),
+    Fridge(),
     MainChoresPage(),
     const Schedule(),
     Profile(),
