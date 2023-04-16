@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:shape_of_view_null_safe/shape_of_view_null_safe.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
@@ -27,13 +28,228 @@ class _FridgeState extends State<Fridge> {
   String dropdownValue = "Expiry (Earliest)";
   List<FridgeItem> items = [];
   DateTime selectedDate = DateTime.now();
+  late final userId;
+  List<dynamic> _rowItems = [];
   int _counter = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: "HomeShare",
+      home: Scaffold(
+        backgroundColor: bgclr,
+        body: SingleChildScrollView(
+            child: Column(
+          children: [
+            Container(
+              height: MediaQuery.of(context).size.width / 5,
+              child: Center(
+                child: Text("Type of Item"),
+              ),
+            ),
+            SizedBox(
+              height: 150,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                shrinkWrap: true,
+                itemCount: 15,
+                itemBuilder: (BuildContext context, int index) {
+                  return Container(
+                      decoration: BoxDecoration(
+                        color: Colors.green,
+                        border: Border.all(width: 3),
+                      ),
+                      child: Column(
+                        children: [
+                          Text("This my photo"),
+                          Text("This my expiry date")
+                        ],
+                      ));
+                },
+              ),
+            ),
+            Padding(
+                padding: EdgeInsets.symmetric(vertical: 16.0),
+                child: Column(children: [
+                  Container(
+                    child: Center(
+                      child: Text("Type of Item"),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 100,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      shrinkWrap: true,
+                      itemCount: 15,
+                      itemBuilder: (BuildContext context, int index) {
+                        return Container(
+                            decoration: BoxDecoration(
+                              color: Colors.green,
+                              border: Border.all(width: 3),
+                            ),
+                            child: Column(
+                              children: [
+                                Text("This my photo"),
+                                Text("This my expiry date")
+                              ],
+                            ));
+                      },
+                    ),
+                  ),
+                  Padding(
+                      padding: EdgeInsets.symmetric(vertical: 16.0),
+                      child: Column(children: [
+                        Container(
+                          child: Center(
+                            child: Text("Type of Item"),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 100,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            shrinkWrap: true,
+                            itemCount: 15,
+                            itemBuilder: (BuildContext context, int index) {
+                              return Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.green,
+                                    border: Border.all(width: 3),
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      Text("This my photo"),
+                                      Text("This my expiry date")
+                                    ],
+                                  ));
+                            },
+                          ),
+                        ),
+                        Padding(
+                            padding: EdgeInsets.symmetric(vertical: 16.0),
+                            child: Column(children: [
+                              Container(
+                                child: Center(
+                                  child: Text("Type of Item"),
+                                ),
+                              ),
+                              SizedBox(
+                                height: 100,
+                                child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  shrinkWrap: true,
+                                  itemCount: 15,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    return Container(
+                                        decoration: BoxDecoration(
+                                          color: Colors.green,
+                                          border: Border.all(width: 3),
+                                        ),
+                                        child: Column(
+                                          children: [
+                                            Text("This my photo"),
+                                            Text("This my expiry date")
+                                          ],
+                                        ));
+                                  },
+                                ),
+                              ),
+                              Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 16.0),
+                                  child: Column(children: [
+                                    Container(
+                                      child: Center(
+                                        child: Text("Type of Item"),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 100,
+                                      child: ListView.builder(
+                                        scrollDirection: Axis.horizontal,
+                                        shrinkWrap: true,
+                                        itemCount: 15,
+                                        itemBuilder:
+                                            (BuildContext context, int index) {
+                                          return Container(
+                                              decoration: BoxDecoration(
+                                                color: Colors.green,
+                                                border: Border.all(width: 3),
+                                              ),
+                                              child: Column(
+                                                children: [
+                                                  Text("This my photo"),
+                                                  Text("This my expiry date")
+                                                ],
+                                              ));
+                                        },
+                                      ),
+                                    ),
+                                  ]))
+                            ]))
+                      ]))
+                ])),
+          ],
+        )),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            // Navigate to FridgeFormPage
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => FridgeFormPage()),
+            );
+          },
+          backgroundColor: Colors.amber,
+          child: const Text(
+            '+',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+              fontSize: 24.0,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 
   @override
   void initState() {
     super.initState();
     _loadSharedPrefs();
     _loadLocalTimeZone();
+  }
+
+  Future<void> loadDB() async {
+    try {
+      final currentUser = Supabase.instance.client.auth.currentUser;
+
+      userId = currentUser?.id;
+
+      //get home_id
+      final response = await supabase
+          .from('user_home')
+          .select('home_id')
+          .eq('user_id', userId)
+          .single()
+          .execute();
+
+      final homeId = response.data['home_id'] as int;
+
+      final response2 = await supabase
+          .from('fridge')
+          .select('*')
+          .eq('home_id', homeId)
+          .execute();
+
+      setState(() {
+        _rowItems = response2.data as List<dynamic>;
+      });
+    } catch (error) {
+      //context.showErrorSnackBar(message: 'Unexpected error has occurred');
+    }
   }
 
   Future<void> _loadLocalTimeZone() async {
@@ -311,243 +527,6 @@ class _FridgeState extends State<Fridge> {
     if (!asc) {
       items = items.reversed.toList();
     }
-  }
-
-  /*
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: "HomeShare",
-        home: Scaffold(
-          appBar: AppBar(),
-          backgroundColor: bgclr,
-          body: Container(
-              //code here
-              child: Center(
-                  child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              const Text(
-                'Fridge Page',
-              ),
-              Text(
-                '$_counter',
-                style: Theme.of(context).textTheme.headline4,
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    _counter++;
-                  });
-                },
-                child: Text('Click me!'),
-              ),
-            ],
-          ))),
-        ));
-  }
-  */
-
-  @override
-  Widget build(BuildContext context) {
-    var topHeight = MediaQuery.of(context).size.height * 4 / 10;
-    return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: "HomeShare",
-        home: Scaffold(
-          backgroundColor: bgclr,
-          resizeToAvoidBottomInset: true,
-          body: SafeArea(
-            child: Stack(
-              children: [
-                Container(
-                  height: topHeight,
-                  width: MediaQuery.of(context).size.width,
-                  // alignment: Alignment.centerLeft,
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 20,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        height: 30,
-                      ),
-                      Text(
-                        "Hi Sidak",
-                        style: TextStyle(
-                          fontSize: 36.0,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.white,
-                        ),
-                      ),
-                      SizedBox(
-                        height: 30,
-                      ),
-                      Text(
-                        "Your Fridge Items",
-                        style: TextStyle(
-                          fontSize: 20.0,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.white,
-                        ),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Expanded(
-                        child: Container(
-                          padding: EdgeInsets.all(12),
-                          // color: Colors.white,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              _infoColumn("Total", items.length.toString(),
-                                  Colors.blue),
-                              _infoColumn(
-                                  "Valid",
-                                  (items.length - _getExpiredItemCount())
-                                      .toString(),
-                                  Colors.green),
-                              _infoColumn(
-                                  "Expired",
-                                  _getExpiredItemCount().toString(),
-                                  Colors.red),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  margin: EdgeInsets.only(top: topHeight - 10),
-                  height: MediaQuery.of(context).size.height - topHeight,
-                  width: MediaQuery.of(context).size.width,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(40.0),
-                    ),
-                    color: Colors.white,
-                  ),
-                  padding: EdgeInsets.all(24),
-                  child: Column(
-                    children: [
-                      Expanded(
-                        flex: 1,
-                        child: Container(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "Item List",
-                                style: TextStyle(
-                                  fontSize: 24.0,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              DropdownButtonHideUnderline(
-                                child: ButtonTheme(
-                                  alignedDropdown: true,
-                                  child: DropdownButton<String>(
-                                      icon: Icon(Icons.sort),
-                                      value: dropdownValue,
-                                      items: <String>[
-                                        'Expiry (Earliest)',
-                                        'Expiry (Latest)',
-                                        'Name (Ascending)',
-                                        'Name (Descending)'
-                                      ].map<DropdownMenuItem<String>>(
-                                          (String value) {
-                                        return DropdownMenuItem<String>(
-                                          value: value,
-                                          child: Text(
-                                            value,
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                            ),
-                                          ),
-                                        );
-                                      }).toList(),
-                                      onChanged: (String? newValue) {
-                                        setState(() {
-                                          dropdownValue = newValue ??
-                                              ""; // Use a default value if null
-                                          _sortItems();
-                                        });
-                                      }),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        flex: 4,
-                        child: ListView.separated(
-                          itemCount: items.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            FridgeItem item = items[index];
-                            return ListTile(
-                              leading: ShapeOfView(
-                                shape: CircleShape(),
-                                elevation: 0,
-                                child: item.imageUrl != null
-                                    ? Image.network(
-                                        item.imageUrl!,
-                                        height: 50,
-                                        width: 50,
-                                        fit: BoxFit.fitHeight,
-                                      )
-                                    : Image.asset(
-                                        "images/food.png",
-                                        height: 50,
-                                        width: 50,
-                                        fit: BoxFit.fitHeight,
-                                      ),
-                              ),
-                              title: Text(item.name!),
-                              subtitle: Text(DateFormat('dd MMM yyyy')
-                                  .format(item.dateExpiring!)),
-                              trailing: IconButton(
-                                icon: Icon(Icons.delete),
-                                onPressed: () {
-                                  _deleteItem(index);
-                                },
-                              ),
-                            );
-                          },
-                          separatorBuilder: (BuildContext context, int index) =>
-                              const Divider(),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              // Navigate to ChoreFormPage
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => FridgeFormPage()),
-              );
-            },
-            backgroundColor: Colors.amber,
-            child: const Text(
-              '+',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-                fontSize: 24.0,
-              ),
-            ),
-          ),
-        ));
   }
 }
   // @override
