@@ -31,6 +31,22 @@ class _FridgeState extends State<Fridge> {
   late final userId;
   List<dynamic> _rowItems = [];
   int _counter = 0;
+  List<String> categories = ['Meat', 'Vegetable', 'Beverage', 'Food', 'Fruit'];
+
+  String getExpiryStatus(String dateStr) {
+    DateTime expiryDate = DateTime.parse(dateStr);
+    DateTime now = DateTime.now();
+
+    final diff = expiryDate.difference(now).inDays;
+
+    if (diff == 0) {
+      return 'Will Expire Today';
+    } else if (diff < 0) {
+      return 'Expired ${-diff} days ago';
+    } else {
+      return 'Will Expire in $diff days';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,166 +57,63 @@ class _FridgeState extends State<Fridge> {
         backgroundColor: bgclr,
         body: SingleChildScrollView(
             child: Column(
-          children: [
-            Container(
-              height: MediaQuery.of(context).size.width / 5,
-              child: Center(
-                child: Text("Type of Item"),
-              ),
-            ),
-            SizedBox(
-              height: 150,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                shrinkWrap: true,
-                itemCount: _rowItems.length,
-                itemBuilder: (BuildContext context, int index) {
-                  final item = _rowItems[index];
-                  return Container(
-                      decoration: BoxDecoration(
-                        color: Colors.green,
-                        border: Border.all(width: 3),
-                      ),
-                      child: Column(
-                        children: [
-                          Image.network(
-                            item['item_image_url'],
-                            fit: BoxFit.cover,
-                          ),
-                          Text(item['date_expiring']),
-                          // Text(item['description'])
-                        ],
-                      ));
-                },
-              ),
-            ),
-            Padding(
-                padding: EdgeInsets.symmetric(vertical: 16.0),
-                child: Column(children: [
-                  Container(
-                    child: Center(
-                      child: Text("Type of Item"),
-                    ),
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: List.generate(
+            categories.length,
+            (index) => Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  height: MediaQuery.of(context).size.width / 5,
+                  child: Center(
+                    child: Text(categories[index]),
                   ),
-                  SizedBox(
-                    height: 100,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      shrinkWrap: true,
-                      itemCount: 15,
-                      itemBuilder: (BuildContext context, int index) {
-                        return Container(
-                            decoration: BoxDecoration(
-                              color: Colors.green,
-                              border: Border.all(width: 3),
-                            ),
-                            child: Column(
-                              children: [
-                                Text("This my photo"),
-                                Text("This my expiry date")
-                              ],
-                            ));
-                      },
-                    ),
+                ),
+                SizedBox(
+                  height: MediaQuery.of(context).size.height / 3,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    shrinkWrap: true,
+                    itemCount: _rowItems
+                        .where((item) => item['category'] == categories[index])
+                        .toList()
+                        .length,
+                    itemBuilder: (BuildContext context, int index1) {
+                      List<dynamic> sortItems = _rowItems
+                          .where(
+                              (item) => item['category'] == categories[index])
+                          .toList();
+                      sortItems.sort((a, b) =>
+                          a['date_expiring'].compareTo(b['date_expiring']));
+                      final item = sortItems[index1];
+                      return Container(
+                          decoration: BoxDecoration(
+                            color: Colors.green,
+                            border: Border.all(width: 3),
+                          ),
+                          child: Column(
+                            children: [
+                              // SizedBox(
+                              //   width: 200,
+                              //   height: 300,
+                              //   child: Image.network(
+                              //     item['item_image_url'],
+                              //     fit: BoxFit.contain,
+                              //   ),
+                              // ),
+                              Text(getExpiryStatus(item['date_expiring']))
+                            ],
+                          ));
+                    },
                   ),
-                  Padding(
-                      padding: EdgeInsets.symmetric(vertical: 16.0),
-                      child: Column(children: [
-                        Container(
-                          child: Center(
-                            child: Text("Type of Item"),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 100,
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            shrinkWrap: true,
-                            itemCount: 15,
-                            itemBuilder: (BuildContext context, int index) {
-                              return Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.green,
-                                    border: Border.all(width: 3),
-                                  ),
-                                  child: Column(
-                                    children: [
-                                      Text("This my photo"),
-                                      Text("This my expiry date")
-                                    ],
-                                  ));
-                            },
-                          ),
-                        ),
-                        Padding(
-                            padding: EdgeInsets.symmetric(vertical: 16.0),
-                            child: Column(children: [
-                              Container(
-                                child: Center(
-                                  child: Text("Type of Item"),
-                                ),
-                              ),
-                              SizedBox(
-                                height: 100,
-                                child: ListView.builder(
-                                  scrollDirection: Axis.horizontal,
-                                  shrinkWrap: true,
-                                  itemCount: 15,
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    return Container(
-                                        decoration: BoxDecoration(
-                                          color: Colors.green,
-                                          border: Border.all(width: 3),
-                                        ),
-                                        child: Column(
-                                          children: [
-                                            Text("This my photo"),
-                                            Text("This my expiry date")
-                                          ],
-                                        ));
-                                  },
-                                ),
-                              ),
-                              Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 16.0),
-                                  child: Column(children: [
-                                    Container(
-                                      child: Center(
-                                        child: Text("Type of Item"),
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      height: 100,
-                                      child: ListView.builder(
-                                        scrollDirection: Axis.horizontal,
-                                        shrinkWrap: true,
-                                        itemCount: 15,
-                                        itemBuilder:
-                                            (BuildContext context, int index) {
-                                          return Container(
-                                              decoration: BoxDecoration(
-                                                color: Colors.green,
-                                                border: Border.all(width: 3),
-                                              ),
-                                              child: Column(
-                                                children: [
-                                                  Text("This my photo"),
-                                                  Text("This my expiry date")
-                                                ],
-                                              ));
-                                        },
-                                      ),
-                                    ),
-                                  ]))
-                            ]))
-                      ]))
-                ])),
-          ],
+                ),
+              ],
+            ),
+          ),
         )),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            // Navigate to FridgeFormPage
+// Navigate to FridgeFormPage
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => FridgeFormPage()),
