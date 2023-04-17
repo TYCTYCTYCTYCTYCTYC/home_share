@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:math';
+import 'dart:typed_data';
 
+import 'package:dio/dio.dart' as dio;
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:home_share/main.dart';
@@ -10,7 +12,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:gallery_saver/gallery_saver.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
@@ -41,15 +43,12 @@ class _OtherUserScheduleState extends State<OtherUserSchedule> {
     try {
       var response = await http.get(Uri.parse(imageUrl));
       if (response.statusCode == 200) {
-        var directory = await getExternalStorageDirectory();
-        var path = directory!.path.replaceFirst(
-          RegExp('/Android/data/com.example.home_share/files\$'),
-          '/Download',
-        );
-
-        var filePath = '${path}/${widget.account['username']}Schedule.jpg';
-        File file = File(filePath);
-        await file.writeAsBytes(response.bodyBytes);
+        var response = await dio.Dio().get(imageUrl,
+            options: dio.Options(responseType: dio.ResponseType.bytes));
+        final result = await ImageGallerySaver.saveImage(
+            Uint8List.fromList(response.data),
+            quality: 60,
+            name: "${widget.account['username']}Schedule.jpg");
         Fluttertoast.showToast(msg: 'Image downloaded successfully!');
       } else {
         Fluttertoast.showToast(msg: 'Failed to download image!');
@@ -218,7 +217,8 @@ class _OtherUserScheduleState extends State<OtherUserSchedule> {
                                   'This user has not uploaded their schedule yet'),
                         ),
                       ),
-                    if (widget.account != null)
+                    if (widget.account != null &&
+                        widget.account['schedule_url'] != null)
                       ElevatedButton(
                         onPressed: () async {
                           // _saveNetworkImage();
