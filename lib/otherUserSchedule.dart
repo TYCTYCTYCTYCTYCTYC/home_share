@@ -12,6 +12,11 @@ import 'package:gallery_saver/gallery_saver.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:path/path.dart' as path;
+
 import 'mySchedule.dart';
 
 Color clr = Color.fromARGB(255, 165, 198, 255);
@@ -31,6 +36,28 @@ class _OtherUserScheduleState extends State<OtherUserSchedule> {
   late GlobalKey<ScaffoldState> _otherUserScheduleKey;
   late BuildContext _ancestorContext;
   late BuildContext _dialogContext;
+
+  Future<void> downloadImage(String imageUrl) async {
+    try {
+      var response = await http.get(Uri.parse(imageUrl));
+      if (response.statusCode == 200) {
+        var directory = await getExternalStorageDirectory();
+        var path = directory!.path.replaceFirst(
+          RegExp('/Android/data/com.example.home_share/files\$'),
+          '/Download',
+        );
+
+        var filePath = '${path}/${widget.account['username']}Schedule.jpg';
+        File file = File(filePath);
+        await file.writeAsBytes(response.bodyBytes);
+        Fluttertoast.showToast(msg: 'Image downloaded successfully!');
+      } else {
+        Fluttertoast.showToast(msg: 'Failed to download image!');
+      }
+    } catch (e) {
+      Fluttertoast.showToast(msg: 'Error downloading image: $e');
+    }
+  }
 
   void showToast(String message) {
     Fluttertoast.showToast(
@@ -194,7 +221,8 @@ class _OtherUserScheduleState extends State<OtherUserSchedule> {
                     if (widget.account != null)
                       ElevatedButton(
                         onPressed: () async {
-                          _saveNetworkImage();
+                          // _saveNetworkImage();
+                          downloadImage(widget.account['schedule_url']);
                         },
                         child: Text('Download Image'),
                       )
