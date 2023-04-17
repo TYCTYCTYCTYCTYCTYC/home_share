@@ -47,10 +47,10 @@ class _OtherUserScheduleState extends State<OtherUserSchedule> {
             name: "${widget.account['username']}Schedule.jpg");
         Fluttertoast.showToast(msg: 'Image downloaded successfully!');
       } else {
-        Fluttertoast.showToast(msg: 'Failed to download image!');
+        Fluttertoast.showToast(msg: 'Failed to download schedule!');
       }
     } catch (e) {
-      Fluttertoast.showToast(msg: 'Error downloading image: $e');
+      Fluttertoast.showToast(msg: 'Error downloading schedule: $e');
     }
   }
 
@@ -212,7 +212,7 @@ class _OtherUserScheduleState extends State<OtherUserSchedule> {
                         onPressed: () async {
                           downloadImage(widget.account['schedule_url']);
                         },
-                        child: const Text('Download Image'),
+                        child: const Text('Download Schedule'),
                       )
                   ],
                 )),
