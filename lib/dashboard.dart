@@ -9,6 +9,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:home_share/bulletin_board/bulletin_board.dart';
 import 'package:home_share/chores/chores.dart';
 
+import 'fridge_item_detail.dart';
+
 class DashBoard extends StatefulWidget {
   const DashBoard({Key? key}) : super(key: key);
 
@@ -30,16 +32,60 @@ class _DashBoardState extends State<DashBoard> with WidgetsBindingObserver {
   int highestChorePoints = 0;
   String highestChoreUsername = '';
   dynamic profileSchedule = null;
+  List<dynamic> _rowItems = [];
 
   @override
   void initState() {
     super.initState();
     myFunction();
-
+    loadDB();
     fetchAndSetBulletin();
     getChoreStatistics();
     getLeaderboardStatics();
     retrieveMySchedule();
+  }
+
+  String getExpiryStatus(String dateStr) {
+    DateTime expiryDate = DateTime.parse(dateStr);
+    DateTime now = DateTime.now();
+
+    final diff = expiryDate.difference(now).inDays;
+
+    if (diff == 0) {
+      return 'Will Expire Today';
+    } else if (diff < 0) {
+      return 'Expired ${-diff} days ago';
+    } else {
+      return 'Will Expire in $diff days';
+    }
+  }
+
+  Color getColorBasedOnExpiry(String dateStr) {
+    String expiryStatus = getExpiryStatus(dateStr);
+
+    if (expiryStatus.contains('Will Expire Today')) {
+      return Colors.black;
+    } else if (expiryStatus.contains('days ago')) {
+      return Colors.white;
+    } else if (expiryStatus.contains('Will Expire in')) {
+      return Colors.white;
+    } else {
+      // Return a default color if no matching pattern is found
+      return Colors.black;
+    }
+  }
+
+  Color getBackgroundColor(String dateStr) {
+    String expiryStatus = getExpiryStatus(dateStr);
+    if (expiryStatus.contains('Will Expire Today')) {
+      return Colors.yellow;
+    } else if (expiryStatus.contains('days ago')) {
+      return Colors.red;
+    } else if (expiryStatus.contains('Will Expire in')) {
+      return Color.fromARGB(255, 17, 169, 27);
+    } else {
+      return Colors.transparent; // or any other default color
+    }
   }
 
   @override
@@ -82,6 +128,43 @@ class _DashBoardState extends State<DashBoard> with WidgetsBindingObserver {
       setState(() {
         _bulletinBoardMessages = bulletins;
       });
+    }
+  }
+
+  Future<void> loadDB() async {
+    try {
+      final currentUser = Supabase.instance.client.auth.currentUser;
+      final userId = currentUser?.id;
+
+      // Get home_id
+      final response = await supabase
+          .from('user_home')
+          .select('home_id')
+          .eq('user_id', userId)
+          .single()
+          .execute();
+
+      final homeId = response.data['home_id'] as int;
+
+      // Get fridge items with ascending date_expiring and filter by date that is today or after today
+      final now = DateTime.now()
+          .toIso8601String()
+          .substring(0, 10); // Get today's date in ISO 8601 format
+      final response2 = await supabase
+          .from('fridge')
+          .select('*')
+          .eq('home_id', homeId)
+          .gte('date_expiring',
+              now) // Filter by date that is today or after today
+          .order('date_expiring',
+              ascending: true) // Sort by date_expiring in ascending order
+          .execute();
+
+      setState(() {
+        _rowItems = response2.data as List<dynamic>;
+      });
+    } catch (error) {
+      //context.showErrorSnackBar(message: 'Unexpected error has occurred');
     }
   }
 
@@ -341,55 +424,85 @@ class _DashBoardState extends State<DashBoard> with WidgetsBindingObserver {
                         border: Border.all(
                             color: const Color(0xFF103465), width: 4.0),
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  const Icon(
-                                    Icons.kitchen_outlined,
-                                    size: 30,
-                                    color: Colors.amber,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        shrinkWrap: true,
+                        itemCount: _rowItems.length,
+                        itemBuilder: (BuildContext context, int index1) {
+                          final item = _rowItems[index1];
+                          return Padding(
+                            padding: EdgeInsets.only(right: 10.0),
+                            child: GestureDetector(
+                              onTap: () {
+                                // Navigate to subpage and pass item description as arguments
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        FridgeItemDetail(item: item),
                                   ),
-                                  const SizedBox(width: 5),
-                                  Text(
-                                    'Fridge',
-                                    style: GoogleFonts.arvo(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                );
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(
+                                      color: const Color(0xFF103465),
+                                      width: 4.0),
+                                ),
+                                child: Padding(
+                                  padding: EdgeInsets.all(10),
+                                  child: Stack(
+                                    children: [
+                                      Column(
+                                        children: [
+                                          Image.network(
+                                            item['item_image_url'],
+                                            width: 150,
+                                            height: 150,
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.symmetric(
+                                                vertical: 15.0),
+                                            child: Container(
+                                              child: Text(
+                                                item['item_name'],
+                                                style: GoogleFonts.arvo(
+                                                  fontSize: 16,
+                                                  color: Colors.black,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.symmetric(
+                                                vertical: 10.0),
+                                            child: Container(
+                                              child: Text(
+                                                getExpiryStatus(
+                                                    item['date_expiring']),
+                                                style: GoogleFonts.arvo(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w500,
+                                                  color: getColorBasedOnExpiry(
+                                                      item['date_expiring']),
+                                                  backgroundColor:
+                                                      getBackgroundColor(item[
+                                                          'date_expiring']),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      )
+                                    ],
                                   ),
-                                ],
-                              ),
-                              GestureDetector(
-                                onTap: () {},
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: const [
-                                    Text(
-                                      'See More',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.amber,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    Icon(
-                                      Icons.arrow_forward_ios,
-                                      size: 16,
-                                      color: Colors.amber,
-                                    ),
-                                  ],
                                 ),
                               ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                          const Text('put your content here'),
-                        ],
+                            ),
+                          );
+                        },
                       ),
                     ),
                     const SizedBox(height: 30),
@@ -492,7 +605,7 @@ class _DashBoardState extends State<DashBoard> with WidgetsBindingObserver {
                               ),
                               const SizedBox(width: 20),
                               Container(
-                                  width: 230,
+                                  width: 190,
                                   child: choreStatistics.isEmpty
                                       ? Visibility(
                                           visible: choreStatistics.isEmpty,
