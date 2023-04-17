@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:home_share/home.dart';
 import 'package:home_share/main.dart';
+import 'package:photo_view/photo_view.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
@@ -28,6 +29,7 @@ class _DashBoardState extends State<DashBoard> with WidgetsBindingObserver {
   String choreStatistics = '';
   int highestChorePoints = 0;
   String highestChoreUsername = '';
+  dynamic profileSchedule = null;
 
   @override
   void initState() {
@@ -37,6 +39,7 @@ class _DashBoardState extends State<DashBoard> with WidgetsBindingObserver {
     fetchAndSetBulletin();
     getChoreStatistics();
     getLeaderboardStatics();
+    retrieveMySchedule();
   }
 
   @override
@@ -184,6 +187,27 @@ class _DashBoardState extends State<DashBoard> with WidgetsBindingObserver {
     return bulletins;
   }
 
+  Future<void> retrieveMySchedule() async {
+    try {
+      final currentUser = Supabase.instance.client.auth.currentUser;
+      final userId = currentUser?.id;
+
+      //get home_id
+      final response = await supabase
+          .from('profiles')
+          .select()
+          .eq('id', userId)
+          .single()
+          .execute();
+
+      setState(() {
+        profileSchedule = response.data;
+      });
+    } catch (error) {
+      //context.showErrorSnackBar(message: 'Unexpected error has occurred');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -192,6 +216,7 @@ class _DashBoardState extends State<DashBoard> with WidgetsBindingObserver {
                 padding: const EdgeInsets.all(20.0),
                 child: Column(
                   children: [
+                    //home name
                     homeName != null && username != null
                         ? Text(
                             'Welcome to $homeName, $username!',
@@ -203,6 +228,8 @@ class _DashBoardState extends State<DashBoard> with WidgetsBindingObserver {
                           )
                         : const CircularProgressIndicator(),
                     const SizedBox(height: 16),
+
+                    //Bulletin board
                     Container(
                       padding: const EdgeInsets.all(10),
                       margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -304,6 +331,8 @@ class _DashBoardState extends State<DashBoard> with WidgetsBindingObserver {
                       ),
                     ),
                     const SizedBox(height: 30),
+
+                    //Fridge
                     Container(
                       padding: const EdgeInsets.all(10),
                       margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -364,6 +393,8 @@ class _DashBoardState extends State<DashBoard> with WidgetsBindingObserver {
                       ),
                     ),
                     const SizedBox(height: 30),
+
+                    //Chores
                     Container(
                       padding: const EdgeInsets.all(10),
                       margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -488,6 +519,177 @@ class _DashBoardState extends State<DashBoard> with WidgetsBindingObserver {
                               ),
                             ],
                           )
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 30),
+
+                    //Schedule
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      margin: const EdgeInsets.symmetric(horizontal: 16),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                            color: const Color(0xFF103465), width: 4.0),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  const Icon(
+                                    Icons.date_range,
+                                    size: 30,
+                                    color: Colors.amber,
+                                  ),
+                                  const SizedBox(width: 5),
+                                  Text(
+                                    'Schedule',
+                                    style: GoogleFonts.arvo(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (_) =>
+                                          const Home(initialIndex: 3)));
+                                },
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: const [
+                                    Text(
+                                      'See More',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.amber,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Icon(
+                                      Icons.arrow_forward_ios,
+                                      size: 16,
+                                      color: Colors.amber,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          // Row(
+                          //   children: [
+                          //     Container(
+                          //       width: 45,
+                          //       height: 45,
+                          //       child: SfRadialGauge(
+                          //           enableLoadingAnimation: true,
+                          //           animationDuration: 1500,
+                          //           axes: [
+                          //             RadialAxis(
+                          //               minimum: 0,
+                          //               maximum: 100,
+                          //               showLabels: false,
+                          //               showTicks: false,
+                          //               axisLineStyle: AxisLineStyle(
+                          //                 thickness: 0.2,
+                          //                 cornerStyle: CornerStyle.bothCurve,
+                          //                 color: Colors.grey[700],
+                          //                 thicknessUnit: GaugeSizeUnit.factor,
+                          //               ),
+                          //               pointers: [
+                          //                 RangePointer(
+                          //                   value: notDone + done == 0
+                          //                       ? 0
+                          //                       : (done / (notDone + done)) *
+                          //                           100,
+                          //                   width: 0.2,
+                          //                   sizeUnit: GaugeSizeUnit.factor,
+                          //                   cornerStyle: CornerStyle.bothCurve,
+                          //                   color: const Color.fromARGB(
+                          //                       255, 237, 69, 57),
+                          //                 ),
+                          //               ],
+                          //             ),
+                          //           ]),
+                          //     ),
+                          //     const SizedBox(width: 20),
+                          //     Container(
+                          //         width: 230,
+                          //         child: choreStatistics.isEmpty
+                          //             ? Visibility(
+                          //                 visible: choreStatistics.isEmpty,
+                          //                 child: const Text(
+                          //                     'No messages available.'))
+                          //             : Text(choreStatistics)),
+                          //   ],
+                          // ),
+                          (profileSchedule == null ||
+                                  profileSchedule['schedule_url'] == null)
+                              ? const Text(
+                                  'You have not uploaded your schedule yet')
+                              : GestureDetector(
+                                  onTap: () {
+                                    showDialog(
+                                      context: context,
+                                      barrierDismissible: false,
+                                      builder: (BuildContext dialogContext) {
+                                        return Dialog(
+                                          backgroundColor: Colors.transparent,
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Expanded(
+                                                child: SizedBox(
+                                                  width: MediaQuery.of(
+                                                          dialogContext)
+                                                      .size
+                                                      .width,
+                                                  height: MediaQuery.of(
+                                                          dialogContext)
+                                                      .size
+                                                      .height,
+                                                  child: PhotoView(
+                                                    enableRotation: true,
+                                                    backgroundDecoration:
+                                                        BoxDecoration(
+                                                      color: Colors.transparent,
+                                                    ),
+                                                    imageProvider: NetworkImage(
+                                                      profileSchedule[
+                                                          'schedule_url'],
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                width: double.infinity,
+                                                child: ElevatedButton(
+                                                  onPressed: () {
+                                                    Navigator.pop(
+                                                        dialogContext);
+                                                  },
+                                                  child: Text('Close'),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  },
+                                  child: Image.network(
+                                    profileSchedule['schedule_url'],
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
                         ],
                       ),
                     ),
