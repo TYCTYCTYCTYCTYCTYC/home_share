@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:home_share/bulletin_board/bulletin_board.dart';
 import 'package:home_share/fridge.dart';
 import 'package:home_share/fridge_form.dart';
-import 'package:home_share/schedule.dart';
 import 'package:home_share/profile/profile.dart';
 import 'package:home_share/chores/main_chores_page.dart';
 import 'package:home_share/dashboard.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:home_share/profile/settings.dart';
+import 'package:home_share/schedule/schedule.dart';
 
 class Home extends StatefulWidget {
   final int initialIndex;
