@@ -3,9 +3,7 @@ import 'package:home_share/fridge_item_detail.dart';
 
 import 'package:home_share/main.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
 import 'package:shape_of_view_null_safe/shape_of_view_null_safe.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
@@ -136,19 +134,16 @@ class _FridgeState extends State<Fridge> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => FridgeItemDetail(
-                                    item: item,
-                                  ),
+                                  builder: (context) =>
+                                      FridgeItemDetail(item: item),
                                 ),
                               );
                             },
                             child: Container(
                               decoration: BoxDecoration(
-                                color: Colors.transparent,
+                                borderRadius: BorderRadius.circular(10),
                                 border: Border.all(
-                                  width: 3,
-                                  color: clr3,
-                                ),
+                                    color: const Color(0xFF103465), width: 4.0),
                               ),
                               child: Padding(
                                 padding: EdgeInsets.all(10),
