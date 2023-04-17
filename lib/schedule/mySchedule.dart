@@ -49,7 +49,7 @@ class _MyScheduleState extends State<MySchedule> {
                                       MediaQuery.of(dialogContext).size.height,
                                   child: PhotoView(
                                     enableRotation: true,
-                                    backgroundDecoration: BoxDecoration(
+                                    backgroundDecoration: const BoxDecoration(
                                       color: Colors.transparent,
                                     ),
                                     imageProvider: NetworkImage(
@@ -108,8 +108,6 @@ class _MyScheduleState extends State<MySchedule> {
     final picker = ImagePicker();
     final imageFile = await picker.pickImage(
       source: ImageSource.gallery,
-      // maxWidth: 300,
-      // maxHeight: 300,
     );
     if (imageFile == null) {
       return;

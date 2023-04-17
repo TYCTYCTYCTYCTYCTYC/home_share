@@ -24,25 +24,16 @@ class Schedule extends StatefulWidget {
 }
 
 class _ScheduleState extends State<Schedule> {
-  int _counter = 0;
-  String? expandedID = null;
   List<dynamic> _accounts = [];
   List<dynamic> accountsBefore = [];
   List<dynamic> accountsAfter = [];
-  // double height = MediaQuery.of(context).size.height;
-  // double width = MediaQuery.of(context).size.width;
   late final userId;
   dynamic curProfile = null;
   int selectedIndex = 0;
   int rowIndex = 0;
   String? _scheduleUrl = null;
-  var _loading = false;
 
   Future<void> _getMySchedule() async {
-    setState(() {
-      _loading = true;
-    });
-
     try {
       final userId = supabase.auth.currentUser!.id;
       final data = await supabase
@@ -64,11 +55,6 @@ class _ScheduleState extends State<Schedule> {
       );
     } catch (error) {
       //context.showErrorSnackBar(message: 'Unexpected exception occurred');
-    }
-    if (mounted) {
-      setState(() {
-        _loading = false;
-      });
     }
   }
 
@@ -158,19 +144,6 @@ class _ScheduleState extends State<Schedule> {
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.width / 5;
-    if (expandedID != null) {
-      selectedIndex =
-          _accounts.indexWhere((account) => account['id'] == expandedID);
-      rowIndex = min((selectedIndex ~/ 3) * 3 + 2, _accounts.length - 1);
-    }
-    if (_accounts.length != 0) {
-      if (rowIndex != 0) {
-        accountsBefore = _accounts.sublist(0, rowIndex + 1);
-        accountsAfter = _accounts.sublist(rowIndex + 1);
-      } else {
-        accountsBefore = _accounts;
-      }
-    }
 
     return MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -213,27 +186,6 @@ class _ScheduleState extends State<Schedule> {
                         fontSize: 24,
                       ),
                     ),
-                    // if (curProfile != null)
-                    //   Padding(
-                    //     padding: EdgeInsets.symmetric(vertical: 20),
-                    //     child: Container(
-                    //       height: height * 2,
-                    //       child: curProfile['schedule_url'] != null
-                    //           ? Image.network(
-                    //               curProfile['schedule_url'],
-                    //               fit: BoxFit.cover,
-                    //             )
-                    //           : const Text(
-                    //               'This user has not uploaded their schedule yet'),
-                    //     ),
-                    //   ),
-                    // ElevatedButton(
-                    //   onPressed: () {},
-                    //   // onPressed: () async {
-                    //   //   await _onUpload('scheduleUrl');
-                    //   // },
-                    //   child: Text('Upload ' + 'your schedule'),
-                    // ),
                     MySchedule(
                       imageUrl: _scheduleUrl,
                       onUpload: _onUpload,
@@ -248,7 +200,6 @@ class _ScheduleState extends State<Schedule> {
                   fontSize: 24,
                 ),
               ),
-
               GridView.count(
                 padding: EdgeInsets.zero,
                 physics: ScrollPhysics(),
@@ -259,113 +210,31 @@ class _ScheduleState extends State<Schedule> {
                 crossAxisSpacing: 10.0,
                 children: _accounts.map((account) {
                   return InkWell(
-                      onTap: () {
-                        setState(() {
-                          // if (expandedID == null) {
-                          //   //if there isnt any expanded profile
-                          //   expandedID = account['id'];
-                          // } else if (expandedID == account['id']) {
-                          //   //if clicking already expanded profile
-                          //   expandedID = null;
-                          // } else {
-                          //   //else clicking on a profile when there is already an expanded profile
-                          //   expandedID = account['id'];
-                          // }
-
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  OtherUserSchedule(account: account),
-                            ),
-                          );
-                        });
-                      },
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          color: expandedID == account['id'] ? clr3 : null,
-                          // border: expandedID == account['id']
-                          //     ? Border(
-                          //         top: BorderSide(
-                          //             width: 3.0, color: clr3),
-                          //         left: BorderSide(
-                          //             width: 3.0, color: clr3),
-                          //         right: BorderSide(
-                          //             width: 3.0, color: clr3),
-                          //       )
-                          //     : null,
-                        ),
-                        child: Container(
-                          child: Column(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.fromLTRB(0, 15, 0, 0),
-                                child: cropCircleImage(context, account, 3),
-                              ),
-                              Text(account['username']),
-                            ],
+                    onTap: () {
+                      setState(() {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                OtherUserSchedule(account: account),
                           ),
-                        ),
-                      ));
+                        );
+                      });
+                    },
+                    child: Container(
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(0, 15, 0, 0),
+                            child: cropCircleImage(context, account, 3),
+                          ),
+                          Text(account['username']),
+                        ],
+                      ),
+                    ),
+                  );
                 }).toList(),
               ),
-              // //insert container here
-              // if (expandedID != null)
-              //   Container(
-              //       height: height * 2,
-              //       padding: EdgeInsets.symmetric(vertical: 20.0),
-              //       decoration: BoxDecoration(
-              //         color: clr,
-              //         border: Border(
-              //             top: BorderSide(width: 3.0, color: clr3),
-              //             bottom: BorderSide(width: 3.0, color: clr3)),
-              //       ),
-              //       child: Center(
-              //         child: _accounts[selectedIndex]['schedule_url'] != null
-              //             ? Image.network(
-              //                 _accounts[selectedIndex]['schedule_url'],
-              //                 fit: BoxFit.cover,
-              //               )
-              //             : const Text(
-              //                 'This user has not uploaded their schedule yet'),
-              //       )),
-
-              // GridView.count(
-              //   padding: EdgeInsets.zero,
-              //   physics: ScrollPhysics(),
-              //   shrinkWrap: true,
-              //   crossAxisCount: 3,
-              //   childAspectRatio: 0.75,
-              //   // mainAxisSpacing: 10.0,
-              //   crossAxisSpacing: 10.0,
-              //   children: accountsAfter.map((account) {
-              //     return InkWell(
-              //       onTap: () {
-              //         // setState(() {
-              //         //   if (expandedID == null) {
-              //         //     //if there isnt any expanded profile
-              //         //     expandedID = account['id'];
-              //         //   } else if (expandedID == account['id']) {
-              //         //     //if clicking already expanded profile
-              //         //     expandedID = null;
-              //         //   } else {
-              //         //     //else clicking on a profile when there is already an expanded profile
-              //         //     expandedID = account['id'];
-              //         //   }
-              //         // });
-              //       },
-              //       child: Column(
-              //         children: [
-              //           Padding(
-              //             padding: EdgeInsets.fromLTRB(0, 15, 0, 0),
-              //             child: cropCircleImage(context, account, 3),
-              //           ),
-              //           Text(account['username']),
-              //         ],
-              //       ),
-              //     );
-              //   }).toList(),
-              // ),
             ],
           )),
         ));

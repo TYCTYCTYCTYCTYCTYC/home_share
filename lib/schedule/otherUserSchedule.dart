@@ -36,7 +36,6 @@ class OtherUserSchedule extends StatefulWidget {
 
 class _OtherUserScheduleState extends State<OtherUserSchedule> {
   late GlobalKey<ScaffoldState> _otherUserScheduleKey;
-  late BuildContext _ancestorContext;
   late BuildContext _dialogContext;
 
   Future<void> downloadImage(String imageUrl) async {
@@ -70,22 +69,10 @@ class _OtherUserScheduleState extends State<OtherUserSchedule> {
     );
   }
 
-  void _saveNetworkImage() async {
-    try {
-      String path = widget.account['schedule_url'];
-      GallerySaver.saveImage(path, toDcim: true).then((success) {
-        showToast('Schedule downloaded successfully');
-      });
-    } catch (error) {
-      log(123);
-    }
-  }
-
   @override
   void initState() {
     super.initState();
     _otherUserScheduleKey = GlobalKey<ScaffoldState>();
-    // loadDB();
   }
 
   @override
@@ -226,10 +213,9 @@ class _OtherUserScheduleState extends State<OtherUserSchedule> {
                         widget.account['schedule_url'] != null)
                       ElevatedButton(
                         onPressed: () async {
-                          // _saveNetworkImage();
                           downloadImage(widget.account['schedule_url']);
                         },
-                        child: Text('Download Image'),
+                        child: const Text('Download Image'),
                       )
                   ],
                 )),
