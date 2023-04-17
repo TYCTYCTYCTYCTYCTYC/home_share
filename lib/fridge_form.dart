@@ -70,6 +70,7 @@ class _FridgeFormPageState extends State<FridgeFormPage> {
         'Beverage',
         'Food',
         'Fruit',
+        'Others'
       ].map<DropdownMenuItem<String>>((String value) {
         return DropdownMenuItem<String>(
           value: value,
@@ -320,7 +321,7 @@ class _FridgeFormPageState extends State<FridgeFormPage> {
                 throw Exception('Failed to add item: ${response.status}');
               }
 
-              Navigator.of(context).push(Home.route(initialIndex: 2));
+              Navigator.of(context).push(Home.route(initialIndex: 1));
             }
 
             return;
