@@ -32,7 +32,7 @@ class _DashBoardState extends State<DashBoard> with WidgetsBindingObserver {
   int highestChorePoints = 0;
   String highestChoreUsername = '';
   dynamic profileSchedule = null;
-  List<dynamic> _rowItems = [];
+  List<dynamic>? _rowItems = null;
 
   @override
   void initState() {
@@ -132,6 +132,7 @@ class _DashBoardState extends State<DashBoard> with WidgetsBindingObserver {
   }
 
   Future<void> loadDB() async {
+    int days = 7;
     try {
       final currentUser = Supabase.instance.client.auth.currentUser;
       final userId = currentUser?.id;
@@ -156,6 +157,11 @@ class _DashBoardState extends State<DashBoard> with WidgetsBindingObserver {
           .eq('home_id', homeId)
           .gte('date_expiring',
               now) // Filter by date that is today or after today
+          .lte(
+              'date_expiring',
+              DateTime.now()
+                  .add(Duration(days: days))
+                  .toIso8601String()) // Filter by date that is up to 'days' days from now
           .order('date_expiring',
               ascending: true) // Sort by date_expiring in ascending order
           .execute();
@@ -417,6 +423,8 @@ class _DashBoardState extends State<DashBoard> with WidgetsBindingObserver {
 
                     //Fridge
                     Container(
+                      height: MediaQuery.of(context).size.height / 2.7,
+                      width: double.infinity,
                       padding: const EdgeInsets.all(10),
                       margin: const EdgeInsets.symmetric(horizontal: 16),
                       decoration: BoxDecoration(
@@ -424,86 +432,91 @@ class _DashBoardState extends State<DashBoard> with WidgetsBindingObserver {
                         border: Border.all(
                             color: const Color(0xFF103465), width: 4.0),
                       ),
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        shrinkWrap: true,
-                        itemCount: _rowItems.length,
-                        itemBuilder: (BuildContext context, int index1) {
-                          final item = _rowItems[index1];
-                          return Padding(
-                            padding: EdgeInsets.only(right: 10.0),
-                            child: GestureDetector(
-                              onTap: () {
-                                // Navigate to subpage and pass item description as arguments
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        FridgeItemDetail(item: item),
+                      child: _rowItems == null
+                          ? const CircularProgressIndicator()
+                          : ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              shrinkWrap: true,
+                              itemCount: _rowItems!.length,
+                              itemBuilder: (BuildContext context, int index1) {
+                                final item = _rowItems![index1];
+                                return Padding(
+                                  padding: EdgeInsets.only(right: 10.0),
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      // Navigate to subpage and pass item description as arguments
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              FridgeItemDetail(item: item),
+                                        ),
+                                      );
+                                    },
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(10),
+                                        border: Border.all(
+                                            color: const Color(0xFF103465),
+                                            width: 4.0),
+                                      ),
+                                      child: Padding(
+                                        padding: EdgeInsets.all(10),
+                                        child: Stack(
+                                          children: [
+                                            Column(
+                                              children: [
+                                                Image.network(
+                                                  item['item_image_url'],
+                                                  width: 150,
+                                                  height: 150,
+                                                ),
+                                                Padding(
+                                                  padding: EdgeInsets.symmetric(
+                                                      vertical: 15.0),
+                                                  child: Container(
+                                                    child: Text(
+                                                      item['item_name'],
+                                                      style: GoogleFonts.arvo(
+                                                        fontSize: 16,
+                                                        color: Colors.black,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                                Padding(
+                                                  padding: EdgeInsets.symmetric(
+                                                      vertical: 10.0),
+                                                  child: Container(
+                                                    child: Text(
+                                                      getExpiryStatus(item[
+                                                          'date_expiring']),
+                                                      style: GoogleFonts.arvo(
+                                                        fontSize: 12,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        color: getColorBasedOnExpiry(
+                                                            item[
+                                                                'date_expiring']),
+                                                        backgroundColor:
+                                                            getBackgroundColor(item[
+                                                                'date_expiring']),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                 );
                               },
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(
-                                      color: const Color(0xFF103465),
-                                      width: 4.0),
-                                ),
-                                child: Padding(
-                                  padding: EdgeInsets.all(10),
-                                  child: Stack(
-                                    children: [
-                                      Column(
-                                        children: [
-                                          Image.network(
-                                            item['item_image_url'],
-                                            width: 150,
-                                            height: 150,
-                                          ),
-                                          Padding(
-                                            padding: EdgeInsets.symmetric(
-                                                vertical: 15.0),
-                                            child: Container(
-                                              child: Text(
-                                                item['item_name'],
-                                                style: GoogleFonts.arvo(
-                                                  fontSize: 16,
-                                                  color: Colors.black,
-                                                  fontWeight: FontWeight.w500,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                          Padding(
-                                            padding: EdgeInsets.symmetric(
-                                                vertical: 10.0),
-                                            child: Container(
-                                              child: Text(
-                                                getExpiryStatus(
-                                                    item['date_expiring']),
-                                                style: GoogleFonts.arvo(
-                                                  fontSize: 12,
-                                                  fontWeight: FontWeight.w500,
-                                                  color: getColorBasedOnExpiry(
-                                                      item['date_expiring']),
-                                                  backgroundColor:
-                                                      getBackgroundColor(item[
-                                                          'date_expiring']),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ),
                             ),
-                          );
-                        },
-                      ),
                     ),
                     const SizedBox(height: 30),
 
