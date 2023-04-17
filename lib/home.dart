@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:home_share/bulletin_board/bulletin_board.dart';
-import 'package:home_share/fridge.dart';
-import 'package:home_share/fridge_form.dart';
+import 'package:home_share/fridge/fridge.dart';
+import 'package:home_share/fridge/fridge_form.dart';
 import 'package:home_share/profile/profile.dart';
 import 'package:home_share/chores/main_chores_page.dart';
 import 'package:home_share/dashboard.dart';

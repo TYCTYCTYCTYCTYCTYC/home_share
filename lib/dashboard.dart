@@ -9,8 +9,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:home_share/bulletin_board/bulletin_board.dart';
 import 'package:home_share/chores/chores.dart';
 
-import 'fridge.dart';
-import 'fridge_item_detail.dart';
+import 'fridge/fridge.dart';
+import 'fridge/fridge_item_detail.dart';
 
 class DashBoard extends StatefulWidget {
   const DashBoard({Key? key}) : super(key: key);
