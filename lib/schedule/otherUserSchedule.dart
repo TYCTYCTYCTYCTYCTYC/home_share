@@ -1,25 +1,22 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:dio/dio.dart' as dio;
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:home_share/main.dart';
+import 'package:gallery_saver/gallery_saver.dart';
+import 'package:http/http.dart' as http;
+import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:path/path.dart' as path;
+import 'package:path_provider/path_provider.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'package:gallery_saver/gallery_saver.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
-
-import 'dart:io';
-import 'package:path_provider/path_provider.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:path/path.dart' as path;
 
 import 'mySchedule.dart';
+import 'package:home_share/main.dart';
 
 Color clr = Color.fromARGB(255, 165, 198, 255);
 Color clr2 = Colors.white;
