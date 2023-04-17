@@ -20,6 +20,50 @@ class Avatar extends StatefulWidget {
 class _AvatarState extends State<Avatar> {
   bool _isLoading = false;
 
+ Widget ifImageNull() {
+  final currentUser = Supabase.instance.client.auth.currentUser;
+  final userId = currentUser?.id;
+
+  return FutureBuilder(
+    future: supabase
+        .from('profiles')
+        .select('username')
+        .eq('id', userId)
+        .execute(),
+    builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        // Show a loading spinner if the data is still loading
+        return CircularProgressIndicator();
+      } else if (snapshot.hasError) {
+        // Show an error message if something went wrong
+        return Text('Error: ${snapshot.error}');
+      } else {
+        // Show the first letter of the username
+        final data = snapshot.data!.data as List<dynamic>;
+        final username = data.first['username'] as String;
+
+        return Container(
+          decoration: BoxDecoration(
+            color: Colors.blueGrey,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Center(
+            child: Text(
+              username[0].toUpperCase(),
+              style: TextStyle(
+                fontSize: 36,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        );
+      }
+    },
+  );
+}
+
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -29,16 +73,7 @@ class _AvatarState extends State<Avatar> {
             width: 150,
             height: 150,
             child: widget.imageUrl == null || widget.imageUrl!.isEmpty
-                ? Container(
-                    color: Colors.amber,
-                    child: const Center(
-                      child: Text(
-                        'Update your profile picture below',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  )
+                ? ifImageNull()
                 : Image.network(
                     widget.imageUrl!,
                     fit: BoxFit.cover,
