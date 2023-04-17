@@ -185,6 +185,11 @@ class _OtherUserScheduleState extends State<OtherUserSchedule> {
                                                       .size
                                                       .height,
                                                   child: PhotoView(
+                                                    enableRotation: true,
+                                                    backgroundDecoration:
+                                                        BoxDecoration(
+                                                      color: Colors.transparent,
+                                                    ),
                                                     imageProvider: NetworkImage(
                                                       widget.account[
                                                           'schedule_url'],

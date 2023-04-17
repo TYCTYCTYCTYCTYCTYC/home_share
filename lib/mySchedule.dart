@@ -48,6 +48,10 @@ class _MyScheduleState extends State<MySchedule> {
                                   height:
                                       MediaQuery.of(dialogContext).size.height,
                                   child: PhotoView(
+                                    enableRotation: true,
+                                    backgroundDecoration: BoxDecoration(
+                                      color: Colors.transparent,
+                                    ),
                                     imageProvider: NetworkImage(
                                       widget.imageUrl!,
                                     ),
