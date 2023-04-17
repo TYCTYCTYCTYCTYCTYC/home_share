@@ -492,7 +492,7 @@ class _DashBoardState extends State<DashBoard> with WidgetsBindingObserver {
                               ),
                               const SizedBox(width: 20),
                               Container(
-                                  width: 230,
+                                  width: 190,
                                   child: choreStatistics.isEmpty
                                       ? Visibility(
                                           visible: choreStatistics.isEmpty,
