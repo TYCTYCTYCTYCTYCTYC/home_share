@@ -22,15 +22,11 @@ final supabase = Supabase.instance.client;
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  //initialise dark mode as false
-  //bool DarkMode = false;
-
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      // theme: DarkMode ? ThemeData.dark() : ThemeData.light(),
       theme: ThemeData(
         primaryColor: const Color(0xFF103465),
         appBarTheme: const AppBarTheme(
@@ -38,13 +34,6 @@ class MyApp extends StatelessWidget {
           color: Colors.white,
         ),
       ),
-      // darkTheme: ThemeData(
-      //   primaryColor: Colors.black,
-      //   appBarTheme: const AppBarTheme(
-      //     iconTheme: IconThemeData(color: Colors.white),
-      //     color: Colors.white,
-      //   ),
-      // ),
       home: const SplashPage(),
     );
   }
