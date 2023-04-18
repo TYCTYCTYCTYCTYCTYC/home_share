@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../home.dart';
 import 'fridge_item_appbar.dart';
 import 'fridge.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -25,10 +26,8 @@ class _FridgeItemDetailState extends State<FridgeItemDetail> {
         .from('fridge')
         .delete()
         .match({'id': itemId}).execute();
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => Fridge()),
-    );
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (_) => const Home(initialIndex: 1)));
   }
 
   @override
@@ -39,36 +38,38 @@ class _FridgeItemDetailState extends State<FridgeItemDetail> {
         children: [
           FridgeItemAppBar(),
           Padding(
-            padding: EdgeInsets.all(16),
-            child: Image.network(widget.item['item_image_url'], height: 300),
+            padding: EdgeInsets.all(5),
+            child: Image.network(widget.item['item_image_url'], height: 220),
           ),
           Padding(
             padding: EdgeInsets.only(
               top: 50,
               bottom: 20,
             ),
-            child: Row(
-              children: [
-                Text(
-                  "Product Description",
-                  style: GoogleFonts.arvo(
-                    fontSize: 20,
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 30.0),
+              child: Row(
+                children: [
+                  Text(
+                    "Product Description",
+                    style: GoogleFonts.arvo(
+                      fontSize: 20,
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
           Padding(
-            padding: EdgeInsets.symmetric(vertical: 12),
+            padding: EdgeInsets.symmetric(vertical: 12, horizontal: 50.0),
             child: Text(
               widget.item['description'],
               textAlign: TextAlign.justify,
-              style: GoogleFonts.arvo(
+              style: GoogleFonts.quicksand(
                 fontSize: 17,
                 color: Colors.black,
-                fontWeight: FontWeight.bold,
               ),
             ),
           )
@@ -80,9 +81,41 @@ class _FridgeItemDetailState extends State<FridgeItemDetail> {
         padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
         child: ElevatedButton(
           onPressed: () {
-            // Navigate to FridgeFormPage
-            String itemIdString = widget.item['id'].toString();
-            deleteItemFromFridge(itemIdString);
+            // Show confirmation dialog before deleting item
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text('Confirm Delete'),
+                  content: Text('Are you sure you want to delete this item?'),
+                  actions: [
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context); // Close the dialog
+                      },
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.grey,
+                        onPrimary: Colors.white,
+                      ),
+                      child: Text('Cancel'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        // Delete item and close the dialog
+                        String itemIdString = widget.item['id'].toString();
+                        deleteItemFromFridge(itemIdString);
+                        Navigator.pop(context);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.red,
+                        onPrimary: Colors.white,
+                      ),
+                      child: Text('Delete'),
+                    ),
+                  ],
+                );
+              },
+            );
           },
           style: ElevatedButton.styleFrom(
             primary: Colors.amber,

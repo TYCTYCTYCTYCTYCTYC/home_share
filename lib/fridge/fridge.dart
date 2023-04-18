@@ -3,7 +3,6 @@ import 'package:home_share/fridge/fridge_item_detail.dart';
 
 import 'package:home_share/main.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:shape_of_view_null_safe/shape_of_view_null_safe.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
@@ -93,112 +92,151 @@ class _FridgeState extends State<Fridge> {
             (index) => Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  height: 60,
-                  child: Center(
-                    child: Text(
-                      categories[index],
-                      style: GoogleFonts.arvo(
-                        fontSize: 25,
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
+                Padding(
+                  padding: const EdgeInsets.only(top: 20.0, bottom: 10.0),
+                  child: Container(
+                    height: 60,
+                    color: Color.fromARGB(255, 255, 241, 201),
+                    child: Center(
+                      child: Text(
+                        categories[index],
+                        style: GoogleFonts.arvo(
+                          fontSize: 25,
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.only(bottom: 20.0),
+                  padding: EdgeInsets.only(bottom: 20.0, left: 3.0),
                   child: SizedBox(
                     height: 280,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      shrinkWrap: true,
-                      itemCount: _rowItems
-                          .where(
-                              (item) => item['category'] == categories[index])
-                          .toList()
-                          .length,
-                      itemBuilder: (BuildContext context, int index1) {
-                        List<dynamic> sortItems = _rowItems
-                            .where(
-                                (item) => item['category'] == categories[index])
-                            .toList();
-                        sortItems.sort((a, b) =>
-                            a['date_expiring'].compareTo(b['date_expiring']));
-                        final item = sortItems[index1];
-                        return Padding(
-                          padding: EdgeInsets.only(right: 10.0),
-                          child: GestureDetector(
-                            onTap: () {
-                              // Navigate to subpage and pass item description as arguments
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      FridgeItemDetail(item: item),
-                                ),
-                              );
-                            },
-                            child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                border: Border.all(
-                                    color: const Color(0xFF103465), width: 4.0),
-                              ),
-                              child: Padding(
-                                padding: EdgeInsets.all(10),
-                                child: Stack(
+                    child: _rowItems == null
+                        ? const CircularProgressIndicator()
+                        : _rowItems!.length == 0
+                            ? Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Column(
-                                      children: [
-                                        Image.network(
-                                          item['item_image_url'],
-                                          width: 150,
-                                          height: 150,
-                                        ),
-                                        Padding(
-                                          padding: EdgeInsets.symmetric(
-                                              vertical: 15.0),
-                                          child: Container(
-                                            child: Text(
-                                              item['item_name'],
-                                              style: GoogleFonts.arvo(
-                                                fontSize: 16,
-                                                color: Colors.black,
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        Padding(
-                                          padding: EdgeInsets.symmetric(
-                                              vertical: 10.0),
-                                          child: Container(
-                                            child: Text(
-                                              getExpiryStatus(
-                                                  item['date_expiring']),
-                                              style: GoogleFonts.arvo(
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.w500,
-                                                color: getColorBasedOnExpiry(
-                                                    item['date_expiring']),
-                                                backgroundColor:
-                                                    getBackgroundColor(
-                                                        item['date_expiring']),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    )
+                                    Text(
+                                      "No items",
+                                      style: GoogleFonts.amaticSc(
+                                        fontSize: 25,
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(
+                                      "Tap on the '+' button below to add new item!",
+                                      style: GoogleFonts.amaticSc(
+                                        fontSize: 25,
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
                                   ],
                                 ),
+                              )
+                            : ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                shrinkWrap: true,
+                                itemCount: _rowItems
+                                    .where((item) =>
+                                        item['category'] == categories[index])
+                                    .toList()
+                                    .length,
+                                itemBuilder:
+                                    (BuildContext context, int index1) {
+                                  List<dynamic> sortItems = _rowItems
+                                      .where((item) =>
+                                          item['category'] == categories[index])
+                                      .toList();
+                                  sortItems.sort((a, b) => a['date_expiring']
+                                      .compareTo(b['date_expiring']));
+                                  final item = sortItems[index1];
+                                  return Padding(
+                                    padding: EdgeInsets.only(right: 10.0),
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        // Navigate to subpage and pass item description as arguments
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                FridgeItemDetail(item: item),
+                                          ),
+                                        );
+                                      },
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          border: Border.all(
+                                              color: const Color(0xFF103465),
+                                              width: 4.0),
+                                        ),
+                                        child: Padding(
+                                          padding: EdgeInsets.all(10),
+                                          child: Stack(
+                                            children: [
+                                              Column(
+                                                children: [
+                                                  Image.network(
+                                                    item['item_image_url'],
+                                                    width: 150,
+                                                    height: 150,
+                                                  ),
+                                                  Padding(
+                                                    padding:
+                                                        EdgeInsets.symmetric(
+                                                            vertical: 15.0),
+                                                    child: Container(
+                                                      child: Text(
+                                                        item['item_name'],
+                                                        style: GoogleFonts.arvo(
+                                                          fontSize: 18,
+                                                          color: Colors.black,
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Padding(
+                                                    padding:
+                                                        EdgeInsets.symmetric(
+                                                            vertical: 10.0),
+                                                    child: Container(
+                                                      child: Text(
+                                                        getExpiryStatus(item[
+                                                            'date_expiring']),
+                                                        style: GoogleFonts.arvo(
+                                                          fontSize: 12,
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                          color: getColorBasedOnExpiry(
+                                                              item[
+                                                                  'date_expiring']),
+                                                          backgroundColor:
+                                                              getBackgroundColor(
+                                                                  item[
+                                                                      'date_expiring']),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
                               ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
                   ),
                 ),
               ],
