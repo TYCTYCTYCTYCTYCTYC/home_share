@@ -1,15 +1,11 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:date_time_picker/date_time_picker.dart';
+import 'package:home_share/utils/constants.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:home_share/main.dart';
 import 'package:home_share/home.dart';
-import 'package:file_picker/file_picker.dart';
 
 class FridgeFormPage extends StatefulWidget {
   const FridgeFormPage({Key? key}) : super(key: key);
@@ -27,7 +23,6 @@ class _FridgeFormPageState extends State<FridgeFormPage> {
   String? _description;
   String? _item_name;
   DateTime? _expiry_date;
-  // File? _image;
   late final userId;
   late final homeId;
   late dynamic _imageUrl = null;
@@ -55,8 +50,46 @@ class _FridgeFormPageState extends State<FridgeFormPage> {
 
       homeId = response.data['home_id'] as int;
     } catch (error) {
-      //context.showErrorSnackBar(message: 'Unexpected error has occurred');
+      context.showErrorSnackBar(message: 'Unexpected error has occurred');
     }
+  }
+
+  Future<void> _pickImageFromGallery() async {
+    final picker = ImagePicker();
+    final imageFile = await picker.pickImage(
+      source: ImageSource.gallery,
+    );
+    if (imageFile == null) {
+      return;
+    }
+
+    try {
+      final bytes = await imageFile.readAsBytes();
+      final fileExt = imageFile.path.split('.').last;
+      final fileName = '${DateTime.now().toIso8601String()}.$fileExt';
+      final filePath = fileName;
+      await supabase.storage.from('image').uploadBinary(filePath, bytes,
+          fileOptions: FileOptions(contentType: imageFile.mimeType));
+      final imageUrlResponse = await supabase.storage
+          .from('image')
+          .createSignedUrl(filePath, 60 * 60 * 24 * 365 * 10);
+
+      setState(() {
+        _imageUrl = imageUrlResponse;
+      });
+    } on StorageException catch (error) {
+      if (mounted) {
+        context.showErrorSnackBar(message: error.message);
+      }
+    } catch (error) {
+      if (mounted) {
+        context.showErrorSnackBar(message: 'Unexpected error occurred');
+      }
+    }
+
+    setState(() {
+      uploadState = true;
+    });
   }
 
   Widget _buildCategoryField() {
@@ -79,129 +112,6 @@ class _FridgeFormPageState extends State<FridgeFormPage> {
       }).toList(),
     );
   }
-
-  Widget _buildImageUploadField() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        _imageUrl != null
-            ? Image.network(
-                _imageUrl,
-                fit: BoxFit.cover,
-              )
-            : Container(
-                child: Column(
-                children: [
-                  Padding(padding: const EdgeInsets.fromLTRB(0, 15, 0, 0)),
-                  ElevatedButton(
-                    onPressed: () async {
-                      setState(() {
-                        uploadState = false;
-                      });
-                      await _pickImageFromGallery();
-                    },
-                    child: Text('Upload Image'),
-                  ),
-                  if (uploadState) Text("Upload Completed"),
-                ],
-              )),
-      ],
-    );
-  }
-
-//   // Function to pick an image from the gallery
-//   Future<void> _pickImageFromGallery() async {
-//     final pickedImage =
-//         await ImagePicker().getImage(source: ImageSource.gallery);
-//     if (pickedImage != null) {
-//       _image = File(pickedImage.path);
-//       await client.storage
-//           .from("image")
-//           .upload(pickedImage.path, _image!)
-//           .then((value) {
-//         print(value);
-//         setState(() {
-//           uploadState = true;
-//         });
-//       });
-//     }
-//   }
-
-  Future<void> _pickImageFromGallery() async {
-    final picker = ImagePicker();
-    final imageFile = await picker.pickImage(
-      source: ImageSource.gallery,
-      // maxWidth: 300,
-      // maxHeight: 300,
-    );
-    if (imageFile == null) {
-      return;
-    }
-
-    try {
-      final bytes = await imageFile.readAsBytes();
-      final fileExt = imageFile.path.split('.').last;
-      final fileName = '${DateTime.now().toIso8601String()}.$fileExt';
-      final filePath = fileName;
-      await supabase.storage.from('image').uploadBinary(filePath, bytes,
-          fileOptions: FileOptions(contentType: imageFile.mimeType));
-      final imageUrlResponse = await supabase.storage
-          .from('image')
-          .createSignedUrl(filePath, 60 * 60 * 24 * 365 * 10);
-
-      setState(() {
-        _imageUrl = imageUrlResponse;
-      });
-    } on StorageException catch (error) {
-      if (mounted) {
-        //context.showErrorSnackBar(message: error.message);
-      }
-    } catch (error) {
-      if (mounted) {
-        //context.showErrorSnackBar(message: 'Unexpected error occurred');
-      }
-    }
-
-    setState(() {
-      uploadState = true;
-    });
-  }
-
-// Future<void> _pickImageFromGallery() async {
-//     final picker = ImagePicker();
-//     final imageFile = await picker.pickImage(
-//       source: ImageSource.gallery,
-//       // maxWidth: 300,
-//       // maxHeight: 300,
-//     );
-//     if (imageFile == null) {
-//       return;
-//     }
-
-//     try {
-//       final bytes = await imageFile.readAsBytes();
-//       final fileExt = imageFile.path.split('.').last;
-//       final fileName = '${DateTime.now().toIso8601String()}.$fileExt';
-//       final filePath = fileName;
-//       await supabase.storage.from('schedule').uploadBinary(
-//             filePath,
-//             bytes,
-//             fileOptions: FileOptions(contentType: imageFile.mimeType),
-//           );
-//       final imageUrlResponse = await supabase.storage
-//           .from('schedule')
-//           .createSignedUrl(filePath, 60 * 60 * 24 * 365 * 10);
-//       widget.onUpload(imageUrlResponse);
-//     } on StorageException catch (error) {
-//       if (mounted) {
-//         //context.showErrorSnackBar(message: error.message);
-//       }
-//     } catch (error) {
-//       if (mounted) {
-//         //context.showErrorSnackBar(message: 'Unexpected error occurred');
-//       }
-//     }
-//   }
 
   Widget _buildItemNameField() {
     return TextFormField(
@@ -262,6 +172,35 @@ class _FridgeFormPageState extends State<FridgeFormPage> {
         ));
   }
 
+  Widget _buildImageUploadField() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        _imageUrl != null
+            ? Image.network(
+                _imageUrl,
+                fit: BoxFit.cover,
+              )
+            : Container(
+                child: Column(
+                children: [
+                  Padding(padding: const EdgeInsets.fromLTRB(0, 15, 0, 0)),
+                  ElevatedButton(
+                    onPressed: () async {
+                      setState(() {
+                        uploadState = false;
+                      });
+                      await _pickImageFromGallery();
+                    },
+                    child: Text('Upload Image'),
+                  ),
+                  if (uploadState) Text("Upload Completed"),
+                ],
+              )),
+      ],
+    );
+  }
+
   Widget _buildSubmitButton() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -287,9 +226,6 @@ class _FridgeFormPageState extends State<FridgeFormPage> {
                 ),
               );
             } else {
-              // final currentUser = Supabase.instance.client.auth.currentUser;
-              // final userId = currentUser?.id;
-
               final response = await supabase.from('fridge').insert({
                 'home_id': homeId,
                 'user_id': userId,
