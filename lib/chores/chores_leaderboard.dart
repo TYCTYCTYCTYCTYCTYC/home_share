@@ -85,7 +85,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                             textStyle: const TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.bold))),
                     trailing: SizedBox(
-                      width: 35,
+                      width: 50,
                       child: Row(
                         children: [
                           Text(
