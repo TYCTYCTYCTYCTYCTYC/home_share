@@ -41,6 +41,7 @@ class _ProfileState extends State<Profile> {
   var _loading = false;
   bool _showSaveButton = false;
 
+  //fetch profile image of user
   Future<void> _getProfile() async {
     setState(() {
       _loading = true;
@@ -66,7 +67,11 @@ class _ProfileState extends State<Profile> {
         fontSize: 16.0,
       );
     } catch (error) {
-      //context.showErrorSnackBar(message: 'Unexpected exception occurred');
+      Fluttertoast.showToast(
+        msg: 'Unexpected error occurred',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+      );
     }
     if (mounted) {
       setState(() {
@@ -105,7 +110,11 @@ class _ProfileState extends State<Profile> {
         fontSize: 16.0,
       );
     } catch (error) {
-      //context.showErrorSnackBar(message: 'Unexpected error has occurred');
+      Fluttertoast.showToast(
+        msg: 'Unexpected error occurred',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+      );
     }
     if (!mounted) {
       return;
@@ -161,7 +170,7 @@ class _ProfileState extends State<Profile> {
     super.dispose();
   }
 
-// Function to get user profile data
+// Function to get user's data
   void getProfileData() async {
     // Check if data is available in shared preferences
     final sharedPreferences = await SharedPreferences.getInstance();
@@ -312,6 +321,8 @@ class _ProfileState extends State<Profile> {
                             onSaved: (value) {
                               _username = value ?? '';
                             },
+
+                            //when user tap on text field, auto select all existing text
                             onTap: () {
                               _nameController.selection = TextSelection(
                                 baseOffset: 0,
@@ -321,6 +332,8 @@ class _ProfileState extends State<Profile> {
                           ),
                         ),
                       ),
+
+                      //when user focus on the text fiels, show Save button
                       Visibility(
                         visible: (_nameFocusNode.hasFocus) ? true : false,
                         child: Padding(
@@ -424,6 +437,8 @@ class _ProfileState extends State<Profile> {
                               if (_formKey.currentState?.validate() ?? false) {
                                 final newEmail = _emailController.text.trim();
                                 _emailFocusNode.unfocus();
+
+                                //alert user if they change email, they will be redirected back to login page to login with new email
                                 bool isConfirmed = await showDialog(
                                   context: context,
                                   builder: (BuildContext contex) {
@@ -449,13 +464,11 @@ class _ProfileState extends State<Profile> {
                                   },
                                 );
 
-                                  // Update email in shared preferences
+                                // Update email in shared preferences
                                 final sharedPreferences =
                                     await SharedPreferences.getInstance();
-                                sharedPreferences.setString(
-                                    'email', newEmail);
+                                sharedPreferences.setString('email', newEmail);
 
-                                
                                 if (isConfirmed != null && isConfirmed) {
                                   await updateUserAndNavigateToLoginPage(
                                       context, newEmail);
@@ -751,6 +764,7 @@ class _ProfileState extends State<Profile> {
   }
 }
 
+//when user change email, navigate to login page
 Future<void> updateUserAndNavigateToLoginPage(
     BuildContext context, String newEmail) async {
   final currentUser = Supabase.instance.client.auth.currentUser;
@@ -776,6 +790,5 @@ Future<void> updateUserAndNavigateToLoginPage(
       textColor: Colors.black,
       fontSize: 16.0,
     );
-    // user is not authenticated
   }
 }

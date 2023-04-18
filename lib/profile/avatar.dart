@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+
 import 'package:home_share/main.dart';
 
 class Avatar extends StatefulWidget {
@@ -19,48 +21,53 @@ class Avatar extends StatefulWidget {
 
 class _AvatarState extends State<Avatar> {
   bool _isLoading = false;
- Widget ifImageNull() {
-  final currentUser = Supabase.instance.client.auth.currentUser;
-  final userId = currentUser?.id;
 
-  return FutureBuilder(
-    future: supabase
-        .from('profiles')
-        .select('username')
-        .eq('id', userId)
-        .execute(),
-    builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-      if (snapshot.connectionState == ConnectionState.waiting) {
-        // Show a loading spinner if the data is still loading
-        return CircularProgressIndicator();
-      } else if (snapshot.hasError) {
-        // Show an error message if something went wrong
-        return Text('Error: ${snapshot.error}');
-      } else {
-        // Show the first letter of the username
-        final data = snapshot.data!.data as List<dynamic>;
-        final username = data.first['username'] as String;
+  //call this function if user dont have profile picture yet
+  Widget ifImageNull() {
+    final currentUser = Supabase.instance.client.auth.currentUser;
+    final userId = currentUser?.id;
 
-        return Container(
-          decoration: BoxDecoration(
-            color: Colors.blueGrey,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Center(
-            child: Text(
-              username[0].toUpperCase(),
-              style: TextStyle(
-                fontSize: 36,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
+    return FutureBuilder(
+      //get their username
+      future: supabase
+          .from('profiles')
+          .select('username')
+          .eq('id', userId)
+          .execute(),
+
+      builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          // Show a loading spinner if the data is still loading
+          return CircularProgressIndicator();
+        } else if (snapshot.hasError) {
+          // Show an error message if something went wrong
+          return Text('Error: ${snapshot.error}');
+        } else {
+          // Show the first letter of the username
+          final data = snapshot.data!.data as List<dynamic>;
+          final username = data.first['username'] as String;
+
+          return Container(
+            decoration: BoxDecoration(
+              color: Colors.blueGrey,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Center(
+              child: Text(
+                username[0].toUpperCase(),
+                style: TextStyle(
+                  fontSize: 36,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
               ),
             ),
-          ),
-        );
-      }
-    },
-  );
-}
+          );
+        }
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -71,6 +78,8 @@ class _AvatarState extends State<Avatar> {
             height: 150,
             child: widget.imageUrl == null || widget.imageUrl!.isEmpty
                 ? ifImageNull()
+
+                //show profile image if available
                 : Image.network(
                     widget.imageUrl!,
                     fit: BoxFit.cover,
@@ -116,11 +125,19 @@ class _AvatarState extends State<Avatar> {
       widget.onUpload(imageUrlResponse);
     } on StorageException catch (error) {
       if (mounted) {
-        //context.showErrorSnackBar(message: error.message);
+        Fluttertoast.showToast(
+          msg: error.message,
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+        );
       }
     } catch (error) {
       if (mounted) {
-        //context.showErrorSnackBar(message: 'Unexpected error occurred');
+        Fluttertoast.showToast(
+          msg: 'Unexpected error occurred',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+        );
       }
     }
 

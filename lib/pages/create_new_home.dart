@@ -36,6 +36,8 @@ class NewHomeScreen extends StatelessWidget {
         child: Column(
           children: [
             const SizedBox(height: 8.0),
+
+            //user to enter home name
             TextFormField(
               controller: _homeNameController,
               decoration: const InputDecoration(
@@ -55,6 +57,8 @@ class NewHomeScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20.0),
+
+            //user to enter home address
             TextField(
               controller: _addressController,
               decoration: const InputDecoration(
@@ -81,6 +85,8 @@ class NewHomeScreen extends StatelessWidget {
                     onPressed: () async {
                       final homeName = _homeNameController.text;
                       final address = _addressController.text;
+
+                      //error handling: if any text field is empty
                       if (homeName.isEmpty || address.isEmpty) {
                         FocusScope.of(context).unfocus();
                         Fluttertoast.showToast(
@@ -98,6 +104,7 @@ class NewHomeScreen extends StatelessWidget {
                           Supabase.instance.client.auth.currentUser;
                       final userId = currentUser?.id;
 
+                      //database function: create home record, create user_home record
                       await Supabase.instance.client
                           .rpc('create_home_with_user_id', params: {
                         'home_name': homeName,

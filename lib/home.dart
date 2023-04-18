@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:home_share/bulletin_board/bulletin_board.dart';
 import 'package:home_share/fridge/fridge.dart';
-import 'package:home_share/fridge/fridge_form.dart';
 import 'package:home_share/profile/profile.dart';
 import 'package:home_share/chores/main_chores_page.dart';
 import 'package:home_share/dashboard.dart';
@@ -26,9 +24,11 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   int _selectedIndex = 0;
+
+  //display different screens when clicking icons
   final screen = [
     const DashBoard(),
-    Fridge(),
+    const Fridge(),
     MainChoresPage(),
     const Schedule(),
     Profile(),
@@ -70,6 +70,8 @@ class _HomeState extends State<Home> {
             ),
           ],
         ),
+
+        //display different pages according to _selectedIndex
         body: screen[_selectedIndex],
         backgroundColor: const Color(0xFF103465),
         bottomNavigationBar: Container(
@@ -120,23 +122,5 @@ class _HomeState extends State<Home> {
                 }
               }),
         ));
-  }
-}
-
-class HomePage extends StatelessWidget {
-  const HomePage({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Text(
-          'Welcome to Home page',
-          style: TextStyle(
-            fontSize: 20,
-          ),
-        ),
-      ),
-    );
   }
 }

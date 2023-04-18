@@ -31,7 +31,6 @@ class CreateOrJoin extends StatelessWidget {
                     builder: (BuildContext context) {
                       return Container(
                         decoration: BoxDecoration(
-                          //borderRadius: BorderRadius.circular(50.0),
                           boxShadow: [
                             BoxShadow(
                               color: Colors.grey.withOpacity(0.5),
@@ -39,9 +38,11 @@ class CreateOrJoin extends StatelessWidget {
                               blurRadius: 5,
                               offset: const Offset(
                                   0, 3), // changes position of shadow
-                            ), // changes position of shadow
+                            ),
                           ],
                         ),
+
+                        //alerts user that if they press back they will have to login again
                         child: AlertDialog(
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10.0),
@@ -97,6 +98,7 @@ class CreateOrJoin extends StatelessWidget {
             padding: EdgeInsets.only(left: 20.0),
             child: Column(
               children: [
+                //button to create home
                 Expanded(
                   child: GestureDetector(
                     onTap: () {
@@ -123,7 +125,7 @@ class CreateOrJoin extends StatelessWidget {
                   ),
                 ),
 
-//create the divider here
+                //create the divider here
                 SizedBox(
                   width: MediaQuery.of(context).size.width * 0.8,
                   child: Row(
@@ -155,6 +157,7 @@ class CreateOrJoin extends StatelessWidget {
                   ),
                 ),
 
+                //button to join home
                 Expanded(
                   child: GestureDetector(
                     onTap: () {
@@ -186,59 +189,3 @@ class CreateOrJoin extends StatelessWidget {
         ));
   }
 }
-
-//testing purpose
-// //confirmation dialog box
-// void _showConfirmationDialog(
-//     BuildContext context, int type, Function onPressed) {
-//   String message = '';
-//   //1 - create home
-//   //2 - join home
-//   if (type == 1) {
-//     message = 'You have selected create home';
-//   } else if (type == 2) {
-//     message = 'You have selected join home';
-//   }
-
-//   showDialog(
-//     context: context,
-//     builder: (BuildContext context) {
-//       return AlertDialog(
-//         title: const Text('Confirm'),
-//         content: Text(message),
-//         actions: <Widget>[
-//           TextButton(
-//             onPressed: () => Navigator.of(context).pop(),
-//             style: ButtonStyle(
-//               foregroundColor: MaterialStateProperty.all<Color>(Colors.amber),
-//             ),
-//             child: Text('CANCEL'),
-//           ),
-//           ElevatedButton(
-//             onPressed: () {
-//               onPressed();
-//               Navigator.of(context).pop();
-//               if (type == 1) {
-//                 Navigator.push(
-//                   context,
-//                   MaterialPageRoute(builder: (context) => NewHomeScreen()),
-//                 );
-//               } else if (type == 2) {
-//                 Navigator.push(
-//                   context,
-//                   MaterialPageRoute(builder: (context) => JoinHomeScreen()),
-//                 );
-//               }
-//             },
-//             style: ButtonStyle(
-//               foregroundColor: MaterialStateProperty.all<Color>(Colors.amber),
-//               backgroundColor:
-//                   MaterialStateProperty.all<Color>(Color(0xFF103465)),
-//             ),
-//             child: Text('OK'),
-//           ),
-//         ],
-//       );
-//     },
-//   );
-// }
