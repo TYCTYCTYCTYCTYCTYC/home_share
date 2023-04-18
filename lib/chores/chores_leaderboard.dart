@@ -31,6 +31,8 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
     if (mounted) {
       setState(() {
         _choresPoints = choresPoints;
+
+        //sort members according to score
         _choresPoints
             .sort((a, b) => b.effortPoints!.compareTo(a.effortPoints!));
       });
@@ -103,6 +105,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                   ));
             },
           ),
+          //show text when no data for leaderboard
           child: Center(
             child: Text(
               'No data yet, start doing chores to beat your housemate high scores!',

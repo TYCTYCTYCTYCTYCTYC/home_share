@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
 import 'package:home_share/main.dart';
 import 'package:home_share/chores/chores_form_page.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class Chore {
   final int choreId;
@@ -90,22 +90,22 @@ class _ChoresState extends State<Chores> {
     final currentUser = Supabase.instance.client.auth.currentUser;
     final currentUserId = currentUser?.id;
 
-    final response = await supabase
+    final currentHome = await supabase
         .from('user_home')
         .select('home_id')
         .eq('user_id', currentUserId)
         .single()
         .execute();
 
-    final homeId = response.data['home_id'] as int;
+    final homeId = currentHome.data['home_id'] as int;
 
-    final response2 = await supabase
+    final allHomeMembers = await supabase
         .from('user_home')
         .select('user_id')
         .eq('home_id', homeId)
         .execute();
 
-    final userIds = response2.data
+    final userIds = allHomeMembers.data
         .map<String>((item) => item['user_id'] as String)
         .toList();
 
@@ -132,6 +132,8 @@ class _ChoresState extends State<Chores> {
         padding: const EdgeInsets.all(10.0),
         child: Container(
             color: Colors.white,
+
+            //show text when no chores yet
             child: _chores.isEmpty
                 ? Visibility(
                     visible: true,
@@ -146,6 +148,8 @@ class _ChoresState extends State<Chores> {
                       ),
                     ),
                   )
+
+                //show list of chores
                 : ListView.builder(
                     itemCount: _chores.length,
                     itemBuilder: (BuildContext context, int index) {
@@ -177,7 +181,7 @@ class _ChoresState extends State<Chores> {
                                               isCompleted;
                                         });
                                       }
-
+                                      //update chore as completed
                                       await _chores[index].updateIsCompleted(
                                           _chores[index].choreId, isCompleted);
                                       if (isCompleted) {
@@ -203,17 +207,14 @@ class _ChoresState extends State<Chores> {
                                           });
                                         }
 
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          SnackBar(
-                                            content: Text('Chore completed!',
-                                                style: GoogleFonts.arvo(
-                                                    textStyle: const TextStyle(
-                                                        color: Colors.black,
-                                                        fontWeight:
-                                                            FontWeight.bold))),
-                                            backgroundColor: Colors.amber,
-                                          ),
+                                        Fluttertoast.showToast(
+                                          msg: 'Chore completed!',
+                                          toastLength: Toast.LENGTH_SHORT,
+                                          gravity: ToastGravity.CENTER,
+                                          timeInSecForIosWeb: 1,
+                                          backgroundColor: Colors.amber,
+                                          textColor: Colors.black,
+                                          fontSize: 16.0,
                                         );
                                       }
                                     },
@@ -303,6 +304,8 @@ class _ChoresState extends State<Chores> {
                     },
                   )),
       ),
+
+      //floating + button to add chores
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           // Navigate to ChoreFormPage

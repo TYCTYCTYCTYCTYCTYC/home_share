@@ -16,31 +16,11 @@ class _MainChoresPageState extends State<MainChoresPage>
   int index = 0;
   String? statsIndex;
 
-// Retrieve data from shared preferences
-  Future<String?> readFromSharedPrefs(String key) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? value = prefs.getString(key);
-    return value;
-  }
-
   @override
   void initState() {
     super.initState();
     _tabController = TabController(
         length: 3, vsync: this); //set the length of the number of tabs
-    //read
-    SharedPreferences.getInstance()
-        .then((value) => {statsIndex = value.getString('statsIndex')})
-        .then((value) => {
-              print(statsIndex),
-              setState(() {
-                if (statsIndex == null) {
-                  index = 0;
-                } else {
-                  index = int.parse(statsIndex!);
-                }
-              })
-            });
   }
 
   @override
