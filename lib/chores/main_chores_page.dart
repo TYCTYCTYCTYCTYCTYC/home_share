@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:home_share/chores/chores.dart';
 import 'package:home_share/chores/chores_leaderboard.dart';
 import 'package:home_share/chores/chores_statistics.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MainChoresPage extends StatefulWidget {
   @override
@@ -12,12 +13,34 @@ class MainChoresPage extends StatefulWidget {
 class _MainChoresPageState extends State<MainChoresPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  int index = 0;
+  String? statsIndex;
+
+// Retrieve data from shared preferences
+  Future<String?> readFromSharedPrefs(String key) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? value = prefs.getString(key);
+    return value;
+  }
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(
         length: 3, vsync: this); //set the length of the number of tabs
+    //read
+    SharedPreferences.getInstance()
+        .then((value) => {statsIndex = value.getString('statsIndex')})
+        .then((value) => {
+              print(statsIndex),
+              setState(() {
+                if (statsIndex == null) {
+                  index = 0;
+                } else {
+                  index = int.parse(statsIndex!);
+                }
+              })
+            });
   }
 
   @override
@@ -83,7 +106,7 @@ class _MainChoresPageState extends State<MainChoresPage>
                 // second tab view
                 LeaderboardPage(),
                 // third tab view
-                ChoresStatisticsPage(),
+                ChoresStatisticsPage(index: index),
               ],
             ),
           )

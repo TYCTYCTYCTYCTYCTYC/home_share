@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:home_share/main.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ChoresStatisticsPage extends StatefulWidget {
+  final int index;
+
+  ChoresStatisticsPage({required this.index});
+
   @override
   _ChoresStatisticsPageState createState() => _ChoresStatisticsPageState();
 }
@@ -19,10 +24,21 @@ class _ChoresStatisticsPageState extends State<ChoresStatisticsPage> {
   List<ChartData> _chartData = [];
   List<PointsData> _pointsData = [];
 
+// Save data to shared preferences
+  Future<void> saveToSharedPrefs(String key, String value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString(key, value);
+  }
+
   @override
   void initState() {
     super.initState();
     getDataStatistics();
+    setState(() {
+      _selectedFilterIndex = widget.index;
+      //store
+      saveToSharedPrefs('statsIndex', widget.index.toString());
+    });
   }
 
   Future<void> getDataStatistics() async {
