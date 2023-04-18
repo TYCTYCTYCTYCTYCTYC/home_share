@@ -125,18 +125,16 @@ class _FridgeState extends State<Fridge> {
                                   children: [
                                     Text(
                                       "No items",
-                                      style: GoogleFonts.amaticSc(
-                                        fontSize: 25,
+                                      style: GoogleFonts.arvo(
+                                        fontSize: 18,
                                         color: Colors.black,
-                                        fontWeight: FontWeight.bold,
                                       ),
                                     ),
                                     Text(
                                       "Tap on the '+' button below to add new item!",
-                                      style: GoogleFonts.amaticSc(
-                                        fontSize: 25,
+                                      style: GoogleFonts.arvo(
+                                        fontSize: 15,
                                         color: Colors.black,
-                                        fontWeight: FontWeight.bold,
                                       ),
                                     ),
                                   ],
