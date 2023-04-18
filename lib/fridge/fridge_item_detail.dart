@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../home.dart';
 import 'fridge_item_appbar.dart';
 import 'fridge.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'dart:math' as math;
 
 class FridgeItemDetail extends StatefulWidget {
   final dynamic item;
@@ -34,7 +32,6 @@ class _FridgeItemDetailState extends State<FridgeItemDetail> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
-        // Wrap ListView with SingleChildScrollView
         child: Column(
           children: [
             FridgeItemAppBar(),

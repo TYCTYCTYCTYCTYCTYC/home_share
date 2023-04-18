@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:home_share/fridge/fridge_item_detail.dart';
-
-import 'package:home_share/main.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:home_share/utils/constants.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'fridge_form.dart';
 
-Color clr = const Color.fromARGB(255, 165, 198, 255);
 Color bgclr = Colors.white;
 Color clr3 = const Color(0xFF103465);
 
@@ -73,7 +71,7 @@ class _FridgeState extends State<Fridge> {
     } else if (expiryStatus.contains('Will Expire in')) {
       return Color.fromARGB(255, 17, 169, 27);
     } else {
-      return Colors.transparent; // or any other default color
+      return Colors.transparent;
     }
   }
 
@@ -302,7 +300,7 @@ class _FridgeState extends State<Fridge> {
         _rowItems = response2.data as List<dynamic>;
       });
     } catch (error) {
-      //context.showErrorSnackBar(message: 'Unexpected error has occurred');
+      context.showErrorSnackBar(message: 'Unexpected error has occurred');
     }
   }
 
@@ -310,11 +308,4 @@ class _FridgeState extends State<Fridge> {
     tz.initializeTimeZones();
     tz.setLocalLocation(tz.getLocation('Asia/Kuala_Lumpur'));
   }
-  // void _deleteItem(int index) async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   setState(() {
-  //     items.removeAt(index);
-  //   });
-  //   prefs.setString('items_key', FridgeItem.encode(items));
-  // }
 }
