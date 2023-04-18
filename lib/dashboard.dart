@@ -687,7 +687,7 @@ class _DashBoardState extends State<DashBoard> with WidgetsBindingObserver {
                     //Chores
                     Container(
                       padding: const EdgeInsets.all(10),
-                      margin: const EdgeInsets.symmetric(horizontal: 16),
+                      margin: const EdgeInsets.symmetric(horizontal: 10),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(
