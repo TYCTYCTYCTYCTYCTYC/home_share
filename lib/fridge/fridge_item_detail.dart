@@ -26,8 +26,8 @@ class _FridgeItemDetailState extends State<FridgeItemDetail> {
         .from('fridge')
         .delete()
         .match({'id': itemId}).execute();
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (_) => const Home(initialIndex: 1)));
+    Navigator.push(context,
+        MaterialPageRoute(builder: (_) => const Home(initialIndex: 1)));
   }
 
   @override

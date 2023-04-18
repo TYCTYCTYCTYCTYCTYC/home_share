@@ -115,7 +115,12 @@ class _FridgeState extends State<Fridge> {
                     height: 280,
                     child: _rowItems == null
                         ? const CircularProgressIndicator()
-                        : _rowItems!.length == 0
+                        : _rowItems
+                                    .where((item) =>
+                                        item['category'] == categories[index])
+                                    .toList()
+                                    .length ==
+                                0
                             ? Center(
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
