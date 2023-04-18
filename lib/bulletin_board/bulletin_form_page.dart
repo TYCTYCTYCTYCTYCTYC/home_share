@@ -52,10 +52,14 @@ class _BulletinFormPageState extends State<BulletinFormPage> {
             'Failed to create bulletin message: ${response.status}');
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error submitting post: $e'),
-        ),
+      Fluttertoast.showToast(
+        msg: 'Error occured.',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.amber,
+        textColor: Colors.black,
+        fontSize: 16.0,
       );
     }
     Navigator.push(
