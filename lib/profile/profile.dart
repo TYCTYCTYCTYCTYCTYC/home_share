@@ -7,6 +7,7 @@ import 'package:home_share/profile/avatar.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:date_time_picker/date_time_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Profile extends StatefulWidget {
   @override
@@ -67,7 +68,7 @@ class _ProfileState extends State<Profile> {
     } catch (error) {
       //context.showErrorSnackBar(message: 'Unexpected exception occurred');
     }
-    if(mounted){
+    if (mounted) {
       setState(() {
         _loading = false;
       });
@@ -110,7 +111,7 @@ class _ProfileState extends State<Profile> {
       return;
     }
 
-    if(mounted){
+    if (mounted) {
       setState(() {
         _avatarUrl = imageUrl;
       });
@@ -160,46 +161,100 @@ class _ProfileState extends State<Profile> {
     super.dispose();
   }
 
+// Function to get user profile data
   void getProfileData() async {
-    //get from authentication table
-    final currentUser = Supabase.instance.client.auth.currentUser;
-    final currentUserId = currentUser?.id;
-    final currentUserEmail = currentUser?.email ?? '';
+    // Check if data is available in shared preferences
+    final sharedPreferences = await SharedPreferences.getInstance();
+    final bool isUsernameAvailable = sharedPreferences.containsKey('username');
+    final bool isPhoneAvailable = sharedPreferences.containsKey('phone');
+    final bool isEmailAvailable = sharedPreferences.containsKey('email');
+    final bool isBdayAvailable = sharedPreferences.containsKey('bday');
+    final bool isRoomNumberAvailable =
+        sharedPreferences.containsKey('roomNumber');
 
-    final response = await supabase
-        .from('profiles')
-        .select('username, phone_number, birthdate, room_number')
-        .eq('id', currentUserId)
-        .execute();
+    print('isPhoneAvailable');
+    print(isPhoneAvailable);
 
-    print(response.data);
-    final firstElement = response.data[0];
-    final birthdate = firstElement['birthdate'];
-    print(birthdate.runtimeType);
+    if (!isUsernameAvailable ||
+        !isPhoneAvailable ||
+        !isEmailAvailable ||
+        !isBdayAvailable ||
+        !isRoomNumberAvailable) {
+      // Data is not available in shared preferences, fetch from Supabase
+      final currentUser = Supabase.instance.client.auth.currentUser;
+      final currentUserId = currentUser?.id;
+      final currentUserEmail = currentUser?.email ?? '';
 
-    if (response.data != null) {
-      final List<dynamic> data = response.data!;
+      final response = await supabase
+          .from('profiles')
+          .select('username, phone_number, birthdate, room_number')
+          .eq('id', currentUserId)
+          .execute();
+
+      print(response.data);
+      final firstElement = response.data[0];
+      final birthdate = firstElement['birthdate'];
+      print(birthdate.runtimeType);
+
+      if (response.data != null) {
+        final List<dynamic> data = response.data!;
+        setState(() {
+          _username = data[0]['username'];
+          _nameController.text = _username;
+
+          _emailController.text = currentUserEmail;
+
+          _phone = data[0]['phone_number'];
+          _phoneController.text =
+              _phone?.toString() ?? 'Please update your phone';
+
+          _birthday = data[0]['birthdate'] != null
+              ? DateTime.tryParse(data[0]['birthdate'])
+              : null;
+
+          _birthdayController.text = _birthday != null
+              ? DateFormat('yyyy-MM-dd').format(_birthday!).toString()
+              : 'Please update your birthday';
+
+          _roomNumber = data[0]['room_number'];
+          _roomNumberController.text =
+              _roomNumber?.toString() ?? 'Please update your room number';
+        });
+
+        // Store data in shared preferences for future use
+        sharedPreferences.setString('username', _username);
+        sharedPreferences.setString('phone', _phone?.toString() ?? '');
+        sharedPreferences.setString('email', currentUserEmail);
+        sharedPreferences.setString(
+            'bday',
+            _birthday != null
+                ? DateFormat('yyyy-MM-dd').format(_birthday!).toString()
+                : '');
+        sharedPreferences.setString('roomNumber', _roomNumber ?? '');
+      }
+    } else {
+      // Data is available in shared preferences, retrieve and set in state
       setState(() {
-        _username = data[0]['username'];
-        _nameController.text = _username;
+        _nameController.text = sharedPreferences.getString('username') ?? '';
 
-        _emailController.text = currentUserEmail;
+        _emailController.text = sharedPreferences.getString('email') ?? '';
 
-        _phone = data[0]['phone_number'];
+        _phone = sharedPreferences.getString('phone') ?? '';
         _phoneController.text =
-            _phone?.toString() ?? 'Please update your phone';
+            _phone?.isNotEmpty == true ? _phone! : 'Please update your phone';
 
-        _birthday = data[0]['birthdate'] != null
-            ? DateTime.tryParse(data[0]['birthdate'])
-            : null;
-
-        _birthdayController.text = _birthday != null
-            ? DateFormat('yyyy-MM-dd').format(_birthday!).toString()
+        final bdayString = sharedPreferences.getString('bday');
+        _birthdayController.text = bdayString != null
+            ? DateFormat('yyyy-MM-dd')
+                .format(DateTime.parse(bdayString))
+                .toString()
+                .substring(0, 10) //show only date
             : 'Please update your birthday';
 
-        _roomNumber = data[0]['room_number'];
-        _roomNumberController.text =
-            _roomNumber?.toString() ?? 'Please update your room number';
+        _roomNumber = sharedPreferences.getString('roomNumber') ?? '';
+        _roomNumberController.text = _roomNumber?.isNotEmpty == true
+            ? _roomNumber!
+            : 'Please update your room number';
       });
     }
   }
@@ -284,6 +339,25 @@ class _ProfileState extends State<Profile> {
                                     .update({'username': _username})
                                     .eq('id', currentUserId)
                                     .execute();
+
+                                // Update username in shared preferences
+                                final sharedPreferences =
+                                    await SharedPreferences.getInstance();
+                                sharedPreferences.setString(
+                                    'username', _username);
+
+                                Fluttertoast.showToast(
+                                  msg: 'Update Sucess!',
+                                  toastLength: Toast.LENGTH_SHORT,
+                                  gravity: ToastGravity.CENTER,
+                                  timeInSecForIosWeb: 1,
+                                  backgroundColor: Colors.amber,
+                                  textColor: Colors.black,
+                                  fontSize: 16.0,
+                                );
+
+                                // Close keyboard
+                                FocusScope.of(context).unfocus();
 
                                 _nameFocusNode.unfocus();
                               }
@@ -374,6 +448,14 @@ class _ProfileState extends State<Profile> {
                                     );
                                   },
                                 );
+
+                                  // Update email in shared preferences
+                                final sharedPreferences =
+                                    await SharedPreferences.getInstance();
+                                sharedPreferences.setString(
+                                    'email', newEmail);
+
+                                
                                 if (isConfirmed != null && isConfirmed) {
                                   await updateUserAndNavigateToLoginPage(
                                       context, newEmail);
@@ -448,6 +530,24 @@ class _ProfileState extends State<Profile> {
                                     .eq('id', currentUserId)
                                     .execute();
 
+                                // Update phone number in shared preferences
+                                final sharedPreferences =
+                                    await SharedPreferences.getInstance();
+                                sharedPreferences.setString(
+                                    'phone', _phone ?? '');
+
+                                Fluttertoast.showToast(
+                                  msg: 'Update Sucess!',
+                                  toastLength: Toast.LENGTH_SHORT,
+                                  gravity: ToastGravity.CENTER,
+                                  timeInSecForIosWeb: 1,
+                                  backgroundColor: Colors.amber,
+                                  textColor: Colors.black,
+                                  fontSize: 16.0,
+                                );
+
+                                // Close keyboard
+                                FocusScope.of(context).unfocus();
                                 _nameFocusNode.unfocus();
                               }
                             },
@@ -522,6 +622,25 @@ class _ProfileState extends State<Profile> {
                                     })
                                     .eq('id', currentUserId)
                                     .execute();
+
+                                // Update birthday in shared preferences
+                                final sharedPreferences =
+                                    await SharedPreferences.getInstance();
+                                sharedPreferences.setString(
+                                    'bday', _birthday?.toString() ?? '');
+
+                                Fluttertoast.showToast(
+                                  msg: 'Update Sucess!',
+                                  toastLength: Toast.LENGTH_SHORT,
+                                  gravity: ToastGravity.CENTER,
+                                  timeInSecForIosWeb: 1,
+                                  backgroundColor: Colors.amber,
+                                  textColor: Colors.black,
+                                  fontSize: 16.0,
+                                );
+
+                                // Close keyboard
+                                FocusScope.of(context).unfocus();
                               }
                               setState(() {
                                 _showSaveButton = false;
@@ -594,6 +713,25 @@ class _ProfileState extends State<Profile> {
                                     .update({'room_number': _roomNumber})
                                     .eq('id', currentUserId)
                                     .execute();
+
+                                // Update room number in shared preferences
+                                final sharedPreferences =
+                                    await SharedPreferences.getInstance();
+                                sharedPreferences.setString(
+                                    'roomNumber', _roomNumber ?? '');
+
+                                Fluttertoast.showToast(
+                                  msg: 'Update Sucess!',
+                                  toastLength: Toast.LENGTH_SHORT,
+                                  gravity: ToastGravity.CENTER,
+                                  timeInSecForIosWeb: 1,
+                                  backgroundColor: Colors.amber,
+                                  textColor: Colors.black,
+                                  fontSize: 16.0,
+                                );
+
+                                // Close keyboard
+                                FocusScope.of(context).unfocus();
 
                                 _roomNumberFocusNode.unfocus();
                               }
