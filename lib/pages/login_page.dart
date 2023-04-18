@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:home_share/home.dart';
-import 'package:home_share/dashboard.dart';
 import 'package:home_share/utils/constants.dart';
 import 'package:home_share/pages/register_page.dart';
 import 'package:home_share/pages/create_or_join.dart';
@@ -33,6 +32,7 @@ class _LoginPageState extends State<LoginPage> {
         password: _passwordController.text,
       );
 
+      //check if user has home
       final currentUser = response.user;
       final userId = currentUser?.id;
 
@@ -82,11 +82,7 @@ class _LoginPageState extends State<LoginPage> {
         child: SingleChildScrollView(
           child: Padding(
             padding: EdgeInsets.fromLTRB(
-                //const EdgeInsets.fromLTRB(this.left, this.top, this.right, this.bottom);
-                20,
-                MediaQuery.of(context).size.height * 0.1,
-                20,
-                10),
+                20, MediaQuery.of(context).size.height * 0.1, 20, 10),
             child: Column(
               children: <Widget>[
                 Image.asset(
@@ -150,6 +146,8 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                 ),
+
+                //if user dont have account, bring them to register page
                 signUpOption()
               ],
             ),

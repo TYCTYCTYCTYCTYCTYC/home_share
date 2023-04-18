@@ -32,6 +32,7 @@ class JoinHomeScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            //user to enter home code of home they want to join
             const Text(
               'Enter Home Code:',
               style: TextStyle(fontSize: 20),
@@ -109,12 +110,12 @@ class JoinHomeScreen extends StatelessWidget {
                         return;
                       }
 
-// home found, continue with your code
-
+                      // home found, continue
                       final currentUser =
                           Supabase.instance.client.auth.currentUser;
                       final userId = currentUser?.id;
 
+                      //db function: create user_home record
                       await Supabase.instance.client
                           .rpc('join_home_with_user_id', params: {
                         'home_code': homeCode,

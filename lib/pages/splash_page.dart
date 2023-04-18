@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
-import 'package:home_share/pages/register_page.dart';
 import 'package:home_share/utils/constants.dart';
 import 'package:home_share/home.dart';
-import 'package:home_share/main.dart';
 import 'package:home_share/pages/create_or_join.dart';
 import 'package:home_share/pages/login_page.dart';
 
@@ -28,6 +25,8 @@ class SplashPageState extends State<SplashPage> {
     await Future.delayed(Duration.zero);
 
     final session = Supabase.instance.client.auth.currentSession;
+
+    //if not logged in, go to login page
     if (session == null) {
       Navigator.of(context)
           .pushAndRemoveUntil(LoginPage.route(), (route) => false);
@@ -38,10 +37,14 @@ class SplashPageState extends State<SplashPage> {
           .eq('user_id', Supabase.instance.client.auth.currentUser!.id)
           .execute();
 
+      //if user don't have home, go to createOrJoin.dart
       if (homeQuery.data.length == 0) {
         Navigator.of(context)
             .pushAndRemoveUntil(CreateOrJoin.route(), (route) => false);
-      } else {
+      }
+
+      //if user logged in and has home, go to Home
+      else {
         Navigator.of(context)
             .pushAndRemoveUntil(Home.route(), (route) => false);
       }
