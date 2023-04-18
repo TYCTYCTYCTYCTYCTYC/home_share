@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:home_share/bulletin_board/bulletin_board.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 import 'package:home_share/main.dart';
 
 class BulletinFormPage extends StatefulWidget {
@@ -50,7 +48,8 @@ class _BulletinFormPageState extends State<BulletinFormPage> {
             backgroundColor: Colors.grey,
             textColor: Colors.black,
             fontSize: 16.0);
-        throw Exception('Failed to create bulletin message: ${response.status}');
+        throw Exception(
+            'Failed to create bulletin message: ${response.status}');
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -86,6 +85,7 @@ class _BulletinFormPageState extends State<BulletinFormPage> {
         child: Form(
           key: _formKey,
           child: Column(
+            //user input fields
             children: [
               TextFormField(
                 decoration: const InputDecoration(
@@ -116,6 +116,7 @@ class _BulletinFormPageState extends State<BulletinFormPage> {
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () {
+                  //error handling: all fields must not be empty
                   if ((_titleController.text?.isEmpty ?? true) ||
                       (_messageController.text?.isEmpty ?? true)) {
                     ScaffoldMessenger.of(context).showSnackBar(

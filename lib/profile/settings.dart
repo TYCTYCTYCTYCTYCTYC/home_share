@@ -4,6 +4,7 @@ import 'package:home_share/main.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class HomeMembers {
   final String username;
@@ -50,10 +51,12 @@ class _SettingsPageState extends State<SettingsPage> {
           .select()
           .eq('id', userId)
           .single() as Map;
-
-      //maybe still need to add something
     } catch (error) {
-      print('Eror getting the user data');
+      Fluttertoast.showToast(
+        msg: 'Unexpected error occurred',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+      );
     }
 
     if (mounted) {
@@ -100,23 +103,22 @@ class _SettingsPageState extends State<SettingsPage> {
     final currentUser = Supabase.instance.client.auth.currentUser;
     final currentUserId = currentUser?.id;
 
-    final response = await supabase
+    final currentHome = await supabase
         .from('user_home')
         .select('home_id')
         .eq('user_id', currentUserId)
         .execute();
 
-    final home_id = response.data[0]['home_id'];
+    final home_id = currentHome.data[0]['home_id'];
 
-    final response2 = await supabase
+    final userData = await supabase
         .from('home')
         .select('name, code, address')
         .eq('id', home_id)
         .execute();
 
-    if (response.data != null) {
-      //response2 will return name, code, address
-      final List<dynamic> data = response2.data!;
+    if (userData.data != null) {
+      final List<dynamic> data = userData.data!;
       if (mounted) {
         setState(() {
           _homeName = data[0]['name'];
@@ -136,32 +138,32 @@ class _SettingsPageState extends State<SettingsPage> {
     final currentUser = Supabase.instance.client.auth.currentUser;
     final userId = currentUser?.id;
 
-    final response = await supabase
+    final currentHome = await supabase
         .from('user_home')
         .select('home_id')
         .eq('user_id', userId)
         .single()
         .execute();
 
-    final homeId = response.data['home_id'] as int;
+    final homeId = currentHome.data['home_id'] as int;
 
-    final response2 = await supabase
+    final allHomeMembers = await supabase
         .from('user_home')
         .select('user_id')
         .eq('home_id', homeId)
         .execute();
 
-    final userIds = response2.data
+    final userIds = allHomeMembers.data
         .map<String>((item) => item['user_id'] as String)
         .toList();
 
-    final result = await supabase
+    final profileAndUsername = await supabase
         .from('profiles')
         .select('username, avatar_url')
         .in_('id', userIds)
         .execute();
 
-    final data = result.data as List<dynamic>;
+    final data = profileAndUsername.data as List<dynamic>;
     final updatedUsernames = data
         .map((dynamic item) => {
               'username': item['username'] as String,
@@ -203,6 +205,8 @@ class _SettingsPageState extends State<SettingsPage> {
                     ),
                   ),
                 ),
+
+                //home detailes
                 Container(
                   decoration: BoxDecoration(
                     border: Border.all(
@@ -254,6 +258,8 @@ class _SettingsPageState extends State<SettingsPage> {
                           ),
                         ),
                       ),
+
+                      //when user click text field, show Save button
                       Visibility(
                         visible: (_homeNameFocusNode.hasFocus) ? true : false,
                         child: Padding(
@@ -267,15 +273,15 @@ class _SettingsPageState extends State<SettingsPage> {
                               if (_formKey.currentState?.validate() ?? false) {
                                 _formKey.currentState?.save();
 
-                                final response = await supabase
+                                final currentHome = await supabase
                                     .from('user_home')
                                     .select('home_id')
                                     .eq('user_id', currentUserId)
                                     .execute();
 
-                                final home_id = response.data[0]['home_id'];
+                                final home_id = currentHome.data[0]['home_id'];
 
-                                final response2 = await supabase
+                                await supabase
                                     .from('home')
                                     .update({'name': _homeName})
                                     .eq('id', home_id)
@@ -325,7 +331,7 @@ class _SettingsPageState extends State<SettingsPage> {
                             controller: _homeCodeController,
                             validator: (value) {
                               if (value?.isEmpty ?? true) {
-                                return 'please enter your home code';
+                                return 'Please enter your home code';
                               }
                               return null;
                             },
@@ -355,15 +361,15 @@ class _SettingsPageState extends State<SettingsPage> {
                               if (_formKey.currentState?.validate() ?? false) {
                                 _formKey.currentState?.save();
 
-                                final response = await supabase
+                                final currentHome = await supabase
                                     .from('user_home')
                                     .select('home_id')
                                     .eq('user_id', currentUserId)
                                     .execute();
 
-                                final home_id = response.data[0]['home_id'];
+                                final home_id = currentHome.data[0]['home_id'];
 
-                                final response2 = await supabase
+                                await supabase
                                     .from('home')
                                     .update({'code': _homeCode})
                                     .eq('id', home_id)
@@ -445,15 +451,15 @@ class _SettingsPageState extends State<SettingsPage> {
                               if (_formKey.currentState?.validate() ?? false) {
                                 _formKey.currentState?.save();
 
-                                final response = await supabase
+                                final currentHome = await supabase
                                     .from('user_home')
                                     .select('home_id')
                                     .eq('user_id', currentUserId)
                                     .execute();
 
-                                final home_id = response.data[0]['home_id'];
+                                final home_id = currentHome.data[0]['home_id'];
 
-                                final response2 = await supabase
+                                await supabase
                                     .from('home')
                                     .update({'address': _homeAddress})
                                     .eq('id', home_id)
@@ -498,8 +504,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                 child: Column(
                                   children: [
                                     Container(
-                                        height: usernames.length *
-                                            55.0, // adjust this to fit your needs
+                                        height: usernames.length * 55.0,
                                         child: ListView.builder(
                                           physics:
                                               NeverScrollableScrollPhysics(),
@@ -523,7 +528,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                                     ? Text(
                                                         username['username'][0]
                                                             .toUpperCase(),
-                                                        style: TextStyle(
+                                                        style: const TextStyle(
                                                           fontWeight:
                                                               FontWeight.bold,
                                                           color: Colors.white,
@@ -533,7 +538,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                               ),
                                               title: Text(username['username']),
                                               contentPadding:
-                                                  EdgeInsets.symmetric(
+                                                  const EdgeInsets.symmetric(
                                                       vertical: 0.0,
                                                       horizontal: 5.0),
                                             );
@@ -549,39 +554,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
                 const SizedBox(height: 30.0),
 
-                //dark mode
-                // const ListTile(
-                //   leading: Icon(Icons.settings, color: Colors.black),
-                //   title: Text(
-                //     'Genral Settings',
-                //     style:
-                //         TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-                //   ),
-                // ),
-
-                // const SizedBox(height: 10.0),
-
-                // //dark mode
-                // SwitchListTile(
-                //   title: const Text('Dark Mode'),
-                //   value: false,
-                //   onChanged: (value) {
-
-                //   },
-                // ),
-
-                // const SizedBox(height: 20.0),
-
-                // const ListTile(
-                //   leading: Icon(Icons.lock, color: Colors.black),
-                //   title: Text(
-                //     'Privacy Settings',
-                //     style:
-                //         TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-                //   ),
-                // ),
-
-                // const Divider(),
+                //Logout button
                 Align(
                     alignment: Alignment.topRight,
                     child: SizedBox(
@@ -604,9 +577,10 @@ class _SettingsPageState extends State<SettingsPage> {
                               ),
                             ),
                             onTap: () async {
-
-                                final sharedPreferences = await SharedPreferences.getInstance();
-                                sharedPreferences.clear();
+                              //clear shared preferences from mobile device upon logout
+                              final sharedPreferences =
+                                  await SharedPreferences.getInstance();
+                              sharedPreferences.clear();
 
                               Navigator.pushReplacement(
                                 context,

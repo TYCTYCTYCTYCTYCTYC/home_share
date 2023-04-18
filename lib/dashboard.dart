@@ -4,12 +4,8 @@ import 'package:home_share/main.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
-
 import 'package:google_fonts/google_fonts.dart';
 import 'package:home_share/bulletin_board/bulletin_board.dart';
-import 'package:home_share/chores/chores.dart';
-
-import 'fridge/fridge.dart';
 import 'fridge/fridge_item_detail.dart';
 
 class DashBoard extends StatefulWidget {
@@ -38,55 +34,12 @@ class _DashBoardState extends State<DashBoard> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    myFunction();
+    WelcomeMessage();
     loadDB();
     fetchAndSetBulletin();
     getChoreStatistics();
     getLeaderboardStatics();
     retrieveMySchedule();
-  }
-
-  String getExpiryStatus(String dateStr) {
-    DateTime expiryDate = DateTime.parse(dateStr);
-    DateTime now = DateTime.now();
-
-    final diff = expiryDate.difference(now).inDays;
-
-    if (diff == 0) {
-      return 'Will Expire Today';
-    } else if (diff < 0) {
-      return 'Expired ${-diff} days ago';
-    } else {
-      return 'Will Expire in $diff days';
-    }
-  }
-
-  Color getColorBasedOnExpiry(String dateStr) {
-    String expiryStatus = getExpiryStatus(dateStr);
-
-    if (expiryStatus.contains('Will Expire Today')) {
-      return Colors.black;
-    } else if (expiryStatus.contains('days ago')) {
-      return Colors.white;
-    } else if (expiryStatus.contains('Will Expire in')) {
-      return Colors.white;
-    } else {
-      // Return a default color if no matching pattern is found
-      return Colors.black;
-    }
-  }
-
-  Color getBackgroundColor(String dateStr) {
-    String expiryStatus = getExpiryStatus(dateStr);
-    if (expiryStatus.contains('Will Expire Today')) {
-      return Colors.yellow;
-    } else if (expiryStatus.contains('days ago')) {
-      return Colors.red;
-    } else if (expiryStatus.contains('Will Expire in')) {
-      return const Color.fromARGB(255, 17, 169, 27);
-    } else {
-      return Colors.transparent; // or any other default color
-    }
   }
 
   @override
@@ -104,10 +57,11 @@ class _DashBoardState extends State<DashBoard> with WidgetsBindingObserver {
     }
   }
 
-  Future<void> myFunction() async {
+  Future<void> WelcomeMessage() async {
     final currentUser = Supabase.instance.client.auth.currentUser;
     final userId = currentUser?.id;
 
+    //get current user's username and home name
     final homeAndUser = await supabase
         .rpc('get_home_and_user_info', params: {'user_id': userId})
         .select()
@@ -123,6 +77,7 @@ class _DashBoardState extends State<DashBoard> with WidgetsBindingObserver {
     }
   }
 
+  //Bulletin
   Future<void> fetchAndSetBulletin() async {
     final bulletins = await fetchBulletin();
     if (mounted) {
@@ -132,6 +87,95 @@ class _DashBoardState extends State<DashBoard> with WidgetsBindingObserver {
     }
   }
 
+//Bulletin
+  Future<List<Post>> fetchBulletin() async {
+    final currentUser = Supabase.instance.client.auth.currentUser;
+    final userId = currentUser?.id;
+
+    final response = await supabase
+        .from('user_home')
+        .select('home_id')
+        .eq('user_id', userId)
+        .single()
+        .execute();
+
+    final homeId = response.data['home_id'] as int;
+
+    final response2 = await supabase
+        .from('user_home')
+        .select('user_id')
+        .eq('home_id', homeId)
+        .execute();
+
+    final userIds = response2.data
+        .map<String>((item) => item['user_id'] as String)
+        .toList();
+
+    final response3 = await supabase
+        .from('bulletin_board')
+        .select()
+        .in_('user_id', userIds)
+        .order('created_at', ascending: false)
+        .limit(2)
+        .execute();
+
+    final data = response3.data as List<dynamic>;
+
+    final bulletins = await Future.wait(data.map((item) async {
+      final bulletin = await Post.fromJson(item);
+      return bulletin;
+    }));
+
+    return bulletins;
+  }
+
+//Fridge
+  String getExpiryStatus(String dateStr) {
+    DateTime expiryDate = DateTime.parse(dateStr);
+    DateTime now = DateTime.now();
+
+    final diff = expiryDate.difference(now).inDays;
+
+    if (diff == 0) {
+      return 'Will Expire Today';
+    } else if (diff < 0) {
+      return 'Expired ${-diff} days ago';
+    } else {
+      return 'Will Expire in $diff days';
+    }
+  }
+
+  //Fridge
+  Color getColorBasedOnExpiry(String dateStr) {
+    String expiryStatus = getExpiryStatus(dateStr);
+
+    if (expiryStatus.contains('Will Expire Today')) {
+      return Colors.black;
+    } else if (expiryStatus.contains('days ago')) {
+      return Colors.white;
+    } else if (expiryStatus.contains('Will Expire in')) {
+      return Colors.white;
+    } else {
+      // Return a default color if no matching pattern is found
+      return Colors.black;
+    }
+  }
+
+  //Fridge
+  Color getBackgroundColor(String dateStr) {
+    String expiryStatus = getExpiryStatus(dateStr);
+    if (expiryStatus.contains('Will Expire Today')) {
+      return Colors.yellow;
+    } else if (expiryStatus.contains('days ago')) {
+      return Colors.red;
+    } else if (expiryStatus.contains('Will Expire in')) {
+      return const Color.fromARGB(255, 17, 169, 27);
+    } else {
+      return Colors.transparent; // or any other default color
+    }
+  }
+
+  //Fridge
   Future<void> loadDB() async {
     int days = 7;
     try {
@@ -175,6 +219,7 @@ class _DashBoardState extends State<DashBoard> with WidgetsBindingObserver {
     }
   }
 
+  //Chore
   Future<void> getChoreStatistics() async {
     String startDateToString(DateTime date) {
       return date.toIso8601String();
@@ -225,6 +270,7 @@ class _DashBoardState extends State<DashBoard> with WidgetsBindingObserver {
     }
   }
 
+  //Chore
   Future<void> getLeaderboardStatics() async {
     final currentUser = Supabase.instance.client.auth.currentUser;
     final userId = currentUser?.id;
@@ -234,47 +280,6 @@ class _DashBoardState extends State<DashBoard> with WidgetsBindingObserver {
     data.sort((a, b) => b['points'] - a['points']);
     highestChorePoints = data.isNotEmpty ? data.first['points'] ?? 0 : 0;
     highestChoreUsername = data.isNotEmpty ? data.first['username'] ?? '' : '';
-  }
-
-  Future<List<Post>> fetchBulletin() async {
-    final currentUser = Supabase.instance.client.auth.currentUser;
-    final userId = currentUser?.id;
-
-    final response = await supabase
-        .from('user_home')
-        .select('home_id')
-        .eq('user_id', userId)
-        .single()
-        .execute();
-
-    final homeId = response.data['home_id'] as int;
-
-    final response2 = await supabase
-        .from('user_home')
-        .select('user_id')
-        .eq('home_id', homeId)
-        .execute();
-
-    final userIds = response2.data
-        .map<String>((item) => item['user_id'] as String)
-        .toList();
-
-    final response3 = await supabase
-        .from('bulletin_board')
-        .select()
-        .in_('user_id', userIds)
-        .order('created_at', ascending: false)
-        .limit(2)
-        .execute();
-
-    final data = response3.data as List<dynamic>;
-
-    final bulletins = await Future.wait(data.map((item) async {
-      final bulletin = await Post.fromJson(item);
-      return bulletin;
-    }));
-
-    return bulletins;
   }
 
   Future<void> retrieveMySchedule() async {
@@ -306,7 +311,7 @@ class _DashBoardState extends State<DashBoard> with WidgetsBindingObserver {
                 padding: const EdgeInsets.all(20.0),
                 child: Column(
                   children: [
-                    //home name
+                    //Welcome Message
                     homeName != null && username != null
                         ? Text(
                             'Welcome to $homeName, $username!',
@@ -489,7 +494,7 @@ class _DashBoardState extends State<DashBoard> with WidgetsBindingObserver {
                                       ],
                                     ),
                                     const SizedBox(height: 16),
-                                    Align(
+                                    const Align(
                                       alignment: Alignment.topLeft,
                                       child: Padding(
                                         padding:
@@ -610,8 +615,9 @@ class _DashBoardState extends State<DashBoard> with WidgetsBindingObserver {
                                                               height: 150,
                                                             ),
                                                             Padding(
-                                                              padding: EdgeInsets
-                                                                  .symmetric(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                          .symmetric(
                                                                       vertical:
                                                                           15.0),
                                                               child: Container(
@@ -633,8 +639,9 @@ class _DashBoardState extends State<DashBoard> with WidgetsBindingObserver {
                                                               ),
                                                             ),
                                                             Padding(
-                                                              padding: EdgeInsets
-                                                                  .symmetric(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                          .symmetric(
                                                                       vertical:
                                                                           10.0),
                                                               child: Container(
@@ -795,7 +802,7 @@ class _DashBoardState extends State<DashBoard> with WidgetsBindingObserver {
                               const SizedBox(width: 34),
                               Flexible(
                                 child: highestChorePoints == 0
-                                    ? Text(
+                                    ? const Text(
                                         "No one is leading, score some points to have your name on the dashboard!")
                                     : Text(
                                         "${highestChoreUsername} is the kakak of the week!"),
@@ -867,53 +874,6 @@ class _DashBoardState extends State<DashBoard> with WidgetsBindingObserver {
                             ],
                           ),
                           const SizedBox(height: 16),
-                          // Row(
-                          //   children: [
-                          //     Container(
-                          //       width: 45,
-                          //       height: 45,
-                          //       child: SfRadialGauge(
-                          //           enableLoadingAnimation: true,
-                          //           animationDuration: 1500,
-                          //           axes: [
-                          //             RadialAxis(
-                          //               minimum: 0,
-                          //               maximum: 100,
-                          //               showLabels: false,
-                          //               showTicks: false,
-                          //               axisLineStyle: AxisLineStyle(
-                          //                 thickness: 0.2,
-                          //                 cornerStyle: CornerStyle.bothCurve,
-                          //                 color: Colors.grey[700],
-                          //                 thicknessUnit: GaugeSizeUnit.factor,
-                          //               ),
-                          //               pointers: [
-                          //                 RangePointer(
-                          //                   value: notDone + done == 0
-                          //                       ? 0
-                          //                       : (done / (notDone + done)) *
-                          //                           100,
-                          //                   width: 0.2,
-                          //                   sizeUnit: GaugeSizeUnit.factor,
-                          //                   cornerStyle: CornerStyle.bothCurve,
-                          //                   color: const Color.fromARGB(
-                          //                       255, 237, 69, 57),
-                          //                 ),
-                          //               ],
-                          //             ),
-                          //           ]),
-                          //     ),
-                          //     const SizedBox(width: 20),
-                          //     Container(
-                          //         width: 230,
-                          //         child: choreStatistics.isEmpty
-                          //             ? Visibility(
-                          //                 visible: choreStatistics.isEmpty,
-                          //                 child: const Text(
-                          //                     'No messages available.'))
-                          //             : Text(choreStatistics)),
-                          //   ],
-                          // ),
                           (profileSchedule == null ||
                                   profileSchedule['schedule_url'] == null)
                               ? const Text(
@@ -942,7 +902,7 @@ class _DashBoardState extends State<DashBoard> with WidgetsBindingObserver {
                                                   child: PhotoView(
                                                     enableRotation: true,
                                                     backgroundDecoration:
-                                                        BoxDecoration(
+                                                        const BoxDecoration(
                                                       color: Colors.transparent,
                                                     ),
                                                     imageProvider: NetworkImage(
@@ -959,7 +919,7 @@ class _DashBoardState extends State<DashBoard> with WidgetsBindingObserver {
                                                     Navigator.pop(
                                                         dialogContext);
                                                   },
-                                                  child: Text('Close'),
+                                                  child: const Text('Close'),
                                                 ),
                                               ),
                                             ],
