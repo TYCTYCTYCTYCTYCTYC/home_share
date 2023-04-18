@@ -504,7 +504,7 @@ class _DashBoardState extends State<DashBoard> with WidgetsBindingObserver {
                                 )
                               : Container(
                                   height:
-                                      MediaQuery.of(context).size.height / 2.3,
+                                      MediaQuery.of(context).size.height / 2.2,
                                   width: double.infinity,
                                   child: Column(
                                     crossAxisAlignment:

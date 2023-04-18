@@ -11,7 +11,8 @@ class NewHomeScreen extends StatelessWidget {
     return MaterialPageRoute(builder: (context) => NewHomeScreen());
   }
 
-  final _homeNameController = TextEditingController();
+  //create controllers for controlling user input
+  final _homeNameController = TextEditingController();    
   final _addressController = TextEditingController();
 
   @override
@@ -47,6 +48,7 @@ class NewHomeScreen extends StatelessWidget {
                     color: Color(0xFF103465),
                   ),
                 ),
+                
                 focusedBorder: OutlineInputBorder(
                   borderSide: BorderSide(
                     color: Colors.amber,
