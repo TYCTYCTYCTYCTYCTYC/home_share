@@ -604,14 +604,39 @@ class _SettingsPageState extends State<SettingsPage> {
                               ),
                             ),
                             onTap: () async {
+                              final sharedPreferences =
+                                  await SharedPreferences.getInstance();
+                              sharedPreferences.clear();
 
-                                final sharedPreferences = await SharedPreferences.getInstance();
-                                sharedPreferences.clear();
-
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const LoginPage()),
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: Text("Confirm Logout"),
+                                    content: Text(
+                                        "Are you sure you want to logout?"),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                        child: Text("Cancel"),
+                                      ),
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                          Navigator.pushReplacement(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const LoginPage()),
+                                          );
+                                        },
+                                        child: Text("Logout"),
+                                      ),
+                                    ],
+                                  );
+                                },
                               );
                             },
                           ),
