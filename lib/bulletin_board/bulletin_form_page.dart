@@ -119,16 +119,14 @@ class _BulletinFormPageState extends State<BulletinFormPage> {
                   //error handling: all fields must not be empty
                   if ((_titleController.text?.isEmpty ?? true) ||
                       (_messageController.text?.isEmpty ?? true)) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Please fill in all fields.',
-                            style: GoogleFonts.arvo(
-                                textStyle: const TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold))),
-                        backgroundColor: Colors.amber,
-                        duration: const Duration(seconds: 2),
-                      ),
+                    Fluttertoast.showToast(
+                      msg: 'Please fill in all fields.',
+                      toastLength: Toast.LENGTH_SHORT,
+                      gravity: ToastGravity.CENTER,
+                      timeInSecForIosWeb: 1,
+                      backgroundColor: Colors.amber,
+                      textColor: Colors.black,
+                      fontSize: 16.0,
                     );
                   } else {
                     _submitPost();

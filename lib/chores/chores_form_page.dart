@@ -26,6 +26,7 @@ class _ChoreFormPageState extends State<ChoreFormPage> {
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
+  //widget for chore category
   Widget _buildCategoryField() {
     return DropdownButtonFormField<String>(
       decoration: const InputDecoration(labelText: 'Category'),
@@ -46,6 +47,25 @@ class _ChoreFormPageState extends State<ChoreFormPage> {
     );
   }
 
+//widget for chore description
+  Widget _buildDescriptionField() {
+    return TextFormField(
+      decoration: const InputDecoration(labelText: 'Short Description'),
+      keyboardType: TextInputType.multiline,
+      maxLines: null,
+      maxLength: 16, // set maximum length here
+
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please enter a description';
+        }
+        return null;
+      },
+      onChanged: (newValue) => setState(() => _description = newValue),
+    );
+  }
+
+//widget for chore assigned user
   Widget _buildAssignedUserField() {
     return FutureBuilder<List<String>>(
       future: _getHomeUsernames(),
@@ -107,23 +127,7 @@ class _ChoreFormPageState extends State<ChoreFormPage> {
     return usernames;
   }
 
-  Widget _buildDescriptionField() {
-    return TextFormField(
-      decoration: const InputDecoration(labelText: 'Short Description'),
-      keyboardType: TextInputType.multiline,
-      maxLines: null,
-      maxLength: 16, // set maximum length here
-
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'Please enter a description';
-        }
-        return null;
-      },
-      onChanged: (newValue) => setState(() => _description = newValue),
-    );
-  }
-
+  //widget for chore start date
   Widget _buildStartDateField() {
     return Theme(
         data: ThemeData(
@@ -153,6 +157,7 @@ class _ChoreFormPageState extends State<ChoreFormPage> {
         ));
   }
 
+//widget for chore effort points
   Widget _buildEffortPointsField() {
     return DropdownButtonFormField<int>(
       decoration: const InputDecoration(labelText: 'Effort points'),
@@ -167,6 +172,7 @@ class _ChoreFormPageState extends State<ChoreFormPage> {
     );
   }
 
+//widget for chore submit button
   Widget _buildSubmitButton() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -180,16 +186,14 @@ class _ChoreFormPageState extends State<ChoreFormPage> {
                 (_description?.isEmpty ?? true) ||
                 (_startDate == null) ||
                 (_effortPoints == null)) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Please fill in all fields.',
-                      style: GoogleFonts.arvo(
-                          textStyle: const TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold))),
-                  backgroundColor: Colors.amber,
-                  duration: const Duration(seconds: 2),
-                ),
+              Fluttertoast.showToast(
+                msg: 'Please fill in all fields.',
+                toastLength: Toast.LENGTH_SHORT,
+                gravity: ToastGravity.CENTER,
+                timeInSecForIosWeb: 1,
+                backgroundColor: Colors.amber,
+                textColor: Colors.black,
+                fontSize: 16.0,
               );
               return;
             }
@@ -217,13 +221,14 @@ class _ChoreFormPageState extends State<ChoreFormPage> {
 
             if (response.status == 201) {
               Fluttertoast.showToast(
-                  msg: 'Chore created successfully.',
-                  toastLength: Toast.LENGTH_SHORT,
-                  gravity: ToastGravity.CENTER,
-                  timeInSecForIosWeb: 1,
-                  backgroundColor: Colors.amber,
-                  textColor: Colors.black,
-                  fontSize: 16.0);
+                msg: 'Chore created successfully.',
+                toastLength: Toast.LENGTH_SHORT,
+                gravity: ToastGravity.CENTER,
+                timeInSecForIosWeb: 1,
+                backgroundColor: Colors.amber,
+                textColor: Colors.black,
+                fontSize: 16.0,
+              );
             } else {
               Fluttertoast.showToast(
                   msg: 'Failed to create chore.',
@@ -275,6 +280,8 @@ class _ChoreFormPageState extends State<ChoreFormPage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
+
+        //display form with all the widgets
         child: Form(
           key: _formKey,
           child: SingleChildScrollView(
