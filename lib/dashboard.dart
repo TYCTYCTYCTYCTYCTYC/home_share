@@ -782,13 +782,20 @@ class _DashBoardState extends State<DashBoard> with WidgetsBindingObserver {
                               ),
                               const SizedBox(width: 20),
                               Container(
-                                  width: 200,
-                                  child: choreStatistics.isEmpty
-                                      ? Visibility(
-                                          visible: choreStatistics.isEmpty,
-                                          child: const Text(
-                                              'No messages available.'))
-                                      : Text(choreStatistics)),
+                                width: 200,
+                                child: choreStatistics.isEmpty
+                                    ? Visibility(
+                                        visible: choreStatistics.isEmpty,
+                                        child: const Text(
+                                            'No messages available.'))
+                                    : Flexible(
+                                        child: Text(
+                                          choreStatistics,
+                                          softWrap: true,
+                                          overflow: TextOverflow.visible,
+                                        ),
+                                      ),
+                              ),
                             ],
                           ),
                           const SizedBox(height: 10),
