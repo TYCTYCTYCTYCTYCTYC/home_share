@@ -33,46 +33,49 @@ class _FridgeItemDetailState extends State<FridgeItemDetail> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: ListView(
-        children: [
-          FridgeItemAppBar(),
-          Padding(
-            padding: EdgeInsets.all(5),
-            child: Image.network(widget.item['item_image_url'], height: 220),
-          ),
-          Padding(
-            padding: EdgeInsets.only(
-              top: 50,
-              bottom: 20,
+      body: SingleChildScrollView(
+        // Wrap ListView with SingleChildScrollView
+        child: Column(
+          children: [
+            FridgeItemAppBar(),
+            Padding(
+              padding: EdgeInsets.all(5),
+              child: Image.network(widget.item['item_image_url'], height: 220),
             ),
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 30.0),
-              child: Row(
-                children: [
-                  Text(
-                    "Product Description",
-                    style: GoogleFonts.arvo(
-                      fontSize: 20,
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
+            Padding(
+              padding: EdgeInsets.only(
+                top: 50,
+                bottom: 20,
+              ),
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 30.0),
+                child: Row(
+                  children: [
+                    Text(
+                      "Product Description",
+                      style: GoogleFonts.arvo(
+                        fontSize: 20,
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 12, horizontal: 50.0),
-            child: Text(
-              widget.item['description'],
-              textAlign: TextAlign.justify,
-              style: GoogleFonts.quicksand(
-                fontSize: 17,
-                color: Colors.black,
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 12, horizontal: 50.0),
+              child: Text(
+                widget.item['description'],
+                textAlign: TextAlign.justify,
+                style: GoogleFonts.quicksand(
+                  fontSize: 17,
+                  color: Colors.black,
+                ),
               ),
-            ),
-          )
-        ],
+            )
+          ],
+        ),
       ),
       floatingActionButton: null, // Remove the original FloatingActionButton
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
